@@ -4,7 +4,7 @@
 
 ## Desciption
 
-**`slientruss3d`** is a python package which can solve the resistances, internal forces and joint dispalcements in a stable 2D or 3D truss by `direct stiffness method`. This repo is writen by  :
+**`slientruss3d`** is a python package which can solve the resistances, internal forces and joint dispalcements in a stable 2D or 3D truss by `direct stiffness method`.This repo is writen by  :
 
 ```text
 Taiwan                                          (臺灣)
@@ -23,8 +23,8 @@ First, download the **`slientruss3d`** package:
 pip install slientruss3d 
 ```
 
-The following is one of the example codes in example.py.  
-You could decide to either just type all the data about the truss in `.py` file or read the data in `.json` file by changing the value of variable `IS_READ_FROM_JSON`.  
+The following is one of the example codes in example.py. 
+You could decide to either just type all the data about the truss in `.py` file or read the data in `.json` file by changing the value of variable `IS_READ_FROM_JSON`. 
 You could switch the dimension of truss by changing the value of variable `TRUSS_DIMENSION` (Only can be **2** or **3**).
 
 ```python
@@ -146,40 +146,45 @@ And the format of `ouput` .json file will be like :
 {
     // Joints
     "joint": {
-        "0": [[0.0 , 0.0 , 0.0 ], "PIN"     ], 
-        "1": [[36.0, 0.0 , 0.0 ], "PIN"     ], 
-        "2": [[36.0, 18.0, 0.0 ], "ROLLER_Z"], 
-        "3": [[0.0 , 20.0, 0.0 ], "PIN"     ], 
-        "4": [[12.0, 10.0, 18.0], "NO"      ]
+        "0": [[0 , 0 , 0 ], "PIN"     ], 
+        "1": [[36, 0 , 0 ], "PIN"     ], 
+        "2": [[36, 18, 0 ], "ROLLER_Z"], 
+        "3": [[0 , 20, 0 ], "PIN"     ], 
+        "4": [[12, 10, 18], "NO"      ]
     }, 
 
     // External forces
     "force": {
-        "0": [-3430.530131923594  , -2651.7198111274147, -4214.046353245278 ], 
-        "1": [-3823.2785480177026 ,  1696.5603777451659,  2867.4589110132774], 
-        "2": [ 0.0                ,  0.0               ,  465.8744223200557 ], 
-        "3": [ 7253.808679941296  , -6044.840566617749 ,  10880.713019911946], 
-        "4": [ 0.0                ,  7000.0            , -10000.0           ]
+        "4": [0, 7000, -10000]
     }, 
 
     // Members
     "member": {
-        "0": [[0, 4], [1.0, 10000000.0, 1.0]], 
-        "1": [[1, 4], [1.0, 10000000.0, 1.0]], 
-        "2": [[2, 4], [1.0, 1000000.0 , 1.0]], 
-        "3": [[3, 4], [1.0, 10000000.0, 1.0]], 
-        "4": [[0, 2], [1.0, 1000000.0 , 1.0]], 
-        "5": [[1, 2], [1.0, 10000000.0, 1.0]]
+        "0": [[0, 4], [1, 10000000, 1]], 
+        "1": [[1, 4], [1, 10000000, 1]], 
+        "2": [[2, 4], [1, 1000000 , 1]], 
+        "3": [[3, 4], [1, 10000000, 1]], 
+        "4": [[0, 2], [1, 1000000 , 1]], 
+        "5": [[1, 2], [1, 10000000, 1]]
     }, 
 
     // Solved displacement of each joint
     "displace": {
-        "0": [0.0                 ,  0.0                   , 0.0                  ], 
-        "1": [0.0                 ,  0.0                   , 0.0                  ], 
-        "2": [0.03134498120304671 , -0.00018634976892802215, 0.0                  ], 
-        "3": [0.0                 ,  0.0                   , 0.0                  ], 
+        "0": [0                   ,  0                     ,  0                   ], 
+        "1": [0                   ,  0                     ,  0                   ], 
+        "2": [0.03134498120304671 , -0.00018634976892802215,  0                   ], 
+        "3": [0                   ,  0                     ,  0                   ], 
         "4": [0.022796692569021636,  0.05676049798868429   , -0.029124752172511904]
     }, 
+
+    // 
+    "external": {
+        "0": [-3430.530131923594 , -2651.7198111274147, -4214.046353245278 ],
+        "1": [-3823.2785480177026,  1696.5603777451659,  2867.4589110132774],
+        "2": [ 0                 ,  0                 ,  465.8744223200557 ],
+        "3": [ 7253.808679941296 , -6044.840566617749 ,  10880.713019911946],
+        "4": [ 0                 ,  7000              , -10000             ]
+    },
 
     // Solved internal force in each member (Tension is positive, Compression is negative)
     "internal": {
@@ -202,12 +207,12 @@ And the format of `ouput` .json file will be like :
 
 The following are time consuming tests for doing structural analysis for each truss (Each testing runs for 30 times and takes average !).
 
-- **`6-bar truss`**&ensp;&ensp; : 0.00043(s)
-- **`10-bar truss`**&ensp; : 0.00063(s)
-- **`25-bar truss`**&ensp; : 0.00176(s)
-- **`72-bar truss`**&ensp; : 0.00443(s)
-- **`120-bar truss`** : 0.00728(s)
-- **`942-bar truss`** : 0.07440(s)
+- **`6-bar truss`**&ensp;&ensp; : 00043(s)
+- **`10-bar truss`**&ensp; : 00063(s)
+- **`25-bar truss`**&ensp; : 00176(s)
+- **`72-bar truss`**&ensp; : 00443(s)
+- **`120-bar truss`** : 00728(s)
+- **`942-bar truss`** : 07440(s)
 
 Testing on :
 
@@ -219,7 +224,7 @@ Intel(R) Core(TM) i7-10750H CPU @ 2.60GHz
 
 ## Result figures
 
-You could use `slientruss3d.plot.TrussPlotter` to plot the result of structural analysis for your truss.  
+You could use `slientruss3d.plot.TrussPlotter` to plot the result of structural analysis for your truss. 
 See the following example in example.py:
 
 ```python
