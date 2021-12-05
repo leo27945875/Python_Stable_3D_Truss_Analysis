@@ -67,4 +67,6 @@ def TestExample():
 
 
 if __name__ == '__main__':
-    TestExample()
+    
+    displace, internal, external = TestExample()
+    
