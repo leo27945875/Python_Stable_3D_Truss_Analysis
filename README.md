@@ -207,12 +207,12 @@ And the format of `ouput` .json file will be like :
 
 The following are time consuming tests for doing structural analysis for each truss (Each testing runs for 30 times and takes average !).
 
-- **`6-bar truss`**&ensp;&ensp; : 00043(s)
-- **`10-bar truss`**&ensp; : 00063(s)
-- **`25-bar truss`**&ensp; : 00176(s)
-- **`72-bar truss`**&ensp; : 00443(s)
-- **`120-bar truss`** : 00728(s)
-- **`942-bar truss`** : 07440(s)
+- **`6-bar truss`**&ensp;&ensp; : 0.00043(s)
+- **`10-bar truss`**&ensp; : 0.00063(s)
+- **`25-bar truss`**&ensp; : 0.00176(s)
+- **`72-bar truss`**&ensp; : 0.00443(s)
+- **`120-bar truss`** : 0.00728(s)
+- **`942-bar truss`** : 0.07440(s)
 
 Testing on :
 
