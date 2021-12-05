@@ -263,9 +263,9 @@ def TestPlot():
 
 - **`Green Arrow`** &ensp;&ensp;: Resistance
 - **`Purple Arrow`** &ensp;: External Force
+- **`Black Line`** &ensp;&ensp;&ensp;: Member
 - **`Blue Dashline`** : Displaced member with tension
 - **`Red Dashline`** &ensp;: Displaced member with compression
-- **`Black Line`** &ensp;&ensp;&ensp;: Member
 - **`Pink Circle`** &ensp;&ensp;: Joint
 - **`Blue Circle`** &ensp;&ensp;: Roller
 - **`Blue Triangle`** : Pin
