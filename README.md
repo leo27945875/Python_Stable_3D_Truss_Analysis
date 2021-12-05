@@ -4,7 +4,7 @@
 
 ## Desciption
 
-This repo can solve the resistances, internal forces and joint dispalcements in a truss by `direct stiffness method`.  
+This package can solve the resistances, internal forces and joint dispalcements in a truss by `direct stiffness method`.  
 This repo is writen by  
 
 ```text
@@ -17,6 +17,12 @@ Shih-Chi Cheng                                  (鄭適其)
 ---
 
 ## How to use ?
+
+First, download the **`slientruss3d`** package:
+
+```text
+pip install slientruss3d 
+```
 
 The following is the example code in `./example.py`.   
 You could decide to either just type all the data about the truss in `.py` file or read the data in `.json` file by changing the value of variable `IS_READ_FROM_JSON`.  
