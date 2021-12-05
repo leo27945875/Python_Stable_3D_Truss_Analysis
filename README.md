@@ -196,7 +196,7 @@ And the format of `ouput` .json file will be like :
         "5": -103.52764940445674
     }, 
 
-    // The total weight of this truss
+    // The total weight of this truss (note that the default density is 1.0)
     "weight": 168.585850740452
 }
 ```
