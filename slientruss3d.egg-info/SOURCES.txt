@@ -1,8 +1,0 @@
-LICENSE.txt
-README.md
-setup.cfg
-setup.py
-slientruss3d.egg-info/PKG-INFO
-slientruss3d.egg-info/SOURCES.txt
-slientruss3d.egg-info/dependency_links.txt
-slientruss3d.egg-info/top_level.txt
