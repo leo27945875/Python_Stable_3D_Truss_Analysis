@@ -244,7 +244,9 @@ def TestPlot():
 
     # Truss object:
     truss = Truss(dim=TRUSS_DIMENSION)
-    truss.LoadFromJSON(TEST_INPUT_FILE, isOutputFile=True) # You could directly read the output .json file.
+
+    # You could directly read the output .json file.
+    truss.LoadFromJSON(TEST_INPUT_FILE, isOutputFile=True)
 
     # Show or save the structural analysis result figure:
     TrussPlotter(truss,
