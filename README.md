@@ -268,30 +268,30 @@ def TestPlot():
 
 <br/>
 
-**Input** : `./data/bar-6_input_0.json`
+**Input** : `./data/bar-6_output_0.json`
 ![0](./plot/bar-6_plot_0.png)
 
 <br/>
 
-**Input** : `./data/bar-10_input_0.json`
+**Input** : `./data/bar-10_output_0.json`
 ![1](./plot/bar-10_plot_0.png)
 
 <br/>
 
-**Input** : `./data/bar-25_input_0.json`
+**Input** : `./data/bar-25_output_0.json`
 ![1](./plot/bar-25_plot_0.png)
 
 <br/>
 
-**Input** : `./data/bar-72_input_1.json`
+**Input** : `./data/bar-72_output_1.json`
 ![1](./plot/bar-72_plot_1.png)
 
 <br/>
 
-**Input** : `./data/bar-120_input_0.json`
+**Input** : `./data/bar-120_output_0.json`
 ![1](./plot/bar-120_plot_0.png)
 
 <br/>
 
-**Input** : `./data/bar-942_input_0.json`
+**Input** : `./data/bar-942_output_0.json`
 ![1](./plot/bar-942_plot_0.png)
