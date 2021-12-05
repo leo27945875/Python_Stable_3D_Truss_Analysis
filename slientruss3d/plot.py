@@ -38,7 +38,6 @@ class TrussPlotter:
         externals = self.truss.GetExternalForces()
         displaces = self.truss.GetDisplacements()
         forcedIDs = self.truss.GetForces().keys()
-        isSolved  = self.truss.isSolved
 
         externalScale   = self.maxForce    / (max(abs(vec).max() for vec in externals.values())) if self.isForceScale    else 1.
         displaceScale   = self.maxDisplace / (max(abs(vec).max() for vec in displaces.values())) if self.isDisplaceScale else 1.
@@ -67,7 +66,7 @@ class TrussPlotter:
         maxF, minF = max(internals.values()), min(internals.values())
         for memberID, (jointID0, jointID1, _) in members.items():
             ax.plot(*zip(joints[jointID0][0], joints[jointID1][0]), 'k-')
-            if isSolved:
+            if self.truss.isSolved:
                 ax.plot(*zip(displacedJoints[jointID0], displacedJoints[jointID1]), 
                         color=self.GetMemberColor(internals[memberID], maxF, minF),
                         linestyle='--')

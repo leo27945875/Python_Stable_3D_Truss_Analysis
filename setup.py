@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-VERSION          = '0.0.9' 
+VERSION          = '1.0.0' 
 DESCRIPTION      = '3D and 2D Truss structural analysis'
 
 
@@ -12,14 +12,17 @@ setup(
         author_email="ezioatiar@gmail.com",
         description=DESCRIPTION,
         url="https://github.com/leo27945875/Python_Stable_3D_Truss_Analysis",
-        download_url="https://github.com/leo27945875/Python_Stable_3D_Truss_Analysis/archive/refs/tags/v0.0.9.tar.gz",
+        download_url="https://github.com/leo27945875/Python_Stable_3D_Truss_Analysis/archive/refs/tags/v1.0.0.tar.gz",
         packages=['slientruss3d'],
         install_requires=['numpy', 'matplotlib'], 
         keywords=['python', 'truss', 'civil engineering', 'structural analysis'],
         classifiers= [
-            "Development Status :: 3 - Alpha",
+            "Development Status :: 5 - Production/Stable",
             "Intended Audience :: Education",
             "Intended Audience :: Developers",
+            "Intended Audience :: Manufacturing",
+            "Intended Audience :: Science/Research",
+            "License :: OSI Approved :: MIT License",
             "Programming Language :: Python :: 3",
             "Operating System :: MacOS :: MacOS X",
             "Operating System :: Microsoft :: Windows",

@@ -253,17 +253,21 @@ class Truss:
             'force'   : {},
             'member'  : {},
             'displace': {},
+            'external': {},
             'internal': {},
             'weight'  : self.weight
         }
         for jointID, (vector, supportType) in self.__joints.items():
             data["joint"   ][str(jointID) ] = [list(vector), SupportType.GetFromType(supportType)]
         
-        for jointID, vector in (self.__external if self.__isSolved else self.__forces).items():
+        for jointID, vector in self.__forces.items():
             data["force"   ][str(jointID) ] = list(vector)
         
         for jointID, vector in self.__displace.items():
             data['displace'][str(jointID) ] = list(vector)
+        
+        for jointID, vector in self.__external.items():
+            data['external'][str(jointID) ] = list(vector)
  
         for memberID, (jointID0, jointI1, member) in self.__members.items():
             data['member'  ][str(memberID)] = [[jointID0, jointI1], member.memberType.Serialize()]
@@ -291,7 +295,7 @@ class Truss:
         if isOutputFile:
             self.__isSolved = True
             self.__displace = {int(jointID) : np.array(vector) for jointID , vector in data['displace'].items()}
-            self.__external = {int(jointID) : np.array(vector) for jointID , vector in data['force'   ].items()}
+            self.__external = {int(jointID) : np.array(vector) for jointID , vector in data['external'].items()}
             self.__internal = {int(memberID): float(force)     for memberID, force  in data['internal'].items()}
  
     # Dump all the structural analysis results into a .json file:

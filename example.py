@@ -44,6 +44,8 @@ def TestPlot():
 
     # Truss object:
     truss = Truss(dim=TRUSS_DIMENSION)
+
+    # You could directly read the output .json file.
     truss.LoadFromJSON(TEST_INPUT_FILE, isOutputFile=True)
 
     # Show or save the structural analysis result figure:
@@ -58,7 +60,7 @@ def TestPlot():
 def TestExample():
     # -------------------- Global variables --------------------
     # Files settings:
-    TEST_FILE_NUMBER        = 25
+    TEST_FILE_NUMBER        = 942
     TEST_LOAD_CASE          = 0
     TEST_INPUT_FILE         = f"./data/bar-{TEST_FILE_NUMBER}_input_{TEST_LOAD_CASE}.json"
     TEST_OUTPUT_FILE        = f"./data/bar-{TEST_FILE_NUMBER}_output_{TEST_LOAD_CASE}.json"
@@ -68,7 +70,7 @@ def TestExample():
     TRUSS_DIMENSION         = 3
     IS_READ_FROM_JSON       = True
     IS_PLOT_TRUSS           = True
-    IS_SAVE_PLOT            = True
+    IS_SAVE_PLOT            = False
     
     # Plot layout settings:
     IS_EQUAL_AXIS           = True   # Whether to use actual aspect ratio in the truss figure or not.
@@ -120,5 +122,5 @@ def TestExample():
 
 if __name__ == '__main__':
     
-    displace, internal, external = TestExample()
+    TestPlot()
     
