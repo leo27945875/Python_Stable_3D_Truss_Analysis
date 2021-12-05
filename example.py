@@ -3,6 +3,58 @@ from slientruss3d.type  import SupportType, MemberType
 from slientruss3d.plot  import TrussPlotter
 
 
+def TestTimeConsuming():
+    # Global variables 
+    TEST_FILE_NUMBER = 120
+    TEST_LOAD_CASE   = 0
+    TEST_INPUT_FILE  = f"./data/bar-{TEST_FILE_NUMBER}_input_{TEST_LOAD_CASE}.json"
+    TRUSS_DIMENSION  = 3
+    TEST_TIME_NUMBER = 30
+
+    # Truss object and read .json:
+    truss = Truss(dim=TRUSS_DIMENSION)
+    truss.LoadFromJSON(TEST_INPUT_FILE)
+
+    # Do direct stiffness method:
+    import time
+    ts = []
+    for _ in range(TEST_TIME_NUMBER):
+        t0 = time.time()
+        truss.Solve()
+        ts.append(time.time() - t0)
+
+    mean = sum(ts) / len(ts)
+    print(f"Time for structural analysis = {mean}(s)")
+    return mean
+
+
+def TestPlot():
+    # Global variables 
+    TEST_FILE_NUMBER        = 25
+    TEST_LOAD_CASE          = 0
+    TEST_INPUT_FILE         = f"./data/bar-{TEST_FILE_NUMBER}_output_{TEST_LOAD_CASE}.json"
+    TEST_PLOT_SAVE_PATH     = f"./plot/bar-{TEST_FILE_NUMBER}_plot_{TEST_LOAD_CASE}.png"
+    TRUSS_DIMENSION         = 3
+    IS_EQUAL_AXIS           = True
+    IS_SAVE_PLOT            = False
+    MAX_SCALED_DISPLACEMENT = 15 
+    MAX_SCALED_FORCE        = 50   
+    POINT_SIZE_SCALE_FACTOR = 1
+    ARROW_SIZE_SCALE_FACTOR = 1
+
+    # Truss object:
+    truss = Truss(dim=TRUSS_DIMENSION)
+    truss.LoadFromJSON(TEST_INPUT_FILE, isOutputFile=True)
+
+    # Show or save the structural analysis result figure:
+    TrussPlotter(truss,
+                 isEqualAxis=IS_EQUAL_AXIS,
+                 maxScaledDisplace=MAX_SCALED_DISPLACEMENT, 
+                 maxScaledForce=MAX_SCALED_FORCE,
+                 pointScale=POINT_SIZE_SCALE_FACTOR,
+                 arrowScale=ARROW_SIZE_SCALE_FACTOR).Plot(IS_SAVE_PLOT, TEST_PLOT_SAVE_PATH)
+
+
 def TestExample():
     # -------------------- Global variables --------------------
     # Files settings:

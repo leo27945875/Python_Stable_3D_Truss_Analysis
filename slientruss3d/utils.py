@@ -80,10 +80,3 @@ def GetLength(vec):
 
 def MinNorm(vec, minNorm=1.):
     return vec * max(1., minNorm / np.linalg.norm(vec))
-
-
-# ----------------------------- Other -----------------------------
-def TestTime(func, *args, **kwargs):
-    t0 = time.time()
-    func(*args, **kwargs)
-    return time.time() - t0
