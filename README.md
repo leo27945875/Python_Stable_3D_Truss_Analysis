@@ -1,10 +1,10 @@
-# Python for stable truss analysis tool
+# **slientruss3d** : Python for stable truss analysis tool
 
 ---
 
 ## Desciption
 
-This package can solve the resistances, internal forces and joint dispalcements in a truss by `direct stiffness method`.  
+**`slientruss3d`** can solve the resistances, internal forces and joint dispalcements in a truss by `direct stiffness method`.  
 This repo is writen by  
 
 ```text
