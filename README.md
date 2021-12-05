@@ -220,7 +220,8 @@ Intel(R) Core(TM) i7-10750H CPU @ 2.60GHz
 
 ## Result figures
 
-You could use `slientruss3d.plot.TrussPlotter` to plot the result of structural analysis for your truss. See the following example in example.py:
+You could use `slientruss3d.plot.TrussPlotter` to plot the result of structural analysis for your truss.  
+See the following example in example.py:
 
 ```python
 def TestPlot():
@@ -239,7 +240,7 @@ def TestPlot():
 
     # Truss object:
     truss = Truss(dim=TRUSS_DIMENSION)
-    truss.LoadFromJSON(TEST_INPUT_FILE, isOutputFile=True)
+    truss.LoadFromJSON(TEST_INPUT_FILE, isOutputFile=True) # You could directly read the output .json file.
 
     # Show or save the structural analysis result figure:
     TrussPlotter(truss,
