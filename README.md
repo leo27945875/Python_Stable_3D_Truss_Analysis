@@ -224,7 +224,7 @@ You could use `slientruss3d.plot.TrussPlotter` to plot the result of structural 
 See the following example in example.py:
 
 ```python
-from slientruss3d.truss import Truss, Member
+from slientruss3d.truss import Truss
 from slientruss3d.plot  import TrussPlotter
 
 
