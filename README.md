@@ -24,7 +24,7 @@ First, download the **`slientruss3d`** package:
 pip install slientruss3d 
 ```
 
-The following is the example code in `./example.py`.   
+The following is one of the example codes in example.py.  
 You could decide to either just type all the data about the truss in `.py` file or read the data in `.json` file by changing the value of variable `IS_READ_FROM_JSON`.  
 You could switch the dimension of truss by changing the value of variable `TRUSS_DIMENSION` (Only can be **2** or **3**).
 
@@ -219,6 +219,36 @@ Intel(R) Core(TM) i7-10750H CPU @ 2.60GHz
 ---
 
 ## Result figures
+
+You could use `slientruss3d.plot.TrussPlotter` to plot the result of structural analysis for your truss. See the following example in example.py:
+
+```python
+def TestPlot():
+    # Global variables 
+    TEST_FILE_NUMBER        = 25
+    TEST_LOAD_CASE          = 0
+    TEST_INPUT_FILE         = f"./data/bar-{TEST_FILE_NUMBER}_output_{TEST_LOAD_CASE}.json"
+    TEST_PLOT_SAVE_PATH     = f"./plot/bar-{TEST_FILE_NUMBER}_plot_{TEST_LOAD_CASE}.png"
+    TRUSS_DIMENSION         = 3
+    IS_EQUAL_AXIS           = True
+    IS_SAVE_PLOT            = False
+    MAX_SCALED_DISPLACEMENT = 15 
+    MAX_SCALED_FORCE        = 50   
+    POINT_SIZE_SCALE_FACTOR = 1
+    ARROW_SIZE_SCALE_FACTOR = 1
+
+    # Truss object:
+    truss = Truss(dim=TRUSS_DIMENSION)
+    truss.LoadFromJSON(TEST_INPUT_FILE, isOutputFile=True)
+
+    # Show or save the structural analysis result figure:
+    TrussPlotter(truss,
+                 isEqualAxis=IS_EQUAL_AXIS,
+                 maxScaledDisplace=MAX_SCALED_DISPLACEMENT, 
+                 maxScaledForce=MAX_SCALED_FORCE,
+                 pointScale=POINT_SIZE_SCALE_FACTOR,
+                 arrowScale=ARROW_SIZE_SCALE_FACTOR).Plot(IS_SAVE_PLOT, TEST_PLOT_SAVE_PATH)
+```
 
 - **`Green Arrow`** &ensp;&ensp;: Resistance
 - **`Purple Arrow`** &ensp;: External Force
