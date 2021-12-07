@@ -109,9 +109,12 @@ class Truss:
     def __repr__(self):
         return (
             super().__repr__() + "\n" +
-            "-" * 30 + "\nJoints :\n"    + "-" * 30 + f"\n{pformat(self.__joints)}\n\n" + 
-            "-" * 30 + "\nForces :\n"    + "-" * 30 + f"\n{pformat(self.__forces)}\n\n" + 
-            "-" * 30 + "\nMembers :\n"   + "-" * 30 + f"\n{pformat(self.__members)}\n"
+            "-" * 30 + "\nJoints :\n"    + "-" * 30 + f"\n{pformat(self.__joints)}\n\n"  + 
+            "-" * 30 + "\nForces :\n"    + "-" * 30 + f"\n{pformat(self.__forces)}\n\n"  + 
+            "-" * 30 + "\nMembers :\n"   + "-" * 30 + f"\n{pformat(self.__members)}\n\n" +
+            "-" * 30 +  "\nDisplaces:\n" + "-" * 30 + f"\n{pformat(self.__displace) if self.__isSolved else '(Not Solved)'}\n\n" +
+            "-" * 30 +  "\nInternals:\n" + "-" * 30 + f"\n{pformat(self.__internal) if self.__isSolved else '(Not Solved)'}\n\n" +
+            "-" * 30 +  "\nExternals:\n" + "-" * 30 + f"\n{pformat(self.__external) if self.__isSolved else '(Not Solved)'}\n\n"
         )
     
     @property

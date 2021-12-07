@@ -108,14 +108,25 @@ class TrussPlotter:
             return {'color': 'magenta'    , 'marker': 'o', 'markersize': 8  * self.pointScale}
     
     def GetMemberColor(self, internal, maxVal, minVal):
-        cmapVal = (internal - minVal) / (maxVal - minVal)
-        zeroVal = -minVal / (maxVal - minVal)
-        if cmapVal < zeroVal:
-            redRatio  = max(0.25, zeroVal - cmapVal)
-            color = redRatio * np.array([1., 0., 0.]) + (1 - redRatio) * np.array([1., 1., 1.])
+        if maxVal * minVal <= 0:
+            cmapVal = (internal - minVal) / (maxVal - minVal)
+            zeroVal = -minVal / (maxVal - minVal)
+            if cmapVal < zeroVal:
+                redRatio  = max(0.25, zeroVal - cmapVal)
+                color = redRatio * np.array([1., 0., 0.]) + (1 - redRatio) * np.array([1., 1., 1.])
+            else:
+                blueRatio = max(0.25, cmapVal - zeroVal)
+                color = blueRatio * np.array([0., 0., 1.]) + (1 - blueRatio) * np.array([1., 1., 1.])
+
+        elif maxVal < 0 and minVal < 0:
+            cmapVal  = 1. - (internal - minVal) / (maxVal - minVal)
+            redRatio = max(0.25, cmapVal)
+            color    = redRatio * np.array([1., 0., 0.]) + (1 - redRatio) * np.array([1., 1., 1.])
+        
         else:
-            blueRatio = max(0.25, cmapVal - zeroVal)
-            color = blueRatio * np.array([0., 0., 1.]) + (1 - blueRatio) * np.array([1., 1., 1.])
+            cmapVal  = (internal - minVal) / (maxVal - minVal)
+            redRatio = max(0.25, cmapVal)
+            color    = redRatio * np.array([1., 0., 0.]) + (1 - redRatio) * np.array([1., 1., 1.])
         
         return color
 
