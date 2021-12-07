@@ -327,6 +327,9 @@ def TestPlot():
 **Input** : `./data/bar-25_output_0.json`
 ![1](./plot/bar-25_plot_0.png)
 
+**Input** : `./data/bar-47_output_0.json`
+![1](./plot/bar-47_plot_0.png)
+
 <br/>
 
 **Input** : `./data/bar-72_output_1.json`
@@ -341,3 +344,5 @@ def TestPlot():
 
 **Input** : `./data/bar-942_output_0.json`
 ![1](./plot/bar-942_plot_0.png)
+
+## Enjoy 😎 !
