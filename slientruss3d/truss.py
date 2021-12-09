@@ -157,7 +157,7 @@ class Truss:
         self.__joints[jointID] = (tuple(float(vector[i]) for i in range(self.__dim)), supportType)
     
     def AddExternalForce(self, jointID, vector):
-        if not all(IsZero(v) for v in vector):
+        if not IsZeroVector(vector):
             self.__forces[jointID] = tuple(float(vector[i]) for i in range(self.__dim))
         
     def AddNewMember(self, memberID, jointID0, jointID1, member):
@@ -281,9 +281,10 @@ class Truss:
         return data
     
     # Load truss data from a .json file:
-    def LoadFromJSON(self, path, isOutputFile=False):
-        with open(path, 'r', encoding='utf-8') as f:
-            data = json.load(f)
+    def LoadFromJSON(self, path=None, isOutputFile=False, data=None):
+        if data is None:
+            with open(path, 'r', encoding='utf-8') as f:
+                data = json.load(f)
         
         for jointID, (vector, supportType) in data['joint'].items():
             self.AddNewJoint(int(jointID), vector, SupportType.GetFromString(supportType))

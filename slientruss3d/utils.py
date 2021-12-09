@@ -71,7 +71,7 @@ def IsZero(num, eps=1e-10):
 
 
 def IsZeroVector(vec, eps=1e-10):
-    return IsZero(vec, eps).all()
+    return IsZero(np.array(vec), eps).all()
 
 
 def GetLength(vec):

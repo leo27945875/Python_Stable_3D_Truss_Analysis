@@ -38,10 +38,11 @@ class TrussPlotter:
         externals = self.truss.GetExternalForces()
         displaces = self.truss.GetDisplacements()
         forcedIDs = self.truss.GetForces().keys()
+        isSolved  = self.truss.isSolved
 
-        externalScale   = self.maxForce    / (max(abs(vec).max() for vec in externals.values())) if self.isForceScale    else 1.
-        displaceScale   = self.maxDisplace / (max(abs(vec).max() for vec in displaces.values())) if self.isDisplaceScale else 1.
-        displacedJoints = {jointID: np.array([*vector]) + np.array(displaces[jointID]) * displaceScale for jointID, (vector, _) in joints.items()}
+        externalScale   = self.maxForce    / (max(abs(vec).max() for vec in externals.values())) if isSolved and self.isForceScale    else 1.
+        displaceScale   = self.maxDisplace / (max(abs(vec).max() for vec in displaces.values())) if isSolved and self.isDisplaceScale else 1.
+        displacedJoints = {jointID: np.array([*vector]) + np.array(displaces[jointID]) * displaceScale for jointID, (vector, _) in joints.items()} if isSolved else {}
         
         # To check the max and min axis range in 2D figure:
         if dim == 2:
@@ -63,10 +64,12 @@ class TrussPlotter:
                     maxArrowPos, minArrowPos = np.array([maxArrowPos, arrowEnd]).max(axis=0), np.array([minArrowPos, arrowEnd]).min(axis=0)
 
         # Plot internal forces and members:
-        maxF, minF = max(internals.values()), min(internals.values())
+        if isSolved:
+            maxF, minF = max(internals.values()), min(internals.values())
+
         for memberID, (jointID0, jointID1, _) in members.items():
             ax.plot(*zip(joints[jointID0][0], joints[jointID1][0]), 'k-')
-            if self.truss.isSolved:
+            if isSolved:
                 ax.plot(*zip(displacedJoints[jointID0], displacedJoints[jointID1]), 
                         color=self.GetMemberColor(internals[memberID], maxF, minF),
                         linestyle='--')
