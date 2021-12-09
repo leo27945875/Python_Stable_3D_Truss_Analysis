@@ -4,7 +4,7 @@ import copy
 from pprint import pformat
 import matplotlib.pyplot as plt
 
-from .utils import IsZero, IsZeroVector, GetLength, CheckDim, DimensionError, TrussNotStableError
+from .utils import IsZero, IsZeroVector, GetLength, CheckDim, DimensionError, TrussNotStableError, InvaildJointError, AddForceOnSupportError
 from .type  import MemberType, SupportType
 from .plot  import TrussPlotter
 
@@ -157,6 +157,12 @@ class Truss:
         self.__joints[jointID] = (tuple(float(vector[i]) for i in range(self.__dim)), supportType)
     
     def AddExternalForce(self, jointID, vector):
+        if jointID not in self.__joints:
+            raise InvaildJointError(f"No such joint [{jointID}], can't add force on it.")
+        
+        if self.__joints[jointID][1] != SupportType.NO:
+            raise AddForceOnSupportError(f"Can't add external force on support (jointID = {jointID}).")
+
         if not IsZeroVector(vector):
             self.__forces[jointID] = tuple(float(vector[i]) for i in range(self.__dim))
         

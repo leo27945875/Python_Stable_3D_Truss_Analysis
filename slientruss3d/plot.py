@@ -99,6 +99,7 @@ class TrussPlotter:
 
         if isSave:
             plt.savefig(savePath)
+            plt.close()
         else:
             plt.show()
     
