@@ -259,7 +259,8 @@ The following are time consuming tests for doing structural analysis for each tr
 Testing on :
 
 ```text
-Intel(R) Core(TM) i7-10750H CPU @ 2.60GHz
+CPU: Intel(R) Core(TM) i7-10750H CPU @ 2.60GHz
+RAM: 8GB DDR4 * 2
 ```
 
 ---
