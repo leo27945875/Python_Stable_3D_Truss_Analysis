@@ -21,7 +21,7 @@ class TrussPlotter:
     def Plot(self, isSave=True, savePath='./truss.png'):
         dim = self.truss.dim
 
-        plt.figure(figsize=self.figsize)
+        plt.figure(0, figsize=self.figsize)
         if dim == 3:
             ax = plt.axes(projection='3d')
             ax.set_xlabel('x')
@@ -99,9 +99,10 @@ class TrussPlotter:
 
         if isSave:
             plt.savefig(savePath)
-            plt.close()
         else:
             plt.show()
+        
+        plt.clf()
     
     def GetSupportMarker(self, supportType):
         if supportType == SupportType.PIN:
