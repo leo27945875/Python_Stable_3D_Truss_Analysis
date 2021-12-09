@@ -59,7 +59,7 @@ def TestExample():
     # Truss object:
     truss = Truss(dim=TRUSS_DIMENSION)
 
-    # Read data in [.json] or in this [.py]:
+    # Read data in this [.py]:
     joints     = [(0, 0, 0), (360, 0, 0), (360, 180, 0), (0, 200, 0), (120, 100, 180)]
     supports   = [SupportType.PIN, SupportType.PIN, SupportType.PIN, SupportType.PIN, SupportType.NO]
     forces     = [(4, (0, 0, -10000))]
@@ -126,7 +126,7 @@ def TestLoadFromJSON():
     # Truss object:
     truss = Truss(dim=TRUSS_DIMENSION)
 
-    # Read data in [.json] or in this [.py]:
+    # Read data in [.json]:
     truss.LoadFromJSON(TEST_INPUT_FILE)
 
     # Do direct stiffness method:
