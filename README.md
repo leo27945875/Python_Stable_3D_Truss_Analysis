@@ -6,7 +6,7 @@
 
 ---
 
-## Desciption
+## Desciption 
 
 **`slientruss3d`** is a python package which can solve the resistances, internal forces and joint dispalcements in a stable 2D or 3D truss by `direct stiffness method`.This repo is writen by  :
 
