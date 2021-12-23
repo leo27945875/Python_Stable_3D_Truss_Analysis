@@ -19,12 +19,12 @@ Shih-Chi Cheng                                  (鄭適其)
 
 ---
 
-## How to use ? 
+## How to use ?
 
 First, check your python version:
 
 ```text
-Python >= 3.9.0
+Python must >= 3.9.0
 ```
 
 Second, download the **`slientruss3d`** package:
