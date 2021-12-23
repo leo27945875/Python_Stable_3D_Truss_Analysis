@@ -258,16 +258,13 @@ And the format of `ouput` .json file will be like :
         "5": [[1, 2], [1, 10000000, 1]]
     }, 
 
-    // Solved displacement of each joint
-    "displace": {
-        "0": [0                   ,  0                     ,  0                   ], 
-        "1": [0                   ,  0                     ,  0                   ], 
+    // Solved displacement of each joint (only contains non-zero part)
+    "displace": { 
         "2": [0.03134498120304671 , -0.00018634976892802215,  0                   ], 
-        "3": [0                   ,  0                     ,  0                   ], 
         "4": [0.022796692569021636,  0.05676049798868429   , -0.029124752172511904]
     }, 
 
-    // External forces with solved resistances
+    // External forces with solved resistances (only contains non-zero part)
     "external": {
         "0": [-3430.530131923594 , -2651.7198111274147, -4214.046353245278 ],
         "1": [-3823.2785480177026,  1696.5603777451659,  2867.4589110132774],
@@ -276,7 +273,7 @@ And the format of `ouput` .json file will be like :
         "4": [ 0                 ,  7000              , -10000             ]
     },
 
-    // Solved internal force in each member (Tension is positive, Compression is negative)
+    // Solved internal force in each member (Tension is positive, Compression is negative, only contains non-zero part)
     "internal": {
         "0":  5579.573091723386 , 
         "1": -5037.6118087489085, 
