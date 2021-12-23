@@ -49,7 +49,6 @@ class TrussNotStableError    (Exception): pass
 class TrussNotSolvedError    (Exception): pass
 class DimensionError         (Exception): pass
 class InvaildJointError      (Exception): pass
-class AddForceOnSupportError (Exception): pass
 
 
 # ----------------------------- Truss -----------------------------

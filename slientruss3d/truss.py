@@ -3,7 +3,7 @@ import json
 import copy
 from pprint import pformat
 
-from .utils import IsZero, IsZeroVector, GetLength, CheckDim, DimensionError, TrussNotStableError, InvaildJointError, AddForceOnSupportError, TrussNotSolvedError
+from .utils import IsZero, IsZeroVector, GetLength, CheckDim, DimensionError, TrussNotStableError, InvaildJointError, TrussNotSolvedError
 from .type  import MemberType, SupportType
 
 
@@ -160,9 +160,6 @@ class Truss:
             raise InvaildJointError(f"No such joint [{jointID}], can't add force on it.")
 
         if not IsZeroVector(vector):
-            if self.__joints[jointID][1] != SupportType.NO:
-                raise AddForceOnSupportError(f"Can't add external force on support (jointID = {jointID}).")
-                
             self.__forces[jointID] = tuple(float(vector[i]) for i in range(self.__dim))
         
     def AddNewMember(self, memberID, jointID0, jointID1, member):
@@ -247,22 +244,22 @@ class Truss:
         # Solve displacements:
         vecD = np.zeros([self.nJoint * dim])
         vecD[mask] = np.linalg.solve(matK[mask, :][:, mask], vecF[mask])
-        self.__displace = {jointID: vecD[jointID * dim: (jointID + 1) * dim]
-                           for jointID in self.__joints}
+        self.__displace = {jointID: d for jointID in self.__joints 
+                           if not IsZeroVector(d := vecD[jointID * dim: (jointID + 1) * dim])}
         
         # Solve resistances:
         mask = np.logical_not(mask)
         vecF[mask] = (matK[mask, :] @ (vecD.reshape(-1, 1))).ravel()
-        self.__external = {jointID: vecF[jointID * dim: (jointID + 1) * dim]
-                           for jointID in self.__joints
-                           if not IsZeroVector(vecF[jointID * dim: (jointID + 1) * dim])}
+        self.__external = {jointID: f for jointID in self.__joints
+                           if not IsZeroVector(f := vecF[jointID * dim: (jointID + 1) * dim])}
         
         # Solve all the internal forces:
         internal = {}
         for memberID, (jointID0, jointID1, member) in self.__members.items():
             index = list(range(jointID0 * dim, (jointID0 + 1) * dim)) + list(range(jointID1 * dim, (jointID1 + 1) * dim))
             vecI  = (member.matK[dim:] @ vecD[index].reshape(-1, 1)).ravel()
-            internal[memberID] = (1. if member.IsTension(vecI) else -1.) * GetLength(vecI)
+            if not IsZero(valI := (1. if member.IsTension(vecI) else -1.) * GetLength(vecI)):
+                internal[memberID] = valI
         
         self.__internal = internal
         

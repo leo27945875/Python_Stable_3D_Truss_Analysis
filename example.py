@@ -64,13 +64,13 @@ def TestExample():
 
     # -------------------- Global variables --------------------
     # Files settings:
-    TEST_OUTPUT_FILE        = f"./data/test_output.json"
-    TEST_PLOT_SAVE_PATH     = f"./plot/test_plot.png"
+    TEST_OUTPUT_FILE        = f"./test_output.json"
+    TEST_PLOT_SAVE_PATH     = f"./test_plot.png"
 
     # Some settings:
     TRUSS_DIMENSION         = 3
     IS_PLOT_TRUSS           = True
-    IS_SAVE_PLOT            = False
+    IS_SAVE_PLOT            = True
     
     # Plot layout settings:
     IS_EQUAL_AXIS           = True   # Whether to use actual aspect ratio in the truss figure or not.
@@ -86,8 +86,8 @@ def TestExample():
     # Read data in this [.py]:
     joints     = [(0, 0, 0), (360, 0, 0), (360, 180, 0), (0, 200, 0), (120, 100, 180)]
     supports   = [SupportType.PIN, SupportType.ROLLER_Z, SupportType.PIN, SupportType.PIN, SupportType.NO]
-    forces     = [(1, (0, 100000, 0))]
-    members    = [(0, 4), (1, 4), (2, 4), (3, 4), (1, 2)]
+    forces     = [(1, (0, 0, -10000))]
+    members    = [(0, 4), (1, 4), (2, 4), (3, 4), (1, 2), (1, 3)]
     memberType = MemberType(1, 1e7, 1)
 
     for i, (joint, support) in enumerate(zip(joints, supports)):
@@ -189,5 +189,5 @@ def TestGA():
 
 if __name__ == '__main__':
     
-    TestGA()
+    TestLoadFromJSON()
     

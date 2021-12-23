@@ -1,9 +1,11 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-from .utils import Arrow2D, Arrow3D, MinNorm, SetAxesEqual
+from .utils import Arrow2D, Arrow3D, IsZero, MinNorm, SetAxesEqual
 from .type import SupportType
 
+
+plt.style.use("seaborn")
 
 class TrussPlotter:
     def __init__(self, truss, isDisplaceScale=True, isForceScale=True, isEqualAxis=False, 
@@ -40,9 +42,9 @@ class TrussPlotter:
         forcedIDs = self.truss.GetForces().keys()
         isSolved  = self.truss.isSolved
 
-        externalScale   = self.maxForce    / (max(abs(vec).max() for vec in externals.values())) if isSolved and self.isForceScale    else 1.
-        displaceScale   = self.maxDisplace / (max(abs(vec).max() for vec in displaces.values())) if isSolved and self.isDisplaceScale else 1.
-        displacedJoints = {jointID: np.array([*vector]) + np.array(displaces[jointID]) * displaceScale for jointID, (vector, _) in joints.items()} if isSolved else {}
+        externalScale   = self.maxForce    / (max(abs(vec).max() for vec in externals.values())) if isSolved and externals and self.isForceScale    else 1.
+        displaceScale   = self.maxDisplace / (max(abs(vec).max() for vec in displaces.values())) if isSolved and displaces and self.isDisplaceScale else 1.
+        displacedJoints = {jointID: np.array([*vector]) + np.array(displaces.get(jointID, [0.] * dim)) * displaceScale for jointID, (vector, _) in joints.items()} if isSolved else {}
         
         # To check the max and min axis range in 2D figure:
         if dim == 2:
@@ -65,13 +67,14 @@ class TrussPlotter:
 
         # Plot internal forces and members:
         if isSolved:
-            maxF, minF = max(internals.values()), min(internals.values())
+            internalVals = internals.values()
+            maxF, minF = max(internalVals) if internalVals else 0., min(internalVals) if internalVals else 0.
 
         for memberID, (jointID0, jointID1, _) in members.items():
             ax.plot(*zip(joints[jointID0][0], joints[jointID1][0]), 'k-')
             if isSolved:
                 ax.plot(*zip(displacedJoints[jointID0], displacedJoints[jointID1]), 
-                        color=self.GetMemberColor(internals[memberID], maxF, minF),
+                        color=self.GetMemberColor(internals.get(memberID, 0.), maxF, minF),
                         linestyle='--')
         
         # Plot joints and displacements:
@@ -113,6 +116,9 @@ class TrussPlotter:
             return {'color': 'magenta'    , 'marker': 'o', 'markersize': 8  * self.pointScale}
     
     def GetMemberColor(self, internal, maxVal, minVal):
+        if IsZero(maxVal - minVal):
+            return np.array([0.9, 0.9, 0.9])
+
         if maxVal * minVal <= 0:
             cmapVal = (internal - minVal) / (maxVal - minVal)
             zeroVal = -minVal / (maxVal - minVal)
