@@ -19,7 +19,7 @@ Shih-Chi Cheng                                  (鄭適其)
 
 ---
 
-## How to use ?
+## How to use ? 
 
 First, check your python version:
 
