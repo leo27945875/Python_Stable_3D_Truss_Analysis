@@ -2,10 +2,10 @@ def TestTimeConsuming():
     from slientruss3d.truss import Truss
 
     # Global variables 
-    TEST_FILE_NUMBER = 120
+    TEST_FILE_NUMBER = 47
     TEST_LOAD_CASE   = 0
     TEST_INPUT_FILE  = f"./data/bar-{TEST_FILE_NUMBER}_input_{TEST_LOAD_CASE}.json"
-    TRUSS_DIMENSION  = 3
+    TRUSS_DIMENSION  = 2
     TEST_TIME_NUMBER = 30
 
     # Truss object and read .json:
@@ -201,5 +201,5 @@ def TestGA():
 
 if __name__ == '__main__':
     
-    TestGA()
+    TestTimeConsuming()
     
