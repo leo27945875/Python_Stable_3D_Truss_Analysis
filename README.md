@@ -81,7 +81,7 @@ If the parameter `isGetSumViolation` is True, then the method returns
 
 Otherwise, it returns 
 1. **boolean**&ensp;&ensp; : indicates whether the truss violates the allowable limit or not.
-2. **dictionary** : indicates each node or member that violates the allowable limit and its absolute value of exceeding quantity.
+2. **dictionary** : contains the information of each node or member which violates the allowable limit and its absolute value of exceeding quantity.
 
 ---
 
