@@ -75,8 +75,13 @@ class Truss:
 
 ```
 
-If the parameter `isGetSumViolation` is True, then the method returns a **boolean** (which indicates whether the truss violates the allowable limit or not) and the **sum** of absolute values of exceeding stresses or displacements.  
-Otherwise, it returns a **boolean** and a **dictionary** which indicates each node or member that violates the allowable limit and its absolute value of exceeding quantity.
+If the parameter `isGetSumViolation` is True, then the method returns
+1. **boolean** : indicates whether the truss violates the allowable limit or not.
+2. **float**&ensp;&ensp;&ensp; : sum of absolute values of exceeding stresses or displacements.  
+
+Otherwise, it returns 
+1. **boolean**&ensp;&ensp; : indicates whether the truss violates the allowable limit or not.
+2. **dictionary** : indicates each node or member that violates the allowable limit and its absolute value of exceeding quantity.
 
 ---
 
