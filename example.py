@@ -167,27 +167,39 @@ def TestLoadFromJSON():
 
 
 def TestGA():
-    import random
     from slientruss3d.truss import Truss
     from slientruss3d.type  import MemberType
-    from slientruss3d.ga import GA
+    from slientruss3d.ga    import GA
 
-    allowStress     = 30000.
-    allowDisplace   = 10.
-    memberTypeList  = [MemberType(inch, random.uniform(1e7, 3e7), random.uniform(0.1, 1.0)) for inch in range(1, 21)]
+    # Allowable stress and displacement:
+    ALLOWABLE_STRESS         = 30000.
+    ALLOWABLE_DISPLACEMENT   = 10.
 
+    # Type the member types you want to use here:
+    import random
+    MEMBER_TYPE_LIST = [MemberType(inch, random.uniform(1e7, 3e7), random.uniform(0.1, 1.0)) for inch in range(1, 21)]
+
+    # GA settings:
+    MAX_ITERATION      = None
+    PATIENCE_ITERATION = 50
+
+    # Truss object:
     truss = Truss(3)
     truss.LoadFromJSON('./data/bar-120_input_0.json')
 
-    ga = GA(truss, memberTypeList, allowStress, allowDisplace, nIteration=None, nPatience=50)
+    # Do GA:
+    ga = GA(truss, MEMBER_TYPE_LIST, ALLOWABLE_STRESS, ALLOWABLE_DISPLACEMENT, nIteration=MAX_ITERATION, nPatience=PATIENCE_ITERATION)
     minGene, (fitness, isInternalAllowed, isDisplaceAllowed), finalPop, bestFitnessHistory = ga.Evolve()
 
+    # Translate optimal gene to member types:
     truss.SetMemberTypes(ga.TranslateGene(minGene))
+
+    # Save result:
     truss.Solve()
     truss.DumpIntoJSON(f'bar-120_ga_0.json')
 
 
 if __name__ == '__main__':
     
-    TestLoadFromJSON()
+    TestGA()
     

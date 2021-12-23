@@ -1,4 +1,4 @@
-# **slientruss3d** : Python for stable truss analysis tool
+# **slientruss3d** : Python for stable truss analysis and optimization tool
 [![Python](https://img.shields.io/pypi/pyversions/slientruss3d)](https://pypi.org/project/slientruss3d/)
 [![Version](https://img.shields.io/pypi/v/slientruss3d)](https://pypi.org/project/slientruss3d/)
 [![GitHub release](https://img.shields.io/github/release/leo27945875/Python_Stable_3D_Truss_Analysis.svg)](https://github.com/leo27945875/Python_Stable_3D_Truss_Analysis/releases)
@@ -8,7 +8,9 @@
 
 ## Desciption
 
-**`slientruss3d`** is a python package which can solve the resistances, internal forces and joint dispalcements in a stable 2D or 3D truss by `direct stiffness method`.This repo is writen by  :
+**`slientruss3d`** is a python package which can solve the resistances, internal forces and joint dispalcements in a stable 2D or 3D truss by `direct stiffness method`. And also can do truss optimization by `Genetic Algorithm (GA)` conveniencely.  
+  
+This repo is writen by  :
 
 ```text
 Taiwan                                          (臺灣)
@@ -16,6 +18,46 @@ Department of Civil Engineering                 (土木工程學系)
 National Yang Ming Chiao Tung University (NYCU) (國立陽明交通大學)
 Shih-Chi Cheng                                  (鄭適其)
 ```
+
+## New feature in v1.2.0 update !
+
+In slientruss3d v1.2.0, you could use **`slientruss3d.ga`** module to do truss optimization conveniencely with `Genetic Algorithm (GA)`!  
+Just simply define the topology of the truss and what member types do you want to use, and then you could start the optimization. The following is the example code of GA in example.py:
+
+```python
+def TestGA():
+    from slientruss3d.truss import Truss
+    from slientruss3d.type  import MemberType
+    from slientruss3d.ga    import GA
+
+    # Allowable stress and displacement:
+    ALLOWABLE_STRESS         = 30000.
+    ALLOWABLE_DISPLACEMENT   = 10.
+
+    # Type the member types you want to use here:
+    import random
+    MEMBER_TYPE_LIST = [MemberType(inch, random.uniform(1e7, 3e7), random.uniform(0.1, 1.0)) for inch in range(1, 21)]
+
+    # GA settings:
+    MAX_ITERATION      = None
+    PATIENCE_ITERATION = 50
+
+    # Truss object:
+    truss = Truss(3)
+    truss.LoadFromJSON('./data/bar-120_input_0.json')
+
+    # Do GA:
+    ga = GA(truss, MEMBER_TYPE_LIST, ALLOWABLE_STRESS, ALLOWABLE_DISPLACEMENT, nIteration=MAX_ITERATION, nPatience=PATIENCE_ITERATION)
+    minGene, (fitness, isInternalAllowed, isDisplaceAllowed), finalPop, bestFitnessHistory = ga.Evolve()
+
+    # Translate optimal gene to member types:
+    truss.SetMemberTypes(ga.TranslateGene(minGene))
+
+    # Save result:
+    truss.Solve()
+    truss.DumpIntoJSON(f'bar-120_ga_0.json')
+```
+
 
 ---
 
@@ -33,7 +75,7 @@ Second, download the **`slientruss3d`** package:
 pip install slientruss3d 
 ```
 
-The following is one of the example codes in example.py. 
+The following is the example code in example.py. 
 You could decide to either just type all the data about the truss in `.py` file or read the data in `.json` file. As for .json file, we will discuss later.
 If you want to do structural analysis on 2D truss, just switch the dimension of truss by changing the value of variable `TRUSS_DIMENSION` (Only can be **2** or **3**).
 
