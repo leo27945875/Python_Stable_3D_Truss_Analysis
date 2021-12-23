@@ -21,7 +21,13 @@ Shih-Chi Cheng                                  (鄭適其)
 
 ## How to use ?
 
-First, download the **`slientruss3d`** package:
+First, check your python version:
+
+```text
+Python >= 3.9.0
+```
+
+Second, download the **`slientruss3d`** package:
 
 ```text
 pip install slientruss3d 
