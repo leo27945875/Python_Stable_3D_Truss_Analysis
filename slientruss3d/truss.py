@@ -2,14 +2,9 @@ import numpy as np
 import json
 import copy
 from pprint import pformat
-import matplotlib.pyplot as plt
 
-from .utils import IsZero, IsZeroVector, GetLength, CheckDim, DimensionError, TrussNotStableError, InvaildJointError, AddForceOnSupportError
+from .utils import IsZero, IsZeroVector, GetLength, CheckDim, DimensionError, TrussNotStableError, InvaildJointError, AddForceOnSupportError, TrussNotSolvedError
 from .type  import MemberType, SupportType
-from .plot  import TrussPlotter
-
-
-plt.style.use('seaborn')
 
 
 class Member:
@@ -41,6 +36,10 @@ class Member:
     @property
     def memberType(self):
         return self.__memberType
+    
+    @memberType.setter
+    def memberType(self, other):
+        self.__memberType.Set(other)
     
     @property
     def length(self):
@@ -170,7 +169,17 @@ class Truss:
         self.__members[memberID] = (jointID0, jointID1, member)
     
     def SetMemberType(self, memberID, memberType):
-        self.__members[memberID].memberType = memberType
+        self.__members[memberID][2].memberType = memberType
+    
+    def SetMemberTypes(self, memberTypeDict):
+        for memberID, memberType in memberTypeDict.items():
+            self.__members[memberID][2].memberType = memberType
+    
+    def GetMemberType(self, memberID):
+        return self.__members[memberID][2].memberType
+    
+    def GetMemberTypes(self):
+        return [member[2].memberType for member in self.__members.values()]
     
     def GetJoints(self):
         return copy.deepcopy(self.__joints)
@@ -189,6 +198,12 @@ class Truss:
     
     def GetInternalForces(self):
         return copy.deepcopy(self.__internal)
+    
+    def GetJointIDs(self):
+        return [jointID for jointID in self.__joints]
+    
+    def GetMemberIDs(self):
+        return [memberID for memberID in self.__members]
     
     # Get the full dimension vector of external forces padding by 0:
     def GetExternalForceVector(self):
@@ -312,3 +327,27 @@ class Truss:
     def DumpIntoJSON(self, path):
         with open(path, 'w', encoding='utf-8') as f:
             json.dump(self.Serialize(), f, ensure_ascii=False)
+    
+    # Check whether all internal forces are in allowable range or not:
+    def IsInternalStressAllowed(self, limit, isGetSumViolation=False):
+        if self.__isSolved:
+            if isGetSumViolation:
+                violation = sum(f - limit for memberID, force in self.__internal.items() if (f := abs(force) / self.__members[memberID][2].a) > limit)
+                return IsZero(violation), violation
+            else:
+                violation = {memberID: f - limit for memberID, force in self.__internal.items() if (f := abs(force) / self.__members[memberID][2].a) > limit}
+                return len(violation) == 0, violation
+        
+        raise TrussNotSolvedError("Haven't done structural analysis yet.")
+    
+    # Check whether all internal displacements are in allowable range or not:
+    def IsDisplacementAllowed(self, limit, isGetSumViolation=False):
+        if self.__isSolved:
+            if isGetSumViolation:
+                violation = sum(l - limit for displace in self.__displace.values() if (l := GetLength(displace)) > limit)
+                return IsZero(violation), violation
+            else:
+                violation = {jointID: l - limit for jointID, displace in self.__displace.items() if (l := GetLength(displace)) > limit}
+                return len(violation) == 0, violation
+        
+        raise TrussNotSolvedError("Haven't done structural analysis yet.")

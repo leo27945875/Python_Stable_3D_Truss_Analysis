@@ -8,6 +8,9 @@ class MemberType:
         self.e       = float(e)
         self.density = float(density)
     
+    def Set(self, other):
+        self.a, self.e, self.density = other.a, other.e, other.density
+    
     def Serialize(self):
         return [self.a, self.e, self.density]
 
