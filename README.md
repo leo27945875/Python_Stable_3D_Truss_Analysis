@@ -58,6 +58,25 @@ def TestGA():
     truss.DumpIntoJSON(f'bar-120_ga_0.json')
 ```
 
+Besides GA, there are some new useful methods in the `Truss` object:
+
+```python
+class Truss:
+
+    ...
+
+    # Check whether all internal forces are in allowable range or not:
+    def IsInternalStressAllowed(self, limit, isGetSumViolation=False) -> bool, dict | float: 
+        ...
+
+    # Check whether all internal displacements are in allowable range or not:
+    def IsDisplacementAllowed(self, limit, isGetSumViolation=False) -> bool, dict | float:
+        ...
+
+```
+
+If the parameter `isGetSumViolation` is True, then the method returns a **boolean** (which indicates whether the truss violates the allowable limit or not) and the **sum** of absolute values of exceeding stresses or displacements.  
+Otherwise, it returns a **boolean** and a **dictionary** which indicates each node or member that violates the allowable limit and its absolute value of exceeding quantity.
 
 ---
 
