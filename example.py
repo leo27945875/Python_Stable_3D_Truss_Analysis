@@ -1,9 +1,6 @@
-from slientruss3d.truss import Truss, Member
-from slientruss3d.type  import SupportType, MemberType
-from slientruss3d.plot  import TrussPlotter
-
-
 def TestTimeConsuming():
+    from slientruss3d.truss import Truss
+
     # Global variables 
     TEST_FILE_NUMBER = 120
     TEST_LOAD_CASE   = 0
@@ -29,6 +26,9 @@ def TestTimeConsuming():
 
 
 def TestPlot():
+    from slientruss3d.truss import Truss
+    from slientruss3d.plot  import TrussPlotter
+
     # Global variables 
     TEST_FILE_NUMBER        = 25
     TEST_LOAD_CASE          = 0
@@ -58,6 +58,10 @@ def TestPlot():
 
 
 def TestExample():
+    from slientruss3d.truss import Truss, Member
+    from slientruss3d.type  import SupportType, MemberType
+    from slientruss3d.plot  import TrussPlotter
+
     # -------------------- Global variables --------------------
     # Files settings:
     TEST_OUTPUT_FILE        = f"./data/test_output.json"
@@ -81,9 +85,9 @@ def TestExample():
 
     # Read data in this [.py]:
     joints     = [(0, 0, 0), (360, 0, 0), (360, 180, 0), (0, 200, 0), (120, 100, 180)]
-    supports   = [SupportType.PIN, SupportType.PIN, SupportType.PIN, SupportType.PIN, SupportType.NO]
-    forces     = [(4, (0, 0, -10000))]
-    members    = [(0, 4), (1, 4), (2, 4), (3, 4)]
+    supports   = [SupportType.PIN, SupportType.ROLLER_Z, SupportType.PIN, SupportType.PIN, SupportType.NO]
+    forces     = [(1, (0, 100000, 0))]
+    members    = [(0, 4), (1, 4), (2, 4), (3, 4), (1, 2)]
     memberType = MemberType(1, 1e7, 1)
 
     for i, (joint, support) in enumerate(zip(joints, supports)):
@@ -114,6 +118,9 @@ def TestExample():
 
 
 def TestLoadFromJSON():
+    from slientruss3d.truss import Truss
+    from slientruss3d.plot  import TrussPlotter
+
     # -------------------- Global variables --------------------
     # Files settings:
     TEST_FILE_NUMBER        = 10
@@ -159,7 +166,28 @@ def TestLoadFromJSON():
     return displace, internal, external
 
 
+def TestGA():
+    import random
+    from slientruss3d.truss import Truss
+    from slientruss3d.type  import MemberType
+    from slientruss3d.ga import GA
+
+    allowStress     = 30000.
+    allowDisplace   = 10.
+    memberTypeList  = [MemberType(inch, random.uniform(1e7, 3e7), random.uniform(0.1, 1.0)) for inch in range(1, 21)]
+
+    truss = Truss(3)
+    truss.LoadFromJSON('./data/bar-120_input_0.json')
+
+    ga = GA(truss, memberTypeList, allowStress, allowDisplace, nIteration=None, nPatience=50)
+    minGene, (fitness, isInternalAllowed, isDisplaceAllowed), finalPop, bestFitnessHistory = ga.Evolve()
+
+    truss.SetMemberTypes(ga.TranslateGene(minGene))
+    truss.Solve()
+    truss.DumpIntoJSON(f'bar-120_ga_0.json')
+
+
 if __name__ == '__main__':
     
-    displace, internal, external = TestLoadFromJSON()
+    TestGA()
     

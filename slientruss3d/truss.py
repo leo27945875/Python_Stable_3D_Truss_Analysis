@@ -158,11 +158,11 @@ class Truss:
     def AddExternalForce(self, jointID, vector):
         if jointID not in self.__joints:
             raise InvaildJointError(f"No such joint [{jointID}], can't add force on it.")
-        
-        if self.__joints[jointID][1] != SupportType.NO:
-            raise AddForceOnSupportError(f"Can't add external force on support (jointID = {jointID}).")
 
         if not IsZeroVector(vector):
+            if self.__joints[jointID][1] != SupportType.NO:
+                raise AddForceOnSupportError(f"Can't add external force on support (jointID = {jointID}).")
+                
             self.__forces[jointID] = tuple(float(vector[i]) for i in range(self.__dim))
         
     def AddNewMember(self, memberID, jointID0, jointID1, member):
@@ -243,7 +243,7 @@ class Truss:
         matK = self.GetKMatrix()
         vecF = self.GetExternalForceVector()
         mask = self.GetDisplacementUnknownMask()
-        
+
         # Solve displacements:
         vecD = np.zeros([self.nJoint * dim])
         vecD[mask] = np.linalg.solve(matK[mask, :][:, mask], vecF[mask])

@@ -8,6 +8,9 @@ class MemberType:
         self.e       = float(e)
         self.density = float(density)
     
+    def __repr__(self):
+        return f"MemberType(a={self.a}, e={self.e}, density={self.density})"
+    
     def Set(self, other):
         self.a, self.e, self.density = other.a, other.e, other.density
     
