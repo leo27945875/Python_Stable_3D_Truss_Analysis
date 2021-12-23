@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 VERSION          = '1.1.1' 
 DESCRIPTION      = '3D and 2D Truss structural analysis'
- 
+
 
 setup(
         name="slientruss3d", 
