@@ -22,7 +22,7 @@ Shih-Chi Cheng                                  (鄭適其)
 ## New feature in v1.2.0 update !
 
 In slientruss3d v1.2.0, you could use **`slientruss3d.ga`** module to do truss optimization conveniencely with `Genetic Algorithm (GA)`!  
-Just simply define the topology of the truss and what member types do you want to use, and then you could start the optimization. The following is the example code of GA in example.py:
+Just simply define the topology of the truss and what member types you want to use, and then you could start the optimization. The following is the example code of GA in example.py:
 
 ```python
 def TestGA():
