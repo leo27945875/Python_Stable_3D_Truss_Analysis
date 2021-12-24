@@ -23,9 +23,6 @@ setup(
             "Intended Audience :: Manufacturing",
             "Intended Audience :: Science/Research",
             "License :: OSI Approved :: MIT License",
-            "Programming Language :: Python :: 3.9",
-            "Operating System :: MacOS :: MacOS X",
-            "Operating System :: Microsoft :: Windows",
-            "Operating System :: MacOS :: Linux"
+            "Programming Language :: Python :: 3.9"
         ]
 )
