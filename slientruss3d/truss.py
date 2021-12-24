@@ -89,13 +89,18 @@ class Member:
     # Serialize this member:
     def Serialize(self):
         return {"joint0": self.__joint0, "joint1": self.__joint0, "memberType": self.__memberType.Serialize()}
+    
+    # Copy the instance:
+    @staticmethod
+    def Copy(other):
+        return Member(copy.copy(other.__joint0), copy.copy(other.__joint1), other.__dim, MemberType.Copy(other.__memberType))
 
 
 class Truss:
     def __init__(self, dim):
         # User conditions:
         self.__dim     = CheckDim(dim)  # (int ) Dimension of this truss
-        self.__joints  = {}             # (dict) {jointID : ((px, py, pz), supportType)   }
+        self.__joints  = {}             # (dict) {jointID : ((px, py, pz), supportType) }
         self.__forces  = {}             # (dict) {jointID : (fx, fy, fz)                }
         self.__members = {}             # (dict) {memberID: (jointID0, jointID1, member)}
         
@@ -165,6 +170,13 @@ class Truss:
     def AddNewMember(self, memberID, jointID0, jointID1, member):
         self.__members[memberID] = (jointID0, jointID1, member)
     
+    def SetJointSupportType(self, jointID, supportType):
+        self.__joints[jointID][1] = supportType
+    
+    def SetJointSupportTypes(self, jointSupportTypeDict):
+        for jointID, supportType in jointSupportTypeDict.items():
+            self.__joints[jointID][1] = supportType
+    
     def SetMemberType(self, memberID, memberType):
         self.__members[memberID][2].memberType = memberType
     
@@ -172,11 +184,17 @@ class Truss:
         for memberID, memberType in memberTypeDict.items():
             self.__members[memberID][2].memberType = memberType
     
+    def GetJointSupportType(self, jointID):
+        return self.__joints[jointID][1]
+    
+    def GetJointSupportTypes(self):
+        return [joint[1] for joint in self.__joints.values()]
+    
     def GetMemberType(self, memberID):
-        return self.__members[memberID][2].memberType
+        return MemberType.Copy(self.__members[memberID][2].memberType)
     
     def GetMemberTypes(self):
-        return [member[2].memberType for member in self.__members.values()]
+        return [MemberType.Copy(member[2].memberType) for member in self.__members.values()]
     
     def GetJoints(self):
         return copy.deepcopy(self.__joints)
