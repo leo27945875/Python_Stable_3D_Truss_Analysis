@@ -39,7 +39,7 @@ def TestGA():
     MEMBER_TYPE_LIST = [MemberType(inch, random.uniform(1e7, 3e7), random.uniform(0.1, 1.0)) for inch in range(1, 21)]
 
     # GA settings:
-    MAX_ITERATION      = None
+    MAX_ITERATION      = None  # When [MAX_ITERATION] is None, do infinite iteration until convergence (reach [PATIENCE_ITERATION]).
     PATIENCE_ITERATION = 50
 
     # Truss object:
