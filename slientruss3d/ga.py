@@ -1,6 +1,5 @@
 import random
 import math
-
 from .truss import Truss
 from .type  import MemberType
     
@@ -8,9 +7,9 @@ from .type  import MemberType
 INF = float("inf")
 
 
-class OnlyOneMemberTypeError   (Exception): pass
-class MinStressNotEnoughError  (Exception): pass
-class MinDisplaceNotEnoughError(Exception): pass
+class OnlyOneMemberTypeError  (Exception): pass
+class MinStressTooLargeError  (Exception): pass
+class MinDisplaceTooLargeError(Exception): pass
 
 
 def _InfinteLoop():
@@ -76,7 +75,7 @@ class GA:
 
         truss.Solve()
         if not truss.IsInternalStressAllowed(allowStress)[0]:
-            raise MinStressNotEnoughError("Minimum stress is not enough. Need other member types which have more [A] value.")
+            raise MinStressTooLargeError("Minimum stress is too large. Need other member types which have more [A] value.")
 
         # Check whether minimum displacement is smaller than allowable displacement:
         for memberID in self.memberIDList:
@@ -84,7 +83,7 @@ class GA:
 
         truss.Solve()
         if not truss.IsDisplacementAllowed(allowDisplace)[0]:
-            raise MinDisplaceNotEnoughError("Minimum displacement is not enough. Need other member types which have more [E*A] value.")
+            raise MinDisplaceTooLargeError("Minimum displacement is too large. Need other member types which have more [E*A] value.")
     
     def GetBestFeasibleGene(self, pop):
         minFitness, minGene, isMinInternalAllowed, isMinDisplaceAllowed = INF, None, False, False
