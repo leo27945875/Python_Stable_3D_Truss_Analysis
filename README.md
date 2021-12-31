@@ -25,11 +25,12 @@ After slientruss3d v1.2.x, you could use **`slientruss3d.ga`** module to do `tru
 The following is the example code of GA in example.py:
 
 ```python
-def TestGA():
-    from slientruss3d.truss import Truss
-    from slientruss3d.type  import MemberType
-    from slientruss3d.ga    import GA
+from slientruss3d.truss import Truss
+from slientruss3d.type  import MemberType
+from slientruss3d.ga    import GA
 
+
+def TestGA():
     # Allowable stress and displacement:
     ALLOWABLE_STRESS         = 30000.
     ALLOWABLE_DISPLACEMENT   = 10.
@@ -100,8 +101,8 @@ pip install slientruss3d
 ```
 
 The following is the example code in example.py.  
- - You could decide to either just type all the data about the truss in `.py` file or read the data in `.json` file. As for .json file, we will discuss it later.  
- - If you want to do structural analysis on 2D truss, just switch the dimension of truss by changing the value of variable `TRUSS_DIMENSION` (Only can be **2** or **3**).  
+ - You could decide to either just type all the data about the truss in `.py` file or read the data in `.json` file. As for .json file, we will discuss it later.
+ - If you want to do structural analysis on 2D truss, just switch the dimension of truss by changing the value of variable `TRUSS_DIMENSION` (Only can be **2** or **3**).
  - By the way, you could use `slientruss3d.plot.TrussPlotter` to plot the result of structural analysis for your truss. We will discuss its details later !
 
 ```python
@@ -174,6 +175,10 @@ def TestExample():
 See the example code in example.py :
 
 ```python
+from slientruss3d.truss import Truss
+from slientruss3d.plot  import TrussPlotter
+
+
 def TestLoadFromJSON():
     # -------------------- Global variables --------------------
     # Files settings:
