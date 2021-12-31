@@ -3,7 +3,7 @@ import json
 import copy
 from pprint import pformat
 
-from .utils import IsZero, IsZeroVector, GetLength, CheckDim, DimensionError, TrussNotStableError, InvaildJointError, TrussNotSolvedError
+from .utils import IsZero, IsZeroVector, GetLength, CheckDim, DimensionError, TrussNotStableError, InvaildJointError, AddForceOnSupportError, TrussNotSolvedError
 from .type  import MemberType, SupportType
 
 
@@ -89,18 +89,13 @@ class Member:
     # Serialize this member:
     def Serialize(self):
         return {"joint0": self.__joint0, "joint1": self.__joint0, "memberType": self.__memberType.Serialize()}
-    
-    # Copy the instance:
-    @staticmethod
-    def Copy(other):
-        return Member(copy.copy(other.__joint0), copy.copy(other.__joint1), other.__dim, MemberType.Copy(other.__memberType))
 
 
 class Truss:
     def __init__(self, dim):
         # User conditions:
         self.__dim     = CheckDim(dim)  # (int ) Dimension of this truss
-        self.__joints  = {}             # (dict) {jointID : ((px, py, pz), supportType) }
+        self.__joints  = {}             # (dict) {jointID : ((px, py, pz), supportType)   }
         self.__forces  = {}             # (dict) {jointID : (fx, fy, fz)                }
         self.__members = {}             # (dict) {memberID: (jointID0, jointID1, member)}
         
@@ -163,6 +158,9 @@ class Truss:
     def AddExternalForce(self, jointID, vector):
         if jointID not in self.__joints:
             raise InvaildJointError(f"No such joint [{jointID}], can't add force on it.")
+        
+        if self.__joints[jointID][1] != SupportType.NO:
+            raise AddForceOnSupportError(f"Can't add external force on support (jointID = {jointID}).")
 
         if not IsZeroVector(vector):
             self.__forces[jointID] = tuple(float(vector[i]) for i in range(self.__dim))
@@ -170,11 +168,18 @@ class Truss:
     def AddNewMember(self, memberID, jointID0, jointID1, member):
         self.__members[memberID] = (jointID0, jointID1, member)
     
-    def SetJointSupportType(self, jointID, supportType):
-        self.__joints[jointID][1] = supportType
+    def SetJointPosition(self, jointID, position):
+        self.__joints[jointID][0][:] = position
     
-    def SetJointSupportTypes(self, jointSupportTypeDict):
-        for jointID, supportType in jointSupportTypeDict.items():
+    def SetJointPositions(self, jointPositionDict):
+        for jointID, position in jointPositionDict.items():
+            self.__joints[jointID][0][:] = position
+    
+    def SetSupportType(self, jointID, supportType):
+        self.__joints[jointID][1] = supportType
+
+    def SetSupportTypes(self, supportTypeDict):
+        for jointID, supportType in supportTypeDict.items():
             self.__joints[jointID][1] = supportType
     
     def SetMemberType(self, memberID, memberType):
@@ -184,17 +189,25 @@ class Truss:
         for memberID, memberType in memberTypeDict.items():
             self.__members[memberID][2].memberType = memberType
     
-    def GetJointSupportType(self, jointID):
+    def SetMemberConnect(self, memberID, connect):
+        self.__members[memberID][:1] = connect
+    
+    def SetMemberConnects(self, memberConnectDict):
+        for memberID, connect in memberConnectDict.items():
+            self.__members[memberID][:1] = connect
+    
+    def GetJointPosition(self, jointID):
+        return self.__joints[jointID][0]
+    
+    def GetSupportType(self, jointID):
         return self.__joints[jointID][1]
     
-    def GetJointSupportTypes(self):
-        return [joint[1] for joint in self.__joints.values()]
-    
     def GetMemberType(self, memberID):
-        return MemberType.Copy(self.__members[memberID][2].memberType)
+        return self.__members[memberID][2].memberType
     
-    def GetMemberTypes(self):
-        return [MemberType.Copy(member[2].memberType) for member in self.__members.values()]
+    def GetMemberConnect(self, memberID):
+        member = self.__members[memberID]
+        return member[0], member[1]
     
     def GetJoints(self):
         return copy.deepcopy(self.__joints)
@@ -258,26 +271,26 @@ class Truss:
         matK = self.GetKMatrix()
         vecF = self.GetExternalForceVector()
         mask = self.GetDisplacementUnknownMask()
-
+        
         # Solve displacements:
         vecD = np.zeros([self.nJoint * dim])
         vecD[mask] = np.linalg.solve(matK[mask, :][:, mask], vecF[mask])
-        self.__displace = {jointID: d for jointID in self.__joints 
-                           if not IsZeroVector(d := vecD[jointID * dim: (jointID + 1) * dim])}
+        self.__displace = {jointID: vecD[jointID * dim: (jointID + 1) * dim]
+                           for jointID in self.__joints}
         
         # Solve resistances:
         mask = np.logical_not(mask)
         vecF[mask] = (matK[mask, :] @ (vecD.reshape(-1, 1))).ravel()
-        self.__external = {jointID: f for jointID in self.__joints
-                           if not IsZeroVector(f := vecF[jointID * dim: (jointID + 1) * dim])}
+        self.__external = {jointID: vecF[jointID * dim: (jointID + 1) * dim]
+                           for jointID in self.__joints
+                           if not IsZeroVector(vecF[jointID * dim: (jointID + 1) * dim])}
         
         # Solve all the internal forces:
         internal = {}
         for memberID, (jointID0, jointID1, member) in self.__members.items():
             index = list(range(jointID0 * dim, (jointID0 + 1) * dim)) + list(range(jointID1 * dim, (jointID1 + 1) * dim))
             vecI  = (member.matK[dim:] @ vecD[index].reshape(-1, 1)).ravel()
-            if not IsZero(valI := (1. if member.IsTension(vecI) else -1.) * GetLength(vecI)):
-                internal[memberID] = valI
+            internal[memberID] = (1. if member.IsTension(vecI) else -1.) * GetLength(vecI)
         
         self.__internal = internal
         
