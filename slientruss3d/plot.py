@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-from .utils import Arrow2D, Arrow3D, IsZero, MinNorm, SetAxesEqual
+from .utils import Arrow2D, Arrow3D, IsZero, IsZeroVector, MinNorm, SetAxesEqual
 from .type import SupportType
 
 
@@ -21,7 +21,8 @@ class TrussPlotter:
         self.figsize         = figsize
     
     def Plot(self, isSave=True, savePath='./truss.png'):
-        dim = self.truss.dim
+        truss = self.truss
+        dim   = truss.dim
 
         plt.figure(0, figsize=self.figsize)
         if dim == 3:
@@ -34,13 +35,14 @@ class TrussPlotter:
             ax.set_xlabel('x')
             ax.set_ylabel('y')
         
-        joints    = self.truss.GetJoints()
-        members   = self.truss.GetMembers()
-        internals = self.truss.GetInternalForces()
-        externals = self.truss.GetExternalForces()
-        displaces = self.truss.GetDisplacements()
-        forcedIDs = self.truss.GetForces().keys()
-        isSolved  = self.truss.isSolved
+        joints    = truss.GetJoints()
+        members   = truss.GetMembers()
+        forces    = truss.GetForces()
+        internals = truss.GetInternalForces()
+        externals = truss.GetExternalForces()
+        displaces = truss.GetDisplacements()
+        forcedIDs = truss.GetForces().keys()
+        isSolved  = truss.isSolved
 
         externalScale   = self.maxForce    / (max(abs(vec).max() for vec in externals.values())) if isSolved and externals and self.isForceScale    else 1.
         displaceScale   = self.maxDisplace / (max(abs(vec).max() for vec in displaces.values())) if isSolved and displaces and self.isDisplaceScale else 1.
@@ -52,14 +54,26 @@ class TrussPlotter:
             minArrowPos, minJointPos = np.zeros([dim]), np.zeros([dim])
 
         # Plot external forces:
+        arrowClass = Arrow3D if dim == 3 else Arrow2D
         for jointID, position in displacedJoints.items():
             ax.plot(*position, **self.GetSupportMarker(joints[jointID][-1]), alpha=0.3)
             if jointID in externals:
-                arrowEnd = position + MinNorm(externals[jointID] * externalScale, self.maxForce * 0.3)
-                if jointID in forcedIDs:
-                    ax.add_artist((Arrow3D if dim == 3 else Arrow2D)(position, arrowEnd, color='blueviolet', arrowstyle="->", mutation_scale=20 * self.arrowScale, lw=3 * self.arrowScale))
+                if truss.GetSupportType(jointID) == SupportType.NO:
+                    arrowEnd = position + MinNorm(externals[jointID] * externalScale, self.maxForce * 0.3)
+                    ax.add_artist(arrowClass(position, arrowEnd, color='blueviolet', arrowstyle="->", mutation_scale=20 * self.arrowScale, lw=3 * self.arrowScale))
                 else:
-                    ax.add_artist((Arrow3D if dim == 3 else Arrow2D)(position, arrowEnd, color='green'     , arrowstyle="->", mutation_scale=20 * self.arrowScale, lw=3 * self.arrowScale))
+                    if jointID not in forcedIDs:
+                        arrowEnd = position + MinNorm(externals[jointID] * externalScale, self.maxForce * 0.3)
+                        ax.add_artist(arrowClass(position, arrowEnd, color='green', arrowstyle="->", mutation_scale=20 * self.arrowScale, lw=3 * self.arrowScale))
+                    else:
+                        force = np.array(forces[jointID])
+                        arrowEndF = position + MinNorm(force * externalScale, self.maxForce * 0.3)
+                        ax.add_artist(arrowClass(position, arrowEndF, color='blueviolet', arrowstyle="->", mutation_scale=20 * self.arrowScale, lw=3 * self.arrowScale))
+                        
+                        force = externals[jointID] - force
+                        if not IsZeroVector(force):
+                            arrowEndR = position + MinNorm(force * externalScale, self.maxForce * 0.3)
+                            ax.add_artist(arrowClass(position, arrowEndR, color='green'     , arrowstyle="->", mutation_scale=20 * self.arrowScale, lw=3 * self.arrowScale))
 
                 # Check the max and min position value of 2D force arrows: 
                 if dim == 2:
