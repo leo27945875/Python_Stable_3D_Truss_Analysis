@@ -99,8 +99,8 @@ Second, download the **`slientruss3d`** package:
 pip install slientruss3d 
 ```
 
-The following is the example code in example.py. 
-You could decide to either just type all the data about the truss in `.py` file or read the data in `.json` file. As for .json file, we will discuss later.
+The following is the example code in example.py.  
+You could decide to either just type all the data about the truss in `.py` file or read the data in `.json` file. As for .json file, we will discuss it later.  
 If you want to do structural analysis on 2D truss, just switch the dimension of truss by changing the value of variable `TRUSS_DIMENSION` (Only can be **2** or **3**).  
 By the way, you could use `slientruss3d.plot.TrussPlotter` to plot the result of structural analysis for your truss. We will discuss its details later !
 
