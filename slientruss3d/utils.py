@@ -44,11 +44,14 @@ def SetAxesEqual(ax, dim):
 
 
 # ----------------------------- Exception -----------------------------
-class InvalidSupportTypeError(Exception): pass
-class TrussNotStableError    (Exception): pass
-class TrussNotSolvedError    (Exception): pass
-class DimensionError         (Exception): pass
-class InvaildJointError      (Exception): pass
+class InvalidSupportTypeError (Exception): pass
+class TrussNotStableError     (Exception): pass
+class TrussNotSolvedError     (Exception): pass
+class DimensionError          (Exception): pass
+class InvaildJointError       (Exception): pass
+class OnlyOneMemberTypeError  (Exception): pass
+class MinStressTooLargeError  (Exception): pass
+class MinDisplaceTooLargeError(Exception): pass
 
 
 # ----------------------------- Truss -----------------------------
@@ -74,3 +77,9 @@ def GetLength(vec):
 
 def MinNorm(vec, minNorm=1.):
     return vec * max(1., minNorm / np.linalg.norm(vec))
+
+
+def GetPowerset(s):
+    x = len(s)
+    for i in range(1 << x):
+        yield  [s[j] for j in range(x) if (i & (1 << j))]

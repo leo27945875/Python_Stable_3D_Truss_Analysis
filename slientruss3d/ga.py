@@ -2,14 +2,10 @@ import random
 import math
 from .truss import Truss
 from .type  import MemberType
-    
+from .utils import OnlyOneMemberTypeError, MinStressTooLargeError, MinDisplaceTooLargeError
+
 
 INF = float("inf")
-
-
-class OnlyOneMemberTypeError  (Exception): pass
-class MinStressTooLargeError  (Exception): pass
-class MinDisplaceTooLargeError(Exception): pass
 
 
 def _InfinteLoop():
@@ -135,7 +131,7 @@ class GA:
         gene[mutateIndex] = random.choice([typeID for typeID in range(self.nType) if typeID != gene[mutateIndex]])
         return gene
 
-    def Evolve(self):
+    def Evolve(self, isPrintMessage=True):
         # Initialize:
         pop, nPop = self.Initialize(), self.nPop
         pCrossover, pMutate, pOrigin   = self.pCrossover, self.pCrossover + self.pMutate, self.pCrossover + self.pMutate + self.pOrigin
@@ -162,7 +158,8 @@ class GA:
             bestFitnessHistory.append(bestFitness)
 
             # Print meaasge of this iteration:
-            print(f"\rIteration: {i :6d}, nWaitBestIter: {nWaitBestIter :3d}, minFitness: {minFitness :12.4f}, isInternalAllowed: {str(isInternalAllowed) :5s}, isDisplaceAllowed: {str(isDisplaceAllowed) :5s}", end='')
+            if isPrintMessage:
+                print(f"\rIteration: {i :6d}, nWaitBestIter: {nWaitBestIter :3d}, minFitness: {minFitness :12.4f}, isInternalAllowed: {str(isInternalAllowed) :5s}, isDisplaceAllowed: {str(isDisplaceAllowed) :5s}", end='')
 
             # Crossover or mutate or do nothing:
             for j in range(nElite, nPop):
@@ -180,5 +177,7 @@ class GA:
         
         # Print and output the final result:
         minGene, minGeneInfo = self.GetBestFeasibleGene(pop)
-        print(f"\rIteration: {i + 1 :6d}, nWaitBestIter: {nWaitBestIter :3d}, minFitness: {minFitness :10.4f}, isInternalAllowed: {str(isInternalAllowed) :5s}, isDisplaceAllowed: {str(isDisplaceAllowed) :5s} {'...EarlyStopping !' if isEarlyStopping else ''}")
+        if isPrintMessage:
+            print(f"\rIteration: {i + 1 :6d}, nWaitBestIter: {nWaitBestIter :3d}, minFitness: {minFitness :10.4f}, isInternalAllowed: {str(isInternalAllowed) :5s}, isDisplaceAllowed: {str(isDisplaceAllowed) :5s} {'...EarlyStopping !' if isEarlyStopping else ''}")
+        
         return minGene, minGeneInfo, pop, bestFitnessHistory
