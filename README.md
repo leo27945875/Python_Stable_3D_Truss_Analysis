@@ -121,11 +121,11 @@ def TestExample():
     IS_SAVE_PLOT            = False
     
     # Plot layout settings:
-    IS_EQUAL_AXIS           = True   # Whether to use actual aspect ratio in the truss figure or not.
-    MAX_SCALED_DISPLACEMENT = 15     # Scale the max value of all dimensions of displacements.
-    MAX_SCALED_FORCE        = 50     # Scale the max value of all dimensions of force arrows.
-    POINT_SIZE_SCALE_FACTOR = 1      # Scale the default size of joint point in the truss figure.
-    ARROW_SIZE_SCALE_FACTOR = 1      # Scale the default size of force arrow in the truss figure.
+    IS_EQUAL_AXIS           = True    # Whether to use actual aspect ratio in the truss figure or not.
+    MAX_SCALED_DISPLACEMENT = 30      # Scale the max value of all dimensions of displacements.
+    MAX_SCALED_FORCE        = 100     # Scale the max value of all dimensions of force arrows.
+    POINT_SIZE_SCALE_FACTOR = 1       # Scale the default size of joint point in the truss figure.
+    ARROW_SIZE_SCALE_FACTOR = 1       # Scale the default size of force arrow in the truss figure.
     # ----------------------------------------------------------
 
     # Truss object:
@@ -133,9 +133,9 @@ def TestExample():
 
     # Read data in this [.py]:
     joints     = [(0, 0, 0), (360, 0, 0), (360, 180, 0), (0, 200, 0), (120, 100, 180)]
-    supports   = [SupportType.PIN, SupportType.PIN, SupportType.PIN, SupportType.PIN, SupportType.NO]
-    forces     = [(4, (0, 0, -10000))]
-    members    = [(0, 4), (1, 4), (2, 4), (3, 4)]
+    supports   = [SupportType.PIN, SupportType.ROLLER_Z, SupportType.PIN, SupportType.PIN, SupportType.NO]
+    forces     = [(1, (0, -10000, 5000))]
+    members    = [(0, 4), (1, 4), (2, 4), (3, 4), (1, 2), (1, 3)]
     memberType = MemberType(1, 1e7, 1)
 
     for i, (joint, support) in enumerate(zip(joints, supports)):
