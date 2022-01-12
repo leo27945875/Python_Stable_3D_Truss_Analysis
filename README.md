@@ -117,19 +117,19 @@ from slientruss3d.type  import SupportType, MemberType
 
 def TestExample():
     # Truss object:
-    truss      = Truss(dim=3)
-    
+    truss = Truss(dim=3)
+
     # Positions of joints in the truss:
-    joints     = [(0, 0, 0), (360, 0, 0), (360, 180, 0), (0, 200, 0), (120, 100, 180)]
+    joints = [(0, 0, 0), (360, 0, 0), (360, 180, 0), (0, 200, 0), (120, 100, 180)]
 
     # Support types of joints:
-    supports   = [SupportType.PIN, SupportType.ROLLER_Z, SupportType.PIN, SupportType.PIN, SupportType.NO]
+    supports = [SupportType.PIN, SupportType.ROLLER_Z, SupportType.PIN, SupportType.PIN, SupportType.NO]
 
     # Loading at each joint:
-    forces     = [(1, (0, -10000, 5000))]
+    forces = [(1, (0, -10000, 5000))]
 
     # Joint IDs of two ends of the members:
-    members    = [(0, 4), (1, 4), (2, 4), (3, 4), (1, 2), (1, 3)]
+    members = [(0, 4), (1, 4), (2, 4), (3, 4), (1, 2), (1, 3)]
 
     # Member type defined by (cross-sectional area, Young's Modulus, density):
     memberType = MemberType(1, 1e7, 1)
