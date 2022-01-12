@@ -2,6 +2,7 @@
 [![Python](https://img.shields.io/pypi/pyversions/slientruss3d)](https://pypi.org/project/slientruss3d/)
 [![Version](https://img.shields.io/pypi/v/slientruss3d)](https://pypi.org/project/slientruss3d/)
 [![GitHub release](https://img.shields.io/github/release/leo27945875/Python_Stable_3D_Truss_Analysis.svg)](https://github.com/leo27945875/Python_Stable_3D_Truss_Analysis/releases)
+[![Downloads](https://img.shields.io/pypi/dw/slientruss3d)](https://pypi.org/project/slientruss3d/)
 [![License](https://img.shields.io/github/license/leo27945875/Python_Stable_3D_Truss_Analysis)](https://github.com/leo27945875/Python_Stable_3D_Truss_Analysis/blob/master/LICENSE.txt)
 
 ---
