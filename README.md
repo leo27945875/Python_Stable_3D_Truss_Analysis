@@ -30,6 +30,7 @@ The following is the example code of GA:
 from slientruss3d.truss import Truss
 from slientruss3d.type  import MemberType
 from slientruss3d.ga    import GA
+import random
 
 
 def TestGA():
@@ -38,7 +39,6 @@ def TestGA():
     ALLOWABLE_DISPLACEMENT   = 10.
 
     # Type the member types you want to use here:
-    import random
     MEMBER_TYPE_LIST = [MemberType(inch, random.uniform(1e7, 3e7), random.uniform(0.1, 1.0)) for inch in range(1, 21)]
 
     # GA settings:
@@ -116,28 +116,40 @@ from slientruss3d.type  import SupportType, MemberType
 
 
 def TestExample():
-    # Truss object:
-    truss = Truss(dim=3)
+    # -------------------- Global variables --------------------
+    # Files settings:
+    TEST_OUTPUT_FILE    = f"./test_output.json"
+    TEST_PLOT_SAVE_PATH = f"./test_plot.png"
 
-    # Truss settings
-    joints     = [(0, 0, 0), (360, 0, 0), (360, 180, 0), (0, 200, 0), (120, 100, 180)]                     # Positions of joints in the truss
-    supports   = [SupportType.PIN, SupportType.ROLLER_Z, SupportType.PIN, SupportType.PIN, SupportType.NO] # Support types of joints
-    forces     = [(1, (0, -10000, 5000))]                                                                  # Loading at each joint
-    members    = [(0, 4), (1, 4), (2, 4), (3, 4), (1, 2), (1, 3)]                                          # Joint IDs of two ends of the members
-    memberType = MemberType(1, 1e7, 1)                                                                     # Member type defined by (cross-sectional area, Young's Modulus, density):
+    # Some settings:
+    TRUSS_DIMENSION     = 3
+    # ----------------------------------------------------------
+
+    # Truss object:
+    truss = Truss(dim=TRUSS_DIMENSION)
+
+    # Truss settings:
+    joints     = [(0, 0, 0), (360, 0, 0), (360, 180, 0), (0, 200, 0), (120, 100, 180)]
+    supports   = [SupportType.PIN, SupportType.ROLLER_Z, SupportType.PIN, SupportType.PIN, SupportType.NO]
+    forces     = [(1, (0, -10000, 5000))]
+    members    = [(0, 4), (1, 4), (2, 4), (3, 4), (1, 2), (1, 3)]
+    memberType = MemberType(1, 1e7, 1)
 
     # Read data in this [.py]:
-    for jointID, (joint, support) in enumerate(zip(joints, supports)):
-        truss.AddNewJoint(jointID, joint, support)
+    for i, (joint, support) in enumerate(zip(joints, supports)):
+        truss.AddNewJoint(i, joint, support)
         
-    for jointID, force in forces:
-        truss.AddExternalForce(jointID, force)
+    for i, force in forces:
+        truss.AddExternalForce(i, force)
     
-    for memberID, (jointID0, jointID1) in enumerate(members):
-        truss.AddNewMember(memberID, jointID0, jointID1, Member(joints[jointID0], joints[jointID1], 3, memberType))
+    for i, (jointID0, jointID1) in enumerate(members):
+        truss.AddNewMember(i, jointID0, jointID1, Member(joints[jointID0], joints[jointID1], TRUSS_DIMENSION, memberType))
 
     # Do direct stiffness method:
     displace, internal, external = truss.Solve()
+
+    # Dump all the structural analysis results into a .json file:
+    truss.DumpIntoJSON(TEST_OUTPUT_FILE)
     
     return displace, internal, external
 
