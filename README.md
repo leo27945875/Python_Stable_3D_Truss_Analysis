@@ -1,4 +1,5 @@
 # **slientruss3d** : Python for stable truss analysis and optimization tool
+
 [![Python](https://img.shields.io/pypi/pyversions/slientruss3d)](https://pypi.org/project/slientruss3d/)
 [![Version](https://img.shields.io/pypi/v/slientruss3d)](https://pypi.org/project/slientruss3d/)
 [![GitHub release](https://img.shields.io/github/release/leo27945875/Python_Stable_3D_Truss_Analysis.svg)](https://github.com/leo27945875/Python_Stable_3D_Truss_Analysis/releases)
@@ -23,7 +24,7 @@ Shih-Chi Cheng                                  (鄭適其)
 ## New feature in v1.2.x update !
 
 After slientruss3d v1.2.x, you could use **`slientruss3d.ga`** module to do `truss type selection optimization` conveniencely with `Genetic Algorithm (GA)`! Just simply define the topology of the truss and what member types you want to use, and then you could start the optimization.  
-The following is the example code of GA in example.py:
+The following is the example code of GA:
 
 ```python
 from slientruss3d.truss import Truss
@@ -78,10 +79,12 @@ class Truss:
 ```
 
 If the parameter `isGetSumViolation` is True, then the method returns
+
 1. **boolean** : indicates whether the truss violates the allowable limit or not.
 2. **float**&ensp;&ensp;&ensp; : sum of absolute values of exceeding stresses or displacements.  
 
-Otherwise, it returns 
+Otherwise, it returns
+
 1. **boolean**&ensp;&ensp; : indicates whether the truss violates the allowable limit or not.
 2. **dictionary** : contains the information of each node or member which violates the allowable limit and its absolute value of exceeding quantity.
 
@@ -101,46 +104,37 @@ Second, download the **`slientruss3d`** package:
 pip install slientruss3d 
 ```
 
-The following is the example code in example.py.  
- - You could decide to either just type all the data about the truss in `.py` file or read the data in `.json` file. As for .json file, we will discuss it later.
- - If you want to do structural analysis on 2D truss, just switch the dimension of truss by changing the value of variable `TRUSS_DIMENSION` (Only can be **2** or **3**).
- - By the way, you could use `slientruss3d.plot.TrussPlotter` to plot the result of structural analysis for your truss. We will discuss its details later !
+The following is the example code.  
+
+- You could decide to either just type all the data about the truss in `.py` file or read the data in `.json` file. As for .json file, we will discuss it later.
+- If you want to do structural analysis on 2D truss, just switch the dimension of truss by changing the value of variable `TRUSS_DIMENSION` (Only can be **2** or **3**).
+- By the way, you could use `slientruss3d.plot.TrussPlotter` to plot the result of structural analysis for your truss. We will discuss its details later !
 
 ```python
 from slientruss3d.truss import Truss, Member
 from slientruss3d.type  import SupportType, MemberType
-from slientruss3d.plot  import TrussPlotter
 
 
 def TestExample():
-    # -------------------- Global variables --------------------
-    # Files settings:
-    TEST_OUTPUT_FILE        = f"./data/test_output.json"
-    TEST_PLOT_SAVE_PATH     = f"./plot/test_plot.png"
-
-    # Some settings:
-    TRUSS_DIMENSION         = 3
-    IS_PLOT_TRUSS           = True
-    IS_SAVE_PLOT            = False
-    
-    # Plot layout settings:
-    IS_EQUAL_AXIS           = True    # Whether to use actual aspect ratio in the truss figure or not.
-    MAX_SCALED_DISPLACEMENT = 30      # Scale the max value of all dimensions of displacements.
-    MAX_SCALED_FORCE        = 100     # Scale the max value of all dimensions of force arrows.
-    POINT_SIZE_SCALE_FACTOR = 1       # Scale the default size of joint point in the truss figure.
-    ARROW_SIZE_SCALE_FACTOR = 1       # Scale the default size of force arrow in the truss figure.
-    # ----------------------------------------------------------
-
     # Truss object:
-    truss = Truss(dim=TRUSS_DIMENSION)
+    truss = Truss(dim=3)
 
-    # Read data in this [.py]:
-    joints     = [(0, 0, 0), (360, 0, 0), (360, 180, 0), (0, 200, 0), (120, 100, 180)]
-    supports   = [SupportType.PIN, SupportType.ROLLER_Z, SupportType.PIN, SupportType.PIN, SupportType.NO]
-    forces     = [(1, (0, -10000, 5000))]
-    members    = [(0, 4), (1, 4), (2, 4), (3, 4), (1, 2), (1, 3)]
+    # Positions of joints in the truss:
+    joints = [(0, 0, 0), (360, 0, 0), (360, 180, 0), (0, 200, 0), (120, 100, 180)]
+
+    # Support types of joints:
+    supports = [SupportType.PIN, SupportType.ROLLER_Z, SupportType.PIN, SupportType.PIN, SupportType.NO]
+
+    # Loading at each joint:
+    forces = [(1, (0, -10000, 5000))]
+
+    # Joint IDs of two ends of the members:
+    members = [(0, 4), (1, 4), (2, 4), (3, 4), (1, 2), (1, 3)]
+
+    # Member type defined by (cross-sectional area, Young's Modulus, density):
     memberType = MemberType(1, 1e7, 1)
 
+    # Read data in this [.py]:
     for i, (joint, support) in enumerate(zip(joints, supports)):
         truss.AddNewJoint(i, joint, support)
         
@@ -152,18 +146,6 @@ def TestExample():
 
     # Do direct stiffness method:
     displace, internal, external = truss.Solve()
-
-    # Dump all the structural analysis results into a .json file:
-    truss.DumpIntoJSON(TEST_OUTPUT_FILE)
-
-    # Show or save the structural analysis result figure:
-    if IS_PLOT_TRUSS:
-        TrussPlotter(truss,
-                     isEqualAxis=IS_EQUAL_AXIS,
-                     maxScaledDisplace=MAX_SCALED_DISPLACEMENT, 
-                     maxScaledForce=MAX_SCALED_FORCE,
-                     pointScale=POINT_SIZE_SCALE_FACTOR,
-                     arrowScale=ARROW_SIZE_SCALE_FACTOR).Plot(IS_SAVE_PLOT, TEST_PLOT_SAVE_PATH)
     
     return displace, internal, external
 
@@ -173,33 +155,22 @@ def TestExample():
 
 ## Format of JSON
 
-See the example code in example.py :
+See the example code :
 
 ```python
 from slientruss3d.truss import Truss
-from slientruss3d.plot  import TrussPlotter
 
 
 def TestLoadFromJSON():
     # -------------------- Global variables --------------------
     # Files settings:
-    TEST_FILE_NUMBER        = 10
-    TEST_LOAD_CASE          = 0
-    TEST_INPUT_FILE         = f"./data/bar-{TEST_FILE_NUMBER}_input_{TEST_LOAD_CASE}.json"
-    TEST_OUTPUT_FILE        = f"./data/bar-{TEST_FILE_NUMBER}_output_{TEST_LOAD_CASE}.json"
-    TEST_PLOT_SAVE_PATH     = f"./plot/bar-{TEST_FILE_NUMBER}_plot_{TEST_LOAD_CASE}.png"
+    TEST_FILE_NUMBER = 10
+    TEST_LOAD_CASE   = 0
+    TEST_INPUT_FILE  = f"./data/bar-{TEST_FILE_NUMBER}_input_{TEST_LOAD_CASE}.json"
+    TEST_OUTPUT_FILE = f"./data/bar-{TEST_FILE_NUMBER}_output_{TEST_LOAD_CASE}.json"
 
-    # Some settings:
-    TRUSS_DIMENSION         = 2
-    IS_PLOT_TRUSS           = True
-    IS_SAVE_PLOT            = False
-    
-    # Plot layout settings:
-    IS_EQUAL_AXIS           = True   # Whether to use actual aspect ratio in the truss figure or not.
-    MAX_SCALED_DISPLACEMENT = 10     # Scale the max value of all dimensions of displacements.
-    MAX_SCALED_FORCE        = 50     # Scale the max value of all dimensions of force arrows.
-    POINT_SIZE_SCALE_FACTOR = 1      # Scale the default size of joint point in the truss figure.
-    ARROW_SIZE_SCALE_FACTOR = 1      # Scale the default size of force arrow in the truss figure.
+    # Truss dimension setting:
+    TRUSS_DIMENSION  = 2
     # ----------------------------------------------------------
 
     # Truss object:
@@ -213,18 +184,22 @@ def TestLoadFromJSON():
 
     # Dump all the structural analysis results into a .json file:
     truss.DumpIntoJSON(TEST_OUTPUT_FILE)
-
-    # Show or save the structural analysis result figure:
-    if IS_PLOT_TRUSS:
-        TrussPlotter(truss,
-                     isEqualAxis=IS_EQUAL_AXIS,
-                     maxScaledDisplace=MAX_SCALED_DISPLACEMENT, 
-                     maxScaledForce=MAX_SCALED_FORCE,
-                     pointScale=POINT_SIZE_SCALE_FACTOR,
-                     arrowScale=ARROW_SIZE_SCALE_FACTOR).Plot(IS_SAVE_PLOT, TEST_PLOT_SAVE_PATH)
     
     return displace, internal, external
 
+```
+
+You could also use the parameter **`data`** in method `LoadFromJSON` to assign a dictionary whose format is the same as the format of our JSON:
+
+```python
+## ...... something to do ...... ##
+
+with open("filename-of-your-JSON-file", 'r') as f:
+    jsonData = json.load(f)
+
+truss.LoadFromJSON(data=jsonData)
+
+## ...... something to do ...... ##
 ```
 
 The `input` data of truss in the .json file must follow this format :  
@@ -345,7 +320,7 @@ RAM: 8GB DDR4 * 2
 ## Result figures
 
 You could use `slientruss3d.plot.TrussPlotter` to plot the result of structural analysis for your truss. 
-See the following example in example.py:
+See the following example:
 
 ```python
 from slientruss3d.truss import Truss
@@ -353,18 +328,24 @@ from slientruss3d.plot  import TrussPlotter
 
 
 def TestPlot():
-    # Global variables 
+    # -------------------- Global variables --------------------
+    # Files settings:
     TEST_FILE_NUMBER        = 25
     TEST_LOAD_CASE          = 0
     TEST_INPUT_FILE         = f"./data/bar-{TEST_FILE_NUMBER}_output_{TEST_LOAD_CASE}.json"
     TEST_PLOT_SAVE_PATH     = f"./plot/bar-{TEST_FILE_NUMBER}_plot_{TEST_LOAD_CASE}.png"
+
+    # Truss dimension setting:
     TRUSS_DIMENSION         = 3
-    IS_EQUAL_AXIS           = True
-    IS_SAVE_PLOT            = False
-    MAX_SCALED_DISPLACEMENT = 15 
-    MAX_SCALED_FORCE        = 50   
-    POINT_SIZE_SCALE_FACTOR = 1
-    ARROW_SIZE_SCALE_FACTOR = 1
+
+    # Figure layout settings:
+    IS_SAVE_PLOT            = False   # Whether to save truss figure or not.
+    IS_EQUAL_AXIS           = True    # Whether to use actual aspect ratio in the truss figure or not.
+    MAX_SCALED_DISPLACEMENT = 15      # Scale the max value of all dimensions of displacements.
+    MAX_SCALED_FORCE        = 50      # Scale the max value of all dimensions of force arrows.
+    POINT_SIZE_SCALE_FACTOR = 1       # Scale the default size of joint point in the truss figure.
+    ARROW_SIZE_SCALE_FACTOR = 1       # Scale the default size of force arrow in the truss figure.
+    # ----------------------------------------------------------
 
     # Truss object:
     truss = Truss(dim=TRUSS_DIMENSION)
