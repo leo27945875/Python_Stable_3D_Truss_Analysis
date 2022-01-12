@@ -193,12 +193,12 @@ def TestLoadFromJSON():
 
 ```
 
-You could also use the parameter **`data`** in method `LoadFromJSON` to assign a dictionary whose format is the same as the format of our JSON:
+You could also use the parameter **`data`** in method `LoadFromJSON` to assign a dictionary whose format is the same as our JSON:
 
 ```python
 ## ...... something to do ...... ##
 
-with open("filename-of-your-JSON-file", 'r') as f:
+with open("filename-of-your-JSON", 'r') as f:
     jsonData = json.load(f)
 
 truss.LoadFromJSON(data=jsonData)
