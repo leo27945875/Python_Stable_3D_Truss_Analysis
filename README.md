@@ -117,32 +117,27 @@ from slientruss3d.type  import SupportType, MemberType
 
 def TestExample():
     # Truss object:
-    truss = Truss(dim=3)
-
+    truss      = Truss(dim=3)
     # Positions of joints in the truss:
-    joints = [(0, 0, 0), (360, 0, 0), (360, 180, 0), (0, 200, 0), (120, 100, 180)]
-
+    joints     = [(0, 0, 0), (360, 0, 0), (360, 180, 0), (0, 200, 0), (120, 100, 180)]
     # Support types of joints:
-    supports = [SupportType.PIN, SupportType.ROLLER_Z, SupportType.PIN, SupportType.PIN, SupportType.NO]
-
+    supports   = [SupportType.PIN, SupportType.ROLLER_Z, SupportType.PIN, SupportType.PIN, SupportType.NO]
     # Loading at each joint:
-    forces = [(1, (0, -10000, 5000))]
-
+    forces     = [(1, (0, -10000, 5000))]
     # Joint IDs of two ends of the members:
-    members = [(0, 4), (1, 4), (2, 4), (3, 4), (1, 2), (1, 3)]
-
+    members    = [(0, 4), (1, 4), (2, 4), (3, 4), (1, 2), (1, 3)]
     # Member type defined by (cross-sectional area, Young's Modulus, density):
     memberType = MemberType(1, 1e7, 1)
 
     # Read data in this [.py]:
-    for i, (joint, support) in enumerate(zip(joints, supports)):
-        truss.AddNewJoint(i, joint, support)
+    for jointID, (joint, support) in enumerate(zip(joints, supports)):
+        truss.AddNewJoint(jointID, joint, support)
         
-    for i, force in forces:
-        truss.AddExternalForce(i, force)
+    for jointID, force in forces:
+        truss.AddExternalForce(jointID, force)
     
-    for i, (jointID0, jointID1) in enumerate(members):
-        truss.AddNewMember(i, jointID0, jointID1, Member(joints[jointID0], joints[jointID1], 3, memberType))
+    for memberID, (jointID0, jointID1) in enumerate(members):
+        truss.AddNewMember(memberID, jointID0, jointID1, Member(joints[jointID0], joints[jointID1], 3, memberType))
 
     # Do direct stiffness method:
     displace, internal, external = truss.Solve()
