@@ -170,9 +170,10 @@ class Truss:
         if not IsZeroVector(vector):
             self.__forces[jointID] = tuple(float(vector[i]) for i in range(self.__dim))
         
-    def AddNewMember(self, memberID, jointID0, jointID1, member):
-        self.__members[memberID] = (jointID0, jointID1, member)
-    
+    def AddNewMember(self, memberID, jointID0, jointID1, memberType):
+        self.__members[memberID] = (jointID0, jointID1, Member(self.__joints[jointID0][0], 
+                                                               self.__joints[jointID1][0],
+                                                               self.__dim, memberType))
     def SetJointPosition(self, jointID, position):
         self.__joints[jointID][0][:] = position
     
@@ -347,9 +348,8 @@ class Truss:
             self.AddExternalForce(int(jointID), vector)
         
         for memberID, ([jointID0, jointID1], memberType) in data['member'].items():
-            self.AddNewMember(int(memberID), jointID0, jointID1, Member(self.__joints[jointID0][0], 
-                                                                        self.__joints[jointID1][0],
-                                                                        self.__dim, MemberType(*memberType)))
+            self.AddNewMember(int(memberID), jointID0, jointID1, MemberType(*memberType))
+
         if isOutputFile:
             self.__isSolved = True
             self.__displace = {int(jointID) : np.array(vector) for jointID , vector in data['displace'].items()}

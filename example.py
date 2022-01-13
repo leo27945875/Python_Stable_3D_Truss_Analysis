@@ -97,7 +97,7 @@ def TestExample():
         truss.AddExternalForce(i, force)
     
     for i, (jointID0, jointID1) in enumerate(members):
-        truss.AddNewMember(i, jointID0, jointID1, Member(joints[jointID0], joints[jointID1], TRUSS_DIMENSION, memberType))
+        truss.AddNewMember(i, jointID0, jointID1, memberType)
 
     # Do direct stiffness method:
     displace, internal, external = truss.Solve()
@@ -178,7 +178,7 @@ def TestGA():
 
     # Type the member types you want to use here:
     MEMBER_TYPE_LIST = [MemberType(inch, random.uniform(1e7, 3e7), random.uniform(0.1, 1.0)) for inch in range(1, 21)]
-    
+
     # GA settings:
     MAX_ITERATION      = None
     PATIENCE_ITERATION = 50
@@ -200,6 +200,9 @@ def TestGA():
 
 
 if __name__ == '__main__':
-
+    # TestTimeConsuming()
+    # TestExample()
+    # TestLoadFromJSON()
+    # TestPlot()
     TestGA()
     
