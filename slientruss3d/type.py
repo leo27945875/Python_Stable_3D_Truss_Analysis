@@ -17,9 +17,8 @@ class MemberType:
     def Serialize(self):
         return [self.a, self.e, self.density]
     
-    @staticmethod
-    def Copy(other):
-        return MemberType(other.a, other.e, other.density)
+    def Copy(self):
+        return MemberType(self.a, self.e, self.density)
 
 
 class SupportType:

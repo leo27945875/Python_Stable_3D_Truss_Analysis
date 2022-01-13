@@ -9,7 +9,7 @@ from .type  import MemberType, SupportType
 
 class Member:
     def __init__(self, joint0, joint1, dim=3, memberType=MemberType()):
-        self.dim = CheckDim(dim)
+        self.__dim = CheckDim(dim)
         if len(joint0) != dim or len(joint1) != dim:
             raise DimensionError(f"Dimension of each joint must be {dim}, but got dim(joint0) = {len(joint0)} and dim(joint1) = {len(joint1)}.")
         
@@ -20,6 +20,10 @@ class Member:
     
     def __repr__(self):
         return f"Member[{self.__joint0}, {self.__joint1}, k={self.e * self.a / self.__length :.4f}]"
+    
+    @property
+    def dim(self):
+        return self.__dim
     
     @property
     def e(self):
@@ -89,6 +93,10 @@ class Member:
     # Serialize this member:
     def Serialize(self):
         return {"joint0": self.__joint0, "joint1": self.__joint0, "memberType": self.__memberType.Serialize()}
+    
+    # Copy this member:
+    def Copy(self):
+        return Member(tuple([v for v in self.__joint0]), tuple([v for v in self.__joint1]), self.__dim, self.memberType.Copy())
 
 
 class Truss:
@@ -347,6 +355,8 @@ class Truss:
             self.__displace = {int(jointID) : np.array(vector) for jointID , vector in data['displace'].items()}
             self.__external = {int(jointID) : np.array(vector) for jointID , vector in data['external'].items()}
             self.__internal = {int(memberID): float(force)     for memberID, force  in data['internal'].items()}
+        
+        return self
  
     # Dump all the structural analysis results into a .json file:
     def DumpIntoJSON(self, path):
@@ -376,3 +386,7 @@ class Truss:
                 return len(violation) == 0, violation
         
         raise TrussNotSolvedError("Haven't done structural analysis yet.")
+    
+    # Copy this truss:
+    def Copy(self):
+        return Truss(self.__dim).LoadFromJSON(data=self.Serialize())

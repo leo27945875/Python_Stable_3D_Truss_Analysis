@@ -44,14 +44,16 @@ def SetAxesEqual(ax, dim):
 
 
 # ----------------------------- Exception -----------------------------
-class InvalidSupportTypeError (Exception): pass
-class TrussNotStableError     (Exception): pass
-class TrussNotSolvedError     (Exception): pass
-class DimensionError          (Exception): pass
-class InvaildJointError       (Exception): pass
-class OnlyOneMemberTypeError  (Exception): pass
-class MinStressTooLargeError  (Exception): pass
-class MinDisplaceTooLargeError(Exception): pass
+class InvalidSupportTypeError       (Exception): pass
+class TrussNotStableError           (Exception): pass
+class TrussNotSolvedError           (Exception): pass
+class DimensionError                (Exception): pass
+class InvaildJointError             (Exception): pass
+class EliteNumberTooMuchError       (Exception): pass
+class ProbabilityGreaterThanOneError(Exception): pass
+class OnlyOneMemberTypeError        (Exception): pass
+class MinStressTooLargeError        (Exception): pass
+class MinDisplaceTooLargeError      (Exception): pass
 
 
 # ----------------------------- Truss -----------------------------

@@ -1,8 +1,11 @@
 import random
-import math
 from .truss import Truss
 from .type  import MemberType
-from .utils import OnlyOneMemberTypeError, MinStressTooLargeError, MinDisplaceTooLargeError
+from .utils import (EliteNumberTooMuchError, 
+                    ProbabilityGreaterThanOneError, 
+                    OnlyOneMemberTypeError, 
+                    MinStressTooLargeError, 
+                    MinDisplaceTooLargeError)
 
 
 INF = float("inf")
@@ -16,43 +19,62 @@ def _InfinteLoop():
 
 
 class GA:
-    def __init__(self, truss: Truss, memberTypeList: list[MemberType], allowStress=30000, allowDisplace=10, 
-                       penaltyInternal=1e5, penaltyDisplace=1e5, nIteration=None, nPatience=50, nPop=200, nElite=50, 
-                       pCrossover=0.7, pMutate=0.1, pOrigin=0.1, isWeightedInit=False):
+    """
+    The generic algorithm to optimize a truss by searching the best combination of member types of members in the truss.
+    """
+    def __init__(
+            self, 
+            truss           : Truss                     , 
+            memberTypeList  : list[MemberType]          , 
+            allowStress     : float            = 30000. , 
+            allowDisplace   : float            = 10.    , 
+            nIteration      : int              = None   , 
+            nPatience       : int              = 50     , 
+            nPop            : int              = 200    , 
+            nElite          : int              = 50     , 
+            pCrossover      : float            = 0.7    , 
+            pMutate         : float            = 0.1    , 
+            pOrigin         : float            = 0.1
+        ):
         # Population settings:
-        self.nPop           = nPop
-        self.nElite         = nElite
-        self.pCrossover     = pCrossover
-        self.pMutate        = pMutate
-        self.pOrigin        = pOrigin
-        self.pRandomGene    = 1. - pCrossover - pMutate - pOrigin
-        self.isWeightedInit = isWeightedInit
+        self.nPop             = nPop
+        self.nElite           = nElite
+        self.pCrossover       = pCrossover
+        self.pMutate          = pMutate
+        self.pOrigin          = pOrigin
+        self.pRandomGene      = 1. - pCrossover - pMutate - pOrigin
 
-        # Fitness function settings:
-        self.nIteration     = nIteration
-        self.nPatience      = nPatience
-        self.penaltyInt     = penaltyInternal
-        self.penaltyDis     = penaltyDisplace
+        # Iteration policy settings:
+        self.nIteration       = nIteration
+        self.nPatience        = nPatience
 
         # Truss settings:
-        self.truss          = truss
-        self.allowStress    = allowStress
-        self.allowDisplace  = allowDisplace
-        self.typeList       = memberTypeList
-        self.nMember        = self.truss.nMember
-        self.nType          = len(memberTypeList)
-        self.memberIDList   = self.truss.GetMemberIDs()
-        self.memberIDMap    = {typeID: memberID for typeID, memberID in enumerate(self.memberIDList)}
+        self.truss            = truss
+        self.allowStress      = allowStress
+        self.allowDisplace    = allowDisplace
+        self.typeList         = memberTypeList
+        self.nMember          = self.truss.nMember
+        self.nType            = len(memberTypeList)
+        self.memberIDList     = self.truss.GetMemberIDs()
+        self.memberIDMap      = {typeID: memberID for typeID, memberID in enumerate(self.memberIDList)}
 
         # Rationality:
         self.CheckRatioality()
+
+    @property
+    def memberTypeWeightedInitProb(self):
+        return [1. for _ in self.typeList]
     
     def CheckRatioality(self):
         truss, allowStress, allowDisplace  = self.truss, self.allowStress, self.allowDisplace
 
+        # Chech whether number of elites <= number of population:
+        if self.nElite > self.nPop:
+            raise EliteNumberTooMuchError(f"Number of elites must <= number of population. Got [nElite] = {self.nElite}, [nPop] = {self.nPop}.")
+
         # Check sum of probabilties must <= 1.0:
         if self.pCrossover + self.pMutate + self.pOrigin > 1.:
-            raise ValueError(f"pCrossover + pMutate + pOrigin must <= 1.0, but got [{self.pCrossover + self.pMutate + self.pOrigin :.4f}].")
+            raise ProbabilityGreaterThanOneError(f"[pCrossover] + [pMutate] + [pOrigin] must <= 1.0, but got [{self.pCrossover + self.pMutate + self.pOrigin :.4f}].")
 
         # Check whether number of member types >= 2 or not:
         if self.nType <= 1:
@@ -94,31 +116,37 @@ class GA:
         memberIDMap, typeList = self.memberIDMap, self.typeList
         return {memberIDMap[i]: typeList[locus] for i, locus in enumerate(gene)}
     
-    def GetFitness(self, gene):
-        truss, memberIDMap, typeList = self.truss, self.memberIDMap, self.typeList
+    def GetRandomGene(self):
+        return random.choices(range(self.nType), k=self.nMember)
+    
+    def SetMemberTypesByGene(self, gene, truss):
+        memberIDMap, typeList = self.memberIDMap, self.typeList
         for i, locus in enumerate(gene):
             truss.SetMemberType(memberIDMap[i], typeList[locus])
-
+        
+        return truss
+    
+    def GetFitness(self, gene):
+        truss = self.SetMemberTypesByGene(gene, self.truss)
         truss.Solve()
+
         isInternalAllowed, internalViolation = truss.IsInternalStressAllowed(self.allowStress, True)
         isDisplaceAllowed, displaceViolation = truss.IsDisplacementAllowed(self.allowDisplace, True)
 
         fitness = truss.weight
-        if not isInternalAllowed: fitness += internalViolation / self.allowStress   * self.penaltyInt
-        if not isDisplaceAllowed: fitness += displaceViolation / self.allowDisplace * self.penaltyDis
+        if not isInternalAllowed: fitness += internalViolation / self.allowStress   * 1e5
+        if not isDisplaceAllowed: fitness += displaceViolation / self.allowDisplace * 1e5
         return fitness, isInternalAllowed, isDisplaceAllowed
     
-    def GetRandomGene(self):
-        return random.choices(range(self.nType), k=self.nMember)
-    
     def Initialize(self):
-        nType, nMember, typeChosenProbs = self.nType, self.nMember, [math.exp(t.a) for t in self.typeList] if self.isWeightedInit else None
+        nType, nMember, typeChosenProbs = self.nType, self.nMember, self.memberTypeWeightedInitProb
         return [random.choices(range(nType), k=nMember, weights=typeChosenProbs) for _ in range(self.nPop)]
     
     def Select(self, pop):
-        pop = sorted([[gene, self.GetFitness(gene)] for gene in pop], key=lambda x: x[1][0])
+        fitnessFunc = self.GetFitness
+        pop      = sorted([[gene, fitnessFunc(gene)] for gene in pop], key=lambda x: x[1][0])
         elitePop = [gene for gene, _ in pop[:self.nElite]]
-        return elitePop, len(elitePop), pop[0][1]
+        return elitePop, pop[0][1]
     
     def Crossover(self, gene0, gene1):
         cut0, cut1 = random.sample(range(self.nMember), k=2)
@@ -131,20 +159,37 @@ class GA:
         gene[mutateIndex] = random.choice([typeID for typeID in range(self.nType) if typeID != gene[mutateIndex]])
         return gene
 
+    def UpdatePop(self, pop, elitePop):
+        nPop      , nElite           = self.nPop      , self.nElite
+        pCrossover, pMutate, pOrigin = self.pCrossover, self.pCrossover + self.pMutate, self.pCrossover + self.pMutate + self.pOrigin
+        
+        newPop = [None for _ in range(nPop)]
+        newPop[:nElite] = elitePop
+        for j in range(nElite, nPop):
+            p = random.random()
+            if p <= pCrossover:
+                newPop[j] = self.Crossover(*random.sample(elitePop, k=2))
+            elif pCrossover < p <= pMutate:
+                newPop[j] = self.Mutate(random.choice(elitePop))
+            elif pMutate < p <= pOrigin:
+                newPop[j] = pop[j]
+            else:
+                newPop[j] = self.GetRandomGene()
+        
+        return newPop
+    
     def Evolve(self, isPrintMessage=True):
-        # Initialize:
-        pop, nPop = self.Initialize(), self.nPop
-        pCrossover, pMutate, pOrigin   = self.pCrossover, self.pCrossover + self.pMutate, self.pCrossover + self.pMutate + self.pOrigin
         nIteration, nPatience = self.nIteration, self.nPatience
+
+        # Initialize:
+        pop = self.Initialize()
 
         # Evolution loops:
         bestFitness, bestFitnessHistory, nWaitBestIter, isEarlyStopping = INF, [], 0, False
         for i in (range(nIteration) if nIteration is not None else _InfinteLoop()):
             
             # Select elites:
-            elitePop, nElite, (minFitness, isInternalAllowed, isDisplaceAllowed) = self.Select(pop)
-            newPop = [None for _ in range(nPop)]
-            newPop[:nElite] = elitePop
+            elitePop, (minFitness, isInternalAllowed, isDisplaceAllowed) = self.Select(pop)
 
             # Early stopping:
             if minFitness < bestFitness:
@@ -155,25 +200,15 @@ class GA:
                     isEarlyStopping = True
                     break
             
+            # Record the best fitness of this iteration:
             bestFitnessHistory.append(bestFitness)
 
             # Print meaasge of this iteration:
             if isPrintMessage:
                 print(f"\rIteration: {i :6d}, nWaitBestIter: {nWaitBestIter :3d}, minFitness: {minFitness :12.4f}, isInternalAllowed: {str(isInternalAllowed) :5s}, isDisplaceAllowed: {str(isDisplaceAllowed) :5s}", end='')
 
-            # Crossover or mutate or do nothing:
-            for j in range(nElite, nPop):
-                p = random.random()
-                if p <= pCrossover:
-                    newPop[j] = self.Crossover(*random.sample(elitePop, k=2))
-                elif pCrossover < p <= pMutate:
-                    newPop[j] = self.Mutate(random.choice(elitePop))
-                elif pMutate < p <= pOrigin:
-                    newPop[j] = pop[j]
-                else:
-                    newPop[j] = self.GetRandomGene()
-            
-            pop = newPop
+            # Population update:
+            pop = self.UpdatePop(pop, elitePop)
         
         # Print and output the final result:
         minGene, minGeneInfo = self.GetBestFeasibleGene(pop)
