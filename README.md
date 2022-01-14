@@ -23,10 +23,12 @@ Shih-Chi Cheng                                  (鄭適其)
 
 ## Content
 
-[How to use](#how-to-use-)
+- [How to use](#how-to-use-)
+- [Update log](#Update-log)
 
+## Update log
 
-## New feature in v1.2.x update !
+### New feature in v1.2.x update !
 
 After slientruss3d v1.2.x, you could use **`slientruss3d.ga`** module to do `truss type selection optimization` conveniencely with `Genetic Algorithm (GA)`! Just simply define the topology of the truss and what member types you want to use, and then you could start the optimization.  
 The following is the example code of GA:
