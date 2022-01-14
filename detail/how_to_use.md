@@ -85,7 +85,7 @@ Truss.AddNewJoint(jointID, vector, supportType=SupportType.NO) -> None
 
 <br/>
 
-### Define a new loading
+### Define a new load
 
 ```python
 Truss.AddExternalForce(jointID, vector) -> None
