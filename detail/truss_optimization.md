@@ -9,9 +9,9 @@ After slientruss3d v1.2.x, you could use **`slientruss3d.ga`** module to do `tru
 ## Fitness function
 
 The following is the `default` fitness function:
-$
+$$
 Fitness = Truss.weight + 10000 \cdot \left(\sum_{i=1}^{Truss.nMember}\max(|stress| - allowable\_stress, 0)\right) + \left(\sum_{i=1}^{Truss.nJoint}\max(|displacement| - allowable\_displacement, 0)\right)
-$
+$$
 
 ---
 

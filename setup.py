@@ -1,6 +1,6 @@
 from setuptools import setup
 
-VERSION          = '1.2.7' 
+VERSION          = '1.2.8' 
 DESCRIPTION      = '3D and 2D Truss structural analysis'
 
 
