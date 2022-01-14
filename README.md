@@ -21,6 +21,11 @@ National Yang Ming Chiao Tung University (NYCU) (國立陽明交通大學)
 Shih-Chi Cheng                                  (鄭適其)
 ```
 
+## Content
+
+[How to use](##How-to-use-?)
+
+
 ## New feature in v1.2.x update !
 
 After slientruss3d v1.2.x, you could use **`slientruss3d.ga`** module to do `truss type selection optimization` conveniencely with `Genetic Algorithm (GA)`! Just simply define the topology of the truss and what member types you want to use, and then you could start the optimization.  
