@@ -41,6 +41,12 @@ The following is the **`default`** mutation method:
 
 ---
 
+## Evolution policy
+
+![Update](./figure/evolution_policy.png)
+
+---
+
 ## Example
 
 The following is the example code of GA:
