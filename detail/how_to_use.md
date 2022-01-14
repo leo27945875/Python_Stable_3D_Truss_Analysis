@@ -63,6 +63,8 @@ def TestExample():
 Truss(dim)
 ```
 
+- **`dim`** : Dimension of the truss (only can be `2` or `3`).
+
 <br/>
 
 ### Define a new joint
