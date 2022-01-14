@@ -179,6 +179,8 @@ Truss.weight -> float
 
 - Get the total weight of the truss.
 
+<br/>
+
 ---
 
 ## Member object
