@@ -27,8 +27,8 @@ Shih-Chi Cheng                                  (鄭適其)
 
 1. **Installaltion**
     - [Install](#Install)
-    - [Update log](#Update-log)
     - [Time consuming](#Time-consuming)
+    - [Update log](#Update-log)
 2. **Quick start**
     - [Basic example](./detail/how_to_use.md#Basic-example)
     - [Truss object](./detail/how_to_use.md#Truss-object)
@@ -69,6 +69,27 @@ pip install slientruss3d
 
 ---
 
+## Time consuming
+
+The following are time consuming tests for doing structural analysis for each truss (Each testing runs for 30 times and takes average !).
+
+- **`6-bar truss`**&ensp;&ensp; : 0.00037(s)
+- **`10-bar truss`**&ensp; : 0.00050(s)
+- **`25-bar truss`**&ensp; : 0.00126(s)
+- **`47-bar truss`**&ensp; : 0.00253(s)
+- **`72-bar truss`**&ensp; : 0.00323(s)
+- **`120-bar truss`** : 0.00557(s)
+- **`942-bar truss`** : 0.05253(s)
+
+Testing on :
+
+```text
+CPU: Intel(R) Core(TM) i7-10750H CPU @ 2.60GHz
+RAM: 8GB DDR4 * 2
+```
+
+---
+
 ## Update log
 
 ### New feature in v1.2.x update !
@@ -103,27 +124,6 @@ Otherwise, it returns
 
 >1. **boolean**&ensp;&ensp; : indicates whether the truss violates the allowable limit or not.
 >2. **dictionary** : contains the information of each node or member which violates the allowable limit and its absolute value of exceeding quantity.
-
----
-
-## Time consuming
-
-The following are time consuming tests for doing structural analysis for each truss (Each testing runs for 30 times and takes average !).
-
-- **`6-bar truss`**&ensp;&ensp; : 0.00037(s)
-- **`10-bar truss`**&ensp; : 0.00050(s)
-- **`25-bar truss`**&ensp; : 0.00126(s)
-- **`47-bar truss`**&ensp; : 0.00253(s)
-- **`72-bar truss`**&ensp; : 0.00323(s)
-- **`120-bar truss`** : 0.00557(s)
-- **`942-bar truss`** : 0.05253(s)
-
-Testing on :
-
-```text
-CPU: Intel(R) Core(TM) i7-10750H CPU @ 2.60GHz
-RAM: 8GB DDR4 * 2
-```
 
 ---
 
