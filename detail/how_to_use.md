@@ -188,6 +188,38 @@ Truss.Serialize() -> dict
 
 <br/>
 
+### Check whether every stress is allowable
+
+```python
+Truss.IsInternalStressAllowed(limit, isGetSumViolation=False) -> tuple[bool, dict | float]
+```
+
+- **`limit`** : Allowable stress.
+- **`isGetSumViolation`** : Sum of the exceeding quantities of members that violate allowable stress.
+
+&ensp; If the parameter `isGetSumViolation` is True, then the method returns
+
+>1. **boolean** : indicates whether the truss violates the allowable limit or not.
+>2. **float**&ensp;&ensp;&ensp; : sum of absolute values of exceeding stresses or displacements.  
+
+<br/>
+
+### Check whether every displacement is allowable
+
+```python
+Truss.IsDisplacementAllowed(limit, isGetSumViolation=False) -> tuple[bool, dict | float]
+```
+
+- **`limit`** : Allowable displacement.
+- **`isGetSumViolation`** : Sum of the exceeding quantities of members that violate allowable displacement.
+
+&ensp; If the parameter `isGetSumViolation` is True, then the method returns
+
+>1. **boolean** : indicates whether the truss violates the allowable limit or not.
+>2. **float**&ensp;&ensp;&ensp; : sum of absolute values of exceeding stresses or displacements. 
+
+<br/>
+
 ### Copy the truss
 
 ```python
