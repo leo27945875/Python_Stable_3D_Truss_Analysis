@@ -10,7 +10,7 @@ After slientruss3d v1.2.x, you could use **`slientruss3d.ga`** module to do `tru
 
 The following is the **`default`** fitness function:
 
-![Fitness](./figure/fitness_func.png)
+![0](./figure/fitness_func.png)
 
 ---
 
