@@ -59,7 +59,7 @@ Or make an JSON response to the client with the method **`Truss.Serialize()`**:
 
 from flask import make_response, jsonify
 
-@app.route("...")
+@app.route("/....")
 def Response():
     ## ...... something to do ...... ##
     return make_response(jsonify(truss.Serialize()))
@@ -67,7 +67,7 @@ def Response():
 ## ...... something to do ...... ##
 ```
 
-> There is also a method serialzeation method **`Member.Serialize()`** in class Member !
+> There is also a method serialization method **`Member.Serialize()`** in class Member !
 
 ---
 
