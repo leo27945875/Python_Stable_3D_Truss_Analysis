@@ -165,6 +165,17 @@ Truss.DumpIntoJSON(path) -> None
 
 <br/>
 
+### Serialize the truss
+
+```python
+Truss.Serialize() -> dict
+```
+
+- Return a dictionary which contains all the information about the truss.
+    > The format is the same as [Format of JSON](./combine_with_JSON.md#Format-of-JSON)
+
+<br/>
+
 ### Copy the truss
 
 ```python
@@ -250,6 +261,24 @@ Member.IsTension(forceVec) -> bool
 ```
 
 - **`forceVec`** : The internal force vector on `joint1`.
+
+<br/>
+
+### Serialize the member
+
+```python
+Member.Serialize() -> dict
+```
+
+- Return a dictionary which contains all the information about the member. The following is its format:
+
+```python
+{
+    "joint0"    : list[float],  # Position of joint0
+    "joint1"    : list[float],  # Position of joint1
+    "memberType": list[float]   # Cross-sectional area, Young's modulus, density
+} 
+```
 
 <br/>
 
