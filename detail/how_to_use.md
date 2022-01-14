@@ -166,7 +166,7 @@ Truss.DumpIntoJSON(path) -> None
 ### Copy the truss
 
 ```python
-Truss.Copy()
+Truss.Copy() -> Truss
 ```
 
 ---
