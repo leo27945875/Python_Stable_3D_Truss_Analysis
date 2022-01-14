@@ -45,7 +45,7 @@ The following is the **`default`** mutation policy:
 
 The following is the **`default`** evolution policy (only for one step):
 
-![Update](./figure/evolution_policy.png)
+![Update](./figure/evolution.png)
 
 ---
 
