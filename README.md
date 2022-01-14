@@ -23,7 +23,7 @@ Shih-Chi Cheng                                  (鄭適其)
 
 ## Content
 
-[How to use](#How-to-use-?)
+[How to use](#how-to-use-)
 
 
 ## New feature in v1.2.x update !
