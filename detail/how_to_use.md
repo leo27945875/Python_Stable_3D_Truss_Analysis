@@ -243,16 +243,6 @@ Member(joint0, joint1, dim=3, memberType=MemberType()) -> None
 
 <br/>
 
-### Stiffness matrix (K)
-
-```python
-Member.matK -> numpy.array
-```
-
-- It will return a numpy array which is the K matrix.
-
-<br/>
-
 ### Check whether the member is tension strss or not
 
 ``` python
@@ -321,7 +311,7 @@ Member.cosines : list[float]
 Member.k : float
 ```
 
-- Stiffness matrix.
+- Stiffness matrix (K).
 
 ```python
 Member.matK : numpy.array
