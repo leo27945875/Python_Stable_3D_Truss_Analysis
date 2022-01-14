@@ -105,7 +105,7 @@ Truss.AddNewMember(memberID, jointID0, jointID1, memberType) -> None
 - **`jointID1`** : ID number of the second joint of this member.
 - **`memberType`** : Member type which contain the information about `cross-sectional area`, `Young's modulus`, `density` of this member.
 
-Here is the detial of class `MemberType`:
+Here is the detail of class `MemberType`:
 
 ```python
 class MemberType:
