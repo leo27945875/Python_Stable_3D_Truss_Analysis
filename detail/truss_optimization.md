@@ -124,10 +124,10 @@ GA.Evolve(isPrintMessage=True) -> tuple[list[int], tuple[int, bool, bool], list[
 - **`isPrintMessage`** : Whether to print optimization messages in the screen or not.
 - Return: (1., 2. is the same output as [GA.GetBestFeasibleGene](#Get-the-best-and-feasible-gene).)
 
-    >1. `Best and *feasible* gene`
-    >2. Tuple(`Fitness corresponding to 1.` , `Is all internal stresses allowed ?` , `Is all displacements allowed ?`)
-    >3. `Final population`
-    >4. `History of best fitness value at each iteration`
+    > 1. `Best and *feasible* gene`
+    > 2. Tuple(`Fitness corresponding to i.` , `Is all internal stresses allowed ?` , `Is all displacements allowed ?`)
+    > 3. `Final population`
+    > 4. `History of best fitness value at each iteration`
 
 <br/>
 
