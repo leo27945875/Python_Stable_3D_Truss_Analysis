@@ -27,7 +27,7 @@ The following is the **`default`** fitness function:
 
 ## Crossover
 
-The following is the **`default`** crossover method:
+The following is the **`default`** crossover policy:
 
 ![Crossover](./figure/crossover.png)
 
@@ -35,13 +35,15 @@ The following is the **`default`** crossover method:
 
 ## Mutation
 
-The following is the **`default`** mutation method:
+The following is the **`default`** mutation policy:
 
 ![Mutate](./figure/mutate.png)
 
 ---
 
 ## Evolution policy
+
+The following is the **`default`** evolution policy (only for one step):
 
 ![Update](./figure/evolution_policy.png)
 
