@@ -153,7 +153,7 @@ GA.SetMemberTypesByGene(gene, truss) -> Truss
 - **`gene`** : Gene, which is a list of integers.
 - **`truss`** : Truss object.
 
-    > This method is equivalent to `truss.SetMemberTypes(ga.TranslateGene(gene))`.
+    > This method is equivalent to `truss.SetMemberTypes(ga.TranslateGene(gene))`.  
     > The reference of the output truss is the same as the input truss.
 
 <br/>
