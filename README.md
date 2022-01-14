@@ -42,6 +42,7 @@ Shih-Chi Cheng                                  (鄭適其)
     - [Example figures](./detail/plot_your_truss.md#Example-figures)
 5. **Truss optimization**
     - [Introduction](./detail/truss_optimization.md#Introduction)
+    - [Gene](./detail/truss_optimization.md#Gene-data-structure)
     - [Fitness function](./detail/truss_optimization.md#Fitness-function)
     - [Example](./detail/truss_optimization.md#Example)
     - [GA object](./detail/truss_optimization.md#GA-object)

@@ -6,6 +6,17 @@ After slientruss3d v1.2.x, you could use **`slientruss3d.ga`** module to do `tru
 
 ---
 
+## Gene data structure
+
+A gene in slientruss3d is a list of integers. Each integer is a index of the member type in the member type list input by the user. And the length of a gene is equal to `Truss.nMember`.
+Example:
+
+```python
+[0, 3, 1, 8, 9, 15, 0, 3]
+```
+
+---
+
 ## Fitness function
 
 The following is the **`default`** fitness function:
