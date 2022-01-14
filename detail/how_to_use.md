@@ -153,6 +153,18 @@ Truss.Solve() -> None
 
 <br/>
 
+### Load truss data from JSON file
+
+```python
+Truss.LoadFromJSON(path=None, isOutputFile=False, data=None) -> Truss
+```
+
+- **`path`** : Filename of the JSON file.
+- **`isOutputFile`** : Whether the JSON file or dictionary data contains the result of structural analysis.
+- **`data`** : Directly assign a `dictionary` whose format is the same as [Format of JSON](./combine_with_JSON.md#Format-of-JSON). If it's not none, do not assgin any value to the argument `path`.
+
+<br/>
+
 ### Save the structural analysis result in a JSON file
 
 ```python
