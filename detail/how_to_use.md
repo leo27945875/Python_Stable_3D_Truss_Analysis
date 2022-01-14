@@ -57,10 +57,18 @@ def TestExample():
 
 ## Truss object
 
+### Constructor
+
+```python
+Truss(dim)
+```
+
+<br/>
+
 ### Define a new joint
 
 ```python
-Truss.AddNewJoint(self, jointID, vector, supportType=SupportType.NO)
+Truss.AddNewJoint(jointID, vector, supportType=SupportType.NO) -> None
 ```
 
 - **`jointID`** : ID number of the joint.
@@ -78,7 +86,7 @@ Truss.AddNewJoint(self, jointID, vector, supportType=SupportType.NO)
 ### Define a new loading
 
 ```python
-Truss.AddExternalForce(self, jointID, vector)
+Truss.AddExternalForce(jointID, vector) -> None
 ```
 
 - **`jointID`** : ID number of the joint.
@@ -89,7 +97,7 @@ Truss.AddExternalForce(self, jointID, vector)
 ### Define a new member
 
 ```python
-Truss.AddNewMember(self, memberID, jointID0, jointID1, memberType)
+Truss.AddNewMember(memberID, jointID0, jointID1, memberType) -> None
 ```
 
 - **`memberID`** : ID number of the member.
@@ -109,7 +117,7 @@ class MemberType:
     def __repr__(self):
         return f"MemberType(a={self.a}, e={self.e}, density={self.density})"
     
-    def Set(self, other):
+    def Set(other):
         self.a, self.e, self.density = other.a, other.e, other.density
     
     def Serialize(self):
@@ -119,32 +127,82 @@ class MemberType:
         return MemberType(self.a, self.e, self.density)
 ```
 
+<br/>
+
 ### Get assembled stiffness matrix (K)
 
 ```python
-Truss.GetKMatrix(self)
+Truss.GetKMatrix() -> numpy.array
 ```
 
 - It will return a numpy array which is the assembled K matrix.
 
-### Do the structural analysis
+<br/>
+
+### Do structural analysis
 
 ```python
-Truss.Solve(self)
+Truss.Solve() -> None
 ```
 
 - Do the structral analysis of your truss by `direct stiffness method`. After that, all the `internal stress` of each member, `displacement` and `total force` at each joint will solved and stored in the Truss object. You could get them with some getter defined in Truss.
 
 > &ensp;&ensp; As said in #Desciption, slientruss3d is made for **`stable`** truss analysis. So once you call the method `Truss.Solve()`, it will check whether your truss is stable or not with the property **`Truss.isStable`**. If your truss is not stable, an exception `TrussNotStableError` will be raised.
 
+<br/>
+
 ### Save the structural analysis result in a JSON file
 
 ```python
-Truss.DumpIntoJSON(self, path)
+Truss.DumpIntoJSON(path) -> None
 ```
 
 - **`path`** : Filename of the JSON in which you want to store the result of structural analysis.
 
     > More about the utility of JSON will be introduced in [Combine with JSON](./combine_with_JSON.md) !
 
+<br/>
+
+### Copy the truss
+
+```python
+Truss.Copy()
+```
+
 ---
+
+## Member object
+
+### Constructor
+
+```python
+Member(joint0, joint1, dim=3, memberType=MemberType()) -> None
+```
+
+<br/>
+
+### Stiffness matrix (K)
+
+```python
+Member.matK -> numpy.array
+```
+
+- It will return a numpy array which is the K matrix.
+
+<br/>
+
+### Check whether the member is tension strss or not
+
+``` python
+Member.IsTension(forceVec) -> bool
+```
+
+- **`forceVec`** : The internal force vector on `joint1`.
+
+<br/>
+
+### Copy the member
+
+```python
+Member.Copy() -> Member
+```

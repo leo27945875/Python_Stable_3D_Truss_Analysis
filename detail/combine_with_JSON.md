@@ -52,6 +52,23 @@ truss.LoadFromJSON(data=request.json)
 ## ...... something to do ...... ##
 ```
 
+Or make an JSON response to the client with the method **`Truss.Serialize()`**:
+
+```python
+## ...... something to do ...... ##
+
+from flask import make_response, jsonify
+
+@app.route("...")
+def Response():
+    ## ...... something to do ...... ##
+    return make_response(jsonify(truss.Serialize()))
+
+## ...... something to do ...... ##
+```
+
+> There is also a method serialzeation method **`Member.Serialize()`** in class Member !
+
 ---
 
 ## Format of JSON
