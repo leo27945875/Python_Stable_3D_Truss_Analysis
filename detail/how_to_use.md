@@ -173,13 +173,61 @@ Truss.Copy() -> Truss
 
 <br/>
 
-### Weight of the truss
+### Some useful properties
+
+- Weight of the truss.
 
 ```python
-Truss.weight -> float
+Truss.weight : float
 ```
 
-- Get the total weight of the truss.
+- Whether the truss is stable or not ?
+
+```python
+Truss.isStable : bool
+```
+
+- Whether the truss has been done structral analysis or not ?
+
+```python
+Truss.isSolved : bool
+```
+
+- Number of joints.
+
+```python
+Truss.nJoint : int
+```
+
+- Number of members.
+
+```python
+Truss.nMember : int
+```
+
+- Number of loads.
+
+```python
+Truss.nForce : int
+```
+
+- Number of supports (support type is **not** _`SupportType.NO`_).
+
+```python
+Truss.nSupport : int
+```
+
+- Number of resistances.
+
+```python
+Truss.nResistance : int
+```
+
+- Dimension of the truss
+
+```python
+Truss.dim : int
+```
 
 <br/>
 
@@ -219,4 +267,68 @@ Member.IsTension(forceVec) -> bool
 
 ```python
 Member.Copy() -> Member
+```
+
+<br/>
+
+### Some useful properties
+
+- Weight of the member.
+
+```python
+Member.weight : float
+```
+
+- Length of the member.
+
+```python
+Member.length : float
+```
+
+- Cross-sectional area.
+
+```python
+Member.a : float
+```
+
+- Young's modulus.
+
+```python
+Member.e : float
+```
+
+- Density.
+
+```python
+Member.density : float
+```
+
+- Member type. (Has both getter and setter)
+
+```python
+Member.memberType : MemberType
+```
+
+- Cosine values of every axis.
+
+```python
+Member.cosines : list[float]
+```
+
+- E * A / L.
+
+```python
+Member.k : float
+```
+
+- Stiffness matrix.
+
+```python
+Member.matK : numpy.array
+```
+
+- Dimension of the member.
+
+```python
+Member.dim : int
 ```
