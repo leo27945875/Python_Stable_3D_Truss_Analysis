@@ -75,11 +75,11 @@ Truss.AddNewJoint(jointID, vector, supportType=SupportType.NO) -> None
 - **`vector`** : Position of each joints in the truss.
 - **`supportType`** : Support type of the joint. The following is the options of support type in slientruss3d:
 
-    >- _SupportType.NO_ &ensp;&emsp;&emsp; **(not a support)**
+    >- _SupportType.NO_ &ensp;&emsp;&emsp;&emsp; **(not a support)**
     >- _SupportType.PIN_
     >- _SupportType.ROLLER_X_
     >- _SupportType.ROLLER_Y_
-    >- _SupportType.ROLLER_Z_ **(only in 3d truss)**
+    >- _SupportType.ROLLER_Z_ &emsp;**(only in 3d truss)**
 
 <br/>
 
