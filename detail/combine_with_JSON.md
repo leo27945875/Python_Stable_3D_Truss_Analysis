@@ -141,7 +141,7 @@ And the format of `ouput` .json file will be like :
         "4": [0.022796692569021636,  0.05676049798868429   , -0.029124752172511904]
     }, 
 
-    // Total force of each joint (only contains non-zero part)
+    // Total force at each joint (only contains non-zero part)
     "external": {
         "0": [-3430.530131923594 , -2651.7198111274147, -4214.046353245278 ],
         "1": [-3823.2785480177026,  1696.5603777451659,  2867.4589110132774],
