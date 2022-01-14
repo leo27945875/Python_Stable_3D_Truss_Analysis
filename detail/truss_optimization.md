@@ -33,6 +33,14 @@ The following is the **`default`** crossover method:
 
 ---
 
+## Mutation
+
+The following is the **`default`** mutation method:
+
+![Mutate](./figure/mutate.png)
+
+---
+
 ## Example
 
 The following is the example code of GA:
