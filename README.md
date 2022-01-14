@@ -23,7 +23,7 @@ Shih-Chi Cheng                                  (鄭適其)
 
 ## Content
 
-1. **Quick start**
+1. **Installaltion**
     - [Install](#Install)
     - [Update log](#Update-log)
 2. **Quick start**
