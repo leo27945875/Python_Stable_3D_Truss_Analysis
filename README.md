@@ -21,7 +21,7 @@ National Yang Ming Chiao Tung University (NYCU) (國立陽明交通大學)
 Shih-Chi Cheng                                  (鄭適其)
 ```
 
-![Show](./plot/bar-25_plot_0.png)
+![Show](./plot/bar-6_plot_0.png)
 
 ## Content
 
