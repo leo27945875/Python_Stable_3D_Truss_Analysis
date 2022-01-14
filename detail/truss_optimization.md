@@ -21,7 +21,15 @@ Example:
 
 The following is the **`default`** fitness function:
 
-![0](./figure/fitness_func.png)
+![Fitness](./figure/fitness_func.png)
+
+---
+
+## Crossover
+
+The following is the **`default`** crossover method:
+
+![Crossover](./figure/crossover.png)
 
 ---
 
