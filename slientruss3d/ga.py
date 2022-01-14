@@ -34,7 +34,8 @@ class GA:
             nElite          : int              = 50     , 
             pCrossover      : float            = 0.7    , 
             pMutate         : float            = 0.1    , 
-            pOrigin         : float            = 0.1
+            pOrigin         : float            = 0.1    ,
+            isCheckWorst    : bool             = True
         ):
         # Population settings:
         self.nPop             = nPop
@@ -59,13 +60,13 @@ class GA:
         self.memberIDMap      = {typeID: memberID for typeID, memberID in enumerate(self.memberIDList)}
 
         # Rationality:
-        self.CheckRatioality()
+        self.CheckRatioality(isCheckWorst)
 
     @property
     def memberTypeWeightedInitProb(self):
         return [1. for _ in self.typeList]
     
-    def CheckRatioality(self):
+    def CheckRatioality(self, isCheckWorst):
         truss, allowStress, allowDisplace  = self.truss, self.allowStress, self.allowDisplace
 
         # Chech whether number of elites <= number of population:
@@ -80,28 +81,30 @@ class GA:
         if self.nType <= 1:
             raise OnlyOneMemberTypeError(f"Number of member types must >= 2, but got {self.nType}.")
         
-        # Get member types which have max [A] value and max [E*A] value, repectively.
-        maxA, maxEA, maxAType, maxEAType = -INF, -INF, None, None
-        for memberType in self.typeList:
-            a, ea = memberType.a, memberType.e * memberType.a
-            if a  > maxA : maxA , maxAType  = a , memberType
-            if ea > maxEA: maxEA, maxEAType = ea, memberType
+        # Check whether minmum stress and strain are both lower than allowable values:
+        if isCheckWorst:
+            # Get member types which have max [A] value and max [E*A] value, repectively.
+            maxA, maxEA, maxAType, maxEAType = -INF, -INF, None, None
+            for memberType in self.typeList:
+                a, ea = memberType.a, memberType.e * memberType.a
+                if a  > maxA : maxA , maxAType  = a , memberType
+                if ea > maxEA: maxEA, maxEAType = ea, memberType
 
-        # Check whether minimum stress is smaller than allowable stress:
-        for memberID in self.memberIDList:
-            truss.SetMemberType(memberID, maxAType)
+            # Check whether minimum stress is smaller than allowable stress:
+            for memberID in self.memberIDList:
+                truss.SetMemberType(memberID, maxAType)
 
-        truss.Solve()
-        if not truss.IsInternalStressAllowed(allowStress)[0]:
-            raise MinStressTooLargeError("Minimum stress is too large. Need other member types which have more [A] value.")
+            truss.Solve()
+            if not truss.IsInternalStressAllowed(allowStress)[0]:
+                raise MinStressTooLargeError("Minimum stress is too large. Need other member types which have more [A] value.")
 
-        # Check whether minimum displacement is smaller than allowable displacement:
-        for memberID in self.memberIDList:
-            truss.SetMemberType(memberID, maxEAType)
+            # Check whether minimum displacement is smaller than allowable displacement:
+            for memberID in self.memberIDList:
+                truss.SetMemberType(memberID, maxEAType)
 
-        truss.Solve()
-        if not truss.IsDisplacementAllowed(allowDisplace)[0]:
-            raise MinDisplaceTooLargeError("Minimum displacement is too large. Need other member types which have more [E*A] value.")
+            truss.Solve()
+            if not truss.IsDisplacementAllowed(allowDisplace)[0]:
+                raise MinDisplaceTooLargeError("Minimum displacement is too large. Need other member types which have more [E*A] value.")
     
     def GetBestFeasibleGene(self, pop):
         minFitness, minGene, isMinInternalAllowed, isMinDisplaceAllowed = INF, None, False, False

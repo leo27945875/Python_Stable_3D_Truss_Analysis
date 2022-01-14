@@ -37,9 +37,13 @@ Shih-Chi Cheng                                  (鄭適其)
     - [Example](./detail/combine_with_JSON.md#Example)
     - [Embed in Web APP](./detail/combine_with_JSON.md#Embed-in-Web-APP)
     - [Format of JSON](./detail/combine_with_JSON.md#Format-of-JSON)
-4. **Plot your truss !**
+4. **Plot your truss**
     - [Example code](./detail/plot_your_truss.md#Example-code)
     - [Example figures](./detail/plot_your_truss.md#Example-figures)
+5. **Truss optimization**
+    - [Introduction](./detail/truss_optimization.md#Introduction)
+    - [Fitness function](./detail/truss_optimization.md#Fitness-function)
+    - [Example](./detail/truss_optimization.md#Example)
 
 ---
 
@@ -64,42 +68,8 @@ pip install slientruss3d
 ### New feature in v1.2.x update !
 
 After slientruss3d v1.2.x, you could use **`slientruss3d.ga`** module to do `truss type selection optimization` conveniencely with `Genetic Algorithm (GA)`! Just simply define the topology of the truss and what member types you want to use, and then you could start the optimization.  
-The following is the example code of GA:
 
-```python
-from slientruss3d.truss import Truss
-from slientruss3d.type  import MemberType
-from slientruss3d.ga    import GA
-import random
-
-
-def TestGA():
-    # Allowable stress and displacement:
-    ALLOWABLE_STRESS         = 30000.
-    ALLOWABLE_DISPLACEMENT   = 10.
-
-    # Type the member types you want to use here:
-    MEMBER_TYPE_LIST = [MemberType(inch, random.uniform(1e7, 3e7), random.uniform(0.1, 1.0)) for inch in range(1, 21)]
-
-    # GA settings:
-    MAX_ITERATION      = None  # When [MAX_ITERATION] is None, do infinite iteration until convergence (reach [PATIENCE_ITERATION]).
-    PATIENCE_ITERATION = 50
-
-    # Truss object:
-    truss = Truss(3)
-    truss.LoadFromJSON('./data/bar-120_input_0.json')
-
-    # Do GA:
-    ga = GA(truss, MEMBER_TYPE_LIST, ALLOWABLE_STRESS, ALLOWABLE_DISPLACEMENT, nIteration=MAX_ITERATION, nPatience=PATIENCE_ITERATION)
-    minGene, (fitness, isInternalAllowed, isDisplaceAllowed), finalPop, bestFitnessHistory = ga.Evolve()
-
-    # Translate optimal gene to member types:
-    truss.SetMemberTypes(ga.TranslateGene(minGene))
-
-    # Save result:
-    truss.Solve()
-    truss.DumpIntoJSON(f'bar-120_ga_0.json')
-```
+> More details is in [Truss optimization](./detail/truss_optimization.md)
 
 Besides GA, there are some new useful methods in the `Truss` object:
 
