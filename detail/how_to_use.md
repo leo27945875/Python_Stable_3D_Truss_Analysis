@@ -169,6 +169,14 @@ Truss.DumpIntoJSON(path) -> None
 Truss.Copy() -> Truss
 ```
 
+<br/>
+
+### Weight of the truss
+
+```python
+Truss.weight -> float
+```
+
 ---
 
 ## Member object
