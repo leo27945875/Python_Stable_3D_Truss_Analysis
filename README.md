@@ -34,6 +34,7 @@ Shih-Chi Cheng                                  (鄭適其)
     - [Truss object](./detail/how_to_use.md#Truss-object)
     - [Member object](./detail/how_to_use.md#Member-object)
     - [MemberType object](./detail/how_to_use.md#Define-a-new-member)
+    - [SupportType enum](./detai/how_to_use.md#Define-a-new-joint)
 3. **Combine with JSON**
     - [Example code](./detail/combine_with_JSON.md#Example)
     - [Embed in Web APP](./detail/combine_with_JSON.md#Embed-in-Web-APP)
