@@ -177,6 +177,8 @@ Truss.Copy() -> Truss
 Truss.weight -> float
 ```
 
+- Get the total weight of the truss.
+
 ---
 
 ## Member object
