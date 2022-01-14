@@ -23,7 +23,7 @@ Shih-Chi Cheng                                  (鄭適其)
 
 ![Show](./plot/bar-6_plot_0.png)
 
-## Content (under maintenance)
+## Content
 
 1. **Installaltion**
     - [Install](#Install)
@@ -49,6 +49,7 @@ Shih-Chi Cheng                                  (鄭適其)
     - [Example](./detail/truss_optimization.md#Example)
     - [GA object](./detail/truss_optimization.md#GA-object)
     - [Customization](./detail/truss_optimization.md#Customization)
+6. **Generate truss data automatically** (under maintenance)
 
 ---
 
