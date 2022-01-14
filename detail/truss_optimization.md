@@ -233,4 +233,4 @@ class CustomGA(GA):
         return fitness, isInternalAllowed, isDisplaceAllowed
 ```
 
-This example shows that if you don't want to use default fitness function, you can customize it by overriding the origin method `GetFitness`. It just adjust the penalty weights for the sum of exceeding quantities of stresses and displacements (1e5 -> 1e3).  
+This example shows that if you don't want to use default fitness function, you can customize it by overriding the origin method `GetFitness`. The new fitness function just adjusts the penalty weights for the sum of exceeding quantities of stresses and displacements (1e5 -> 1e3).  
