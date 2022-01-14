@@ -123,7 +123,7 @@ GA.SetMemberTypesByGene(gene, truss) -> Truss
 ### Get the best and feasible gene
 
 ```python
-GA.GetBestFeasibleGene(pop)
+GA.GetBestFeasibleGene(pop) -> tuple[list[int], tuple[int, bool, bool]
 ```
 
 - **`pop`** : Population, which is a list of genes.
