@@ -44,6 +44,8 @@ Shih-Chi Cheng                                  (鄭適其)
     - [Introduction](./detail/truss_optimization.md#Introduction)
     - [Fitness function](./detail/truss_optimization.md#Fitness-function)
     - [Example](./detail/truss_optimization.md#Example)
+    - [GA object](./detail/truss_optimization.md#GA-object)
+    - [Customization](./detail/truss_optimization.md#Customization)
 
 ---
 
@@ -79,11 +81,11 @@ class Truss:
     ...
 
     # Check whether all internal forces are in allowable range or not:
-    def IsInternalStressAllowed(self, limit, isGetSumViolation=False) -> bool, dict | float: 
+    def IsInternalStressAllowed(self, limit, isGetSumViolation=False) -> tuple[bool, dict | float]: 
         ...
 
     # Check whether all internal displacements are in allowable range or not:
-    def IsDisplacementAllowed(self, limit, isGetSumViolation=False) -> bool, dict | float:
+    def IsDisplacementAllowed(self, limit, isGetSumViolation=False) -> tuple[bool, dict | float]:
         ...
 
 ```
