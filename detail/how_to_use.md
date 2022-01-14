@@ -6,7 +6,7 @@ The following is the example code.
 
 - You could decide to either just type all the data about the truss in `.py` file or read the data in `.json` file. As for .json file, we will discuss it later.
 - If you want to do structural analysis on 2D truss, just switch the dimension of truss by changing the value of variable `TRUSS_DIMENSION` (Only can be **2** or **3**).
-- By the way, you could use `slientruss3d.plot.TrussPlotter` to plot the result of structural analysis for your truss. We will discuss its details later !
+- By the way, you could use `slientruss3d.plot.TrussPlotter` to plot the result of structural analysis for your truss. We will discuss its details in [Here](./plot_your_truss.md) !
 
 ```python
 from slientruss3d.truss import Truss, Member
@@ -119,8 +119,6 @@ class MemberType:
         return MemberType(self.a, self.e, self.density)
 ```
 
----
-
 ### Get assembled stiffness matrix (K)
 
 ```python
@@ -128,8 +126,6 @@ Truss.GetKMatrix(self)
 ```
 
 - It will return a numpy array which is the assembled K matrix.
-
----
 
 ### Do the structural analysis
 
@@ -141,8 +137,6 @@ Truss.Solve(self)
 
 > &ensp;&ensp; As said in #Desciption, slientruss3d is made for **`stable`** truss analysis. So once you call the method `Truss.Solve()`, it will check whether your truss is stable or not with the property **`Truss.isStable`**. If your truss is not stable, an exception `TrussNotStableError` will be raised.
 
----
-
 ### Save the structural analysis result in a JSON file
 
 ```python
@@ -152,3 +146,5 @@ Truss.DumpIntoJSON(self, path)
 - **`path`** : Filename of the JSON in which you want to store the result of structural analysis.
 
     > More about the utility of JSON will be introduced in [Combine with JSON](./combine_with_JSON.md) !
+
+---

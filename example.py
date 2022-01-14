@@ -200,9 +200,9 @@ def TestGA():
 
 
 if __name__ == '__main__':
-    # TestTimeConsuming()
+    TestTimeConsuming()
     # TestExample()
     # TestLoadFromJSON()
     # TestPlot()
-    TestGA()
+    # TestGA()
     
