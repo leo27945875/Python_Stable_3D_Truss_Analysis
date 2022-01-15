@@ -103,14 +103,14 @@ class Truss:
     def __init__(self, dim):
         # User conditions:
         self.__dim     = CheckDim(dim)  # (int ) Dimension of this truss
-        self.__joints  = {}             # (dict) {jointID : ((px, py, pz), supportType)   }
+        self.__joints  = {}             # (dict) {jointID : ((px, py, pz), supportType) }
         self.__forces  = {}             # (dict) {jointID : (fx, fy, fz)                }
         self.__members = {}             # (dict) {memberID: (jointID0, jointID1, member)}
         
         # Solved results:
         self.__displace = None          # (dict) {jointID : np.array([dx, dy, dz])}
         self.__external = None          # (dict) {jointID : np.array([fx, fy, fz])}
-        self.__internal = None          # (dict) {memberID: internalForce         }
+        self.__internal = None          # (dict) {memberID: internalForce         } (Not internal stress !)
         self.__isSolved = False         # (bool) Indicate whether this truss has been solved.
 
     def __repr__(self):
@@ -232,6 +232,9 @@ class Truss:
     
     def GetInternalForces(self):
         return copy.deepcopy(self.__internal)
+    
+    def GetInternalStresses(self):
+        return {memberID: internal / self.__members[memberID][2].a for memberID, internal in self.__internal.items()}
     
     def GetJointIDs(self):
         return [jointID for jointID in self.__joints]

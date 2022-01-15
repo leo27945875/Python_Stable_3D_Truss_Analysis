@@ -3,7 +3,7 @@ import numpy as np
 from .utils import CheckDim, InvalidSupportTypeError
 
 class MemberType:
-    def __init__(self, a=1, e=1, density=1):
+    def __init__(self, a=1., e=1., density=1.):
         self.a       = float(a)
         self.e       = float(e)
         self.density = float(density)

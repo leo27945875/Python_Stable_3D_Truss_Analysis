@@ -36,6 +36,7 @@ def TestPlot():
     TEST_PLOT_SAVE_PATH     = f"./plot/bar-{TEST_FILE_NUMBER}_plot_{TEST_LOAD_CASE}.png"
     TRUSS_DIMENSION         = 3
     IS_EQUAL_AXIS           = True
+    IS_PLOT_STRESS          = True
     IS_SAVE_PLOT            = False
     MAX_SCALED_DISPLACEMENT = 15 
     MAX_SCALED_FORCE        = 50   
@@ -51,6 +52,7 @@ def TestPlot():
     # Show or save the structural analysis result figure:
     TrussPlotter(truss,
                  isEqualAxis=IS_EQUAL_AXIS,
+                 isPlotStress=IS_PLOT_STRESS,
                  maxScaledDisplace=MAX_SCALED_DISPLACEMENT, 
                  maxScaledForce=MAX_SCALED_FORCE,
                  pointScale=POINT_SIZE_SCALE_FACTOR,

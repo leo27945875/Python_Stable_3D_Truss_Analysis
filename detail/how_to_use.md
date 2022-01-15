@@ -149,9 +149,42 @@ Truss.GetKMatrix() -> numpy.array
 Truss.Solve() -> None
 ```
 
-- Do the structral analysis of your truss by `direct stiffness method`. After that, all the `internal stress` of each member, `displacement` and `total force` at each joint will solved and stored in the Truss object. You could get them with some getter defined in Truss.
+- Do the structral analysis of your truss by `direct stiffness method`. After that, all the `internal force (not stress!)` of each member, `displacement` and `total force` at each joint will solved and stored in the Truss object. You could get them with some getters defined in Truss.
 
 > &ensp;&ensp; As said in [Description](../README.md#Description), slientruss3d is made for **`stable`** truss analysis. So once you call the method `Truss.Solve()`, it will check whether your truss is stable or not with the property **`Truss.isStable`**. If your truss is not stable, an exception `TrussNotStableError` will be raised.
+
+<br/>
+
+
+### Get internal stress
+
+```python
+Truss.GetInternalStresses() -> dict[int, float]
+```
+
+- Get inetrnal stress at each member. It returns a dictionary whose key is `member ID` and value is `stress`.
+
+<br/>
+
+
+### Get internal force
+
+```python
+Truss.GetInternalForces() -> dict[int, float]
+```
+
+- Get inetrnal force at each member. It returns a dictionary whose key is `member ID` and value is `force magnitude`.
+
+<br/>
+
+
+### Get joint displacement
+
+```python
+Truss.GetDisplacements() -> dict[int, numpy.array]
+```
+
+- Get displacement at each joint. It returns a dictionary whose key is `joint ID` and value is `displacement vector`.
 
 <br/>
 

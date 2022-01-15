@@ -8,12 +8,13 @@ from .type import SupportType
 plt.style.use("seaborn")
 
 class TrussPlotter:
-    def __init__(self, truss, isDisplaceScale=True, isForceScale=True, isEqualAxis=False, 
+    def __init__(self, truss, isDisplaceScale=True, isForceScale=True, isEqualAxis=False, isPlotStress=True,
                  maxScaledDisplace=5, maxScaledForce=5, pointScale=1.0, arrowScale=1.0, figsize=(10, 10)):
         self.truss           = truss
         self.isDisplaceScale = isDisplaceScale
         self.isForceScale    = isForceScale
         self.isEqualAxis     = isEqualAxis
+        self.isPlotStress    = isPlotStress
         self.maxDisplace     = maxScaledDisplace
         self.maxForce        = maxScaledForce
         self.pointScale      = pointScale
@@ -38,7 +39,7 @@ class TrussPlotter:
         joints    = truss.GetJoints()
         members   = truss.GetMembers()
         forces    = truss.GetForces()
-        internals = truss.GetInternalForces()
+        internals = truss.GetInternalStresses() if self.isPlotStress else truss.GetInternalForces()
         externals = truss.GetExternalForces()
         displaces = truss.GetDisplacements()
         forcedIDs = truss.GetForces().keys()

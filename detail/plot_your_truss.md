@@ -24,6 +24,7 @@ def TestPlot():
     # Figure layout settings:
     IS_SAVE_PLOT            = False   # Whether to save truss figure or not.
     IS_EQUAL_AXIS           = True    # Whether to use actual aspect ratio in the truss figure or not.
+    IS_PLOT_STRESS          = True    # If True, the color of each displaced member gives expression to [stress]. Otherwise, [force magnitude].
     MAX_SCALED_DISPLACEMENT = 15      # Scale the max value of all dimensions of displacements.
     MAX_SCALED_FORCE        = 50      # Scale the max value of all dimensions of force arrows.
     POINT_SIZE_SCALE_FACTOR = 1       # Scale the default size of joint point in the truss figure.
@@ -39,6 +40,7 @@ def TestPlot():
     # Show or save the structural analysis result figure:
     TrussPlotter(truss,
                  isEqualAxis=IS_EQUAL_AXIS,
+                 isPlotStress=IS_PLOT_STRESS,
                  maxScaledDisplace=MAX_SCALED_DISPLACEMENT, 
                  maxScaledForce=MAX_SCALED_FORCE,
                  pointScale=POINT_SIZE_SCALE_FACTOR,
@@ -72,6 +74,8 @@ def TestPlot():
 
 **Input** : `./data/bar-25_output_0.json`
 ![2](../plot/bar-25_plot_0.png)
+
+<br/>
 
 **Input** : `./data/bar-47_output_0.json`
 ![3](../plot/bar-47_plot_0.png)

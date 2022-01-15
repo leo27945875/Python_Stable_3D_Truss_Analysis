@@ -150,7 +150,7 @@ And the format of `ouput` .json file will be like :
         "4": [ 0                 ,  7000              , -10000             ]
     },
 
-    // Solved internal force in each member (Tension is positive, Compression is negative, only contains non-zero part)
+    // Solved internal force (not stress !) in each member (Tension is positive, Compression is negative, only contains non-zero part)
     "internal": {
         "0":  5579.573091723386 , 
         "1": -5037.6118087489085, 
