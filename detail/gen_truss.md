@@ -14,6 +14,8 @@ The following is an example figure for how `4-cube truss` looks like. And also i
 
 ## Generate cube-like truss
 
+Generate cube-like trusses and save them into JSON files.
+
 ```python
 from slientruss3d.generate import GenerateRandomCubeTrusses
 
@@ -33,12 +35,12 @@ GenerateRandomCubeTrusses(gridRange              = (5, 5, 5),
 
 - **`gridRange`** : Max range of the `global cube grid`.
 - **`numCubeRange`** : Range of the total numbers of cube-like truss block on the global grid.
-- **`numCaseRange`** : Range of the numbers of cases for each `numCubeRange`.
+- **`numCaseRange`** : Range of the numbers of cases for each `numCubeRange` (only influence names of the saved JSON files).
 - **`lengthRange`** : Range of the edge length (that is, height, width, deepth) for every cube-like truss block.
 - **`forceRange`** : Range of the magnitudes for xy(z)-axis of the random forces assigned at joints.
 - **`linkType`** : Link type of faces of every cube-like truss block.
 - **`method`** : Algorithm to decide positions to generate cube-like truss blocks.
-- **`saveFolder`** : Folder to save the generated result (JSON file).
+- **`saveFolder`** : Folder to save the generated result (in JSON file).
 - **`isDoStructuralAnalysis`** : Whether to do structral analysis after each truss be generated.
 - **`isPlotTruss`** : Whether to plot the truss after each truss be generated.
 - **`isPrintMessage`** : Whether to print the message for the generating progress on the screen.
