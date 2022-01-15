@@ -163,7 +163,7 @@ Truss.GetInternalStresses() -> dict[int, float]
 ```
 
 - Get inetrnal stress at each member. It returns a dictionary whose key is `member ID` and value is `stress`.
-- Note that if you haven't done structural analysis yet, this method will return `None`.
+    > Note that if you haven't done structural analysis yet, this method will return `None`.
 
 <br/>
 
@@ -175,7 +175,7 @@ Truss.GetInternalForces() -> dict[int, float]
 ```
 
 - Get inetrnal force at each member. It returns a dictionary whose key is `member ID` and value is `force magnitude`.
-- Note that if you haven't done structural analysis yet, this method will return `None`.
+    > Note that if you haven't done structural analysis yet, this method will return `None`.
 
 <br/>
 
@@ -187,7 +187,7 @@ Truss.GetDisplacements() -> dict[int, numpy.array]
 ```
 
 - Get displacement at each joint. It returns a dictionary whose key is `joint ID` and value is `displacement vector`.
-- Note that if you haven't done structural analysis yet, this method will return `None`.
+    > Note that if you haven't done structural analysis yet, this method will return `None`.
 
 <br/>
 
