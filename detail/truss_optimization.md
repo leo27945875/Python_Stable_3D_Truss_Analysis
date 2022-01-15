@@ -166,7 +166,7 @@ GA.GetBestFeasibleGene(pop) -> tuple[list[int], tuple[int, bool, bool]
 
 - **`pop`** : Population, which is a list of genes.
 
-    > If there is no feasible gene, this method will return the `worst` gene which has the highest fitness in the population.
+    > If there is no feasible gene, this method will return the `None, (inf, False, False)`.
 
 <br/>
 
