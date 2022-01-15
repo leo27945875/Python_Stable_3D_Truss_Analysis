@@ -53,9 +53,9 @@ Options of `linkType`:
 >1. *LinekType.LeftBottom_RightTop*
 >2. *LinekType.RightBottom_LeftTop*
 >3. *LinekType.Cross*
->4. *LinekType.Random*
+>4. *LinekType.Random* &ensp; **(default)**
 
 Options of `method`:
 
->1. *GenerateMethod.DFS*
+>1. *GenerateMethod.DFS* &ensp; **(default)**
 >2. *GenerateMethod.BFS*
