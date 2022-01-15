@@ -225,6 +225,7 @@ Truss.Serialize() -> dict
 ```
 
 - Return a dictionary which contains all the information about the truss.
+
     > The format is the same as [Format of JSON](./combine_with_JSON.md#Format-of-JSON).
 
 <br/>
