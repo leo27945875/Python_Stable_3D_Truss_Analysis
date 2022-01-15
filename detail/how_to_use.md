@@ -101,7 +101,7 @@ Truss.AddExternalForce(jointID, vector) -> None
 ### Define a new member
 
 ```python
-Truss.AddNewMember(memberID, jointID0, jointID1, memberType) -> None
+Truss.AddNewMember(memberID, jointID0, jointID1, memberType=MemberType()) -> None
 ```
 
 - **`memberID`** : ID number of the member.
