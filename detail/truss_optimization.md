@@ -94,6 +94,8 @@ def TestGA():
 
 ## Geneic algorithm
 
+(Not every method or property is listed here)
+
 ### Constructor
 
 ```python
