@@ -57,6 +57,8 @@ def TestExample():
 
 ## Truss object
 
+(Not every method or property is listed here)
+
 ### Constructor
 
 ```python

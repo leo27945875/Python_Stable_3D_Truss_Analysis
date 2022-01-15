@@ -21,8 +21,8 @@ class GenerateMethod:
 
 class CubeTruss:
     def __init__(self, coordinate, usedDict={}):
-        self.__coord = coordinate
-        self.__links = []
+        self.__coord  = coordinate
+        self.__links  = []
         self.jointIDs = [None for _ in range(8)]
         self.GenerateNew(usedDict)
 
@@ -51,7 +51,7 @@ class CubeTruss:
                 self[i] = usedDict[joint]
             else:
                 maxJointID += 1
-                self[i]          = maxJointID
+                self[i]         = maxJointID
                 usedDict[joint] = maxJointID
     
     def LinkMember(self, linkType=LinkType.Random):
@@ -170,13 +170,12 @@ class CubeGrid:
         return {'joint': joints, 'force': {}, 'member': members}
 
 
-def GenerateRandomCubeTrusses(gridRange=(5, 5, 5), numCubeRange=(3, 20), numEach=100, lengthRange=(50, 150), forceRange=(0, 30000), 
-                              saveFolder="./", isDoStructuralAnalysis=False, isPlotTruss=False, isPrintMessage=True):
+def GenerateRandomCubeTrusses(gridRange=(5, 5, 5), numCubeRange=(3, 20), numCaseRange=(0, 99), lengthRange=(50, 150), forceRange=(0, 30000), linkType=LinkType.Random,
+                              method=GenerateMethod.DFS, saveFolder="./", isDoStructuralAnalysis=False, isPlotTruss=False, isPrintMessage=True):
 
     def SaveJSON(obj, path):
         with open(path, "w", encoding='utf-8') as f:
             json.dump(obj, f, ensure_ascii=False)
-
 
     def AssignRandomForces(trussData, forceRange):
         notSupportJoints = [jointID for jointID, (_, supportType) in trussData['joint'].items() if supportType == "NO"]
@@ -185,19 +184,18 @@ def GenerateRandomCubeTrusses(gridRange=(5, 5, 5), numCubeRange=(3, 20), numEach
                               for jointID in random.sample(notSupportJoints, nForce)}
         return trussData
 
-
     for numCube in range(numCubeRange[0], numCubeRange[1] + 1):
-        for i in range(numEach):
+        for i in range(numCaseRange[0], numCaseRange[1] + 1):
             if isPrintMessage:
-                print(f"\rGenerating [numCube : {numCube :5d}, i : {i :5d}] ", end='')
+                print(f"\rGenerating [numCube : {numCube :5d}, case : {i :5d}] ", end='')
 
             inputPath  = os.path.join(saveFolder, f"cube-{numCube}_input_{i}.json")
             outputPath = os.path.join(saveFolder, f"cube-{numCube}_output_{i}.json")
             plotPath   = os.path.join(saveFolder, f"cube-{numCube}_plot_{i}.png")
 
             cubeGrid  = CubeGrid(*gridRange)
-            cubes     = cubeGrid.RandomGenerateCubes(numCube, GenerateMethod.DFS if i <= numEach // 2 else GenerateMethod.BFS)
-            trussData = cubeGrid.CubesToTruss(cubes, length=[random.uniform(*lengthRange) for _ in range(3)])
+            cubes     = cubeGrid.RandomGenerateCubes(numCube, method)
+            trussData = cubeGrid.CubesToTruss(cubes, length=[random.uniform(*lengthRange) for _ in range(3)], linkType=linkType)
             AssignRandomForces(trussData, forceRange)
             SaveJSON(trussData, inputPath)
 
