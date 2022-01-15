@@ -50,12 +50,12 @@ Explanation of `global cube grid` ( `gridRange` = (3, 3, 3), `numCubeRange` = (5
 
 Options of `linkType`:
 
->1. *LinekType.LeftBottom_RightTop*
->2. *LinekType.RightBottom_LeftTop*
->3. *LinekType.Cross*
->4. *LinekType.Random* &ensp; **(default)**
+>- *LinekType.LeftBottom_RightTop*
+>- *LinekType.RightBottom_LeftTop*
+>- *LinekType.Cross*
+>- *LinekType.Random* &ensp; **(default)**
 
 Options of `method`:
 
->1. *GenerateMethod.DFS* &ensp; **(default)**
->2. *GenerateMethod.BFS*
+>- *GenerateMethod.DFS* &ensp; **(default)**
+>- *GenerateMethod.BFS*
