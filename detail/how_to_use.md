@@ -55,7 +55,7 @@ def TestExample():
 
 ---
 
-## Truss object
+## Truss
 
 (Not every method or property is listed here)
 
@@ -290,7 +290,7 @@ Truss.dim : int
 
 ---
 
-## Member object
+## Member
 
 ### Constructor
 

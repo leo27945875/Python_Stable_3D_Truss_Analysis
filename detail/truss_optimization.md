@@ -92,7 +92,7 @@ def TestGA():
 
 ---
 
-## GA object
+## Geneic algorithm
 
 ### Constructor
 
