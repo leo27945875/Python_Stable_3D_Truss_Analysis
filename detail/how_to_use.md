@@ -113,7 +113,7 @@ Here is the detail of class `MemberType`:
 
 ```python
 class MemberType:
-    def __init__(self, a=1, e=1, density=1):
+    def __init__(self, a=1., e=1., density=1.):
         self.a       = float(a)
         self.e       = float(e)
         self.density = float(density)
