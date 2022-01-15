@@ -38,6 +38,7 @@ GenerateRandomCubeTrusses(gridRange              = (5, 5, 5),
 - **`forceRange`** : Range of the magnitudes for xy(z)-axis of the random forces assigned at joints.
 - **`linkType`** : Link type of faces of every cube-like truss block.
 - **`method`** : Algorithm to decide positions to generate cube-like truss blocks.
+- **`saveFolder`** : Folder to save the generated result (JSON file).
 - **`isDoStructuralAnalysis`** : Whether to do structral analysis after each truss be generated.
 - **`isPlotTruss`** : Whether to plot the truss after each truss be generated.
 - **`isPrintMessage`** : Whether to print the message for the generating progress on the screen.
