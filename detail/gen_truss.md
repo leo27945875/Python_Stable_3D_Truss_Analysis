@@ -47,7 +47,7 @@ GenerateRandomCubeTrusses(gridRange              = (5, 5, 5),
 
 <br/>
 
-Explanation of `global cube grid` ( `gridRange` = (3, 3, 3), `numCubeRange` = (50, 150) for example ) :
+Explanation of `global cube grid` ( `gridRange` = (3, 3, 3), `numCubeRange` = (2, 2), `lengthRange` = (50, 150) for example ) :
 
 ![Grid](./figure/truss_gen_grid.png)
 
