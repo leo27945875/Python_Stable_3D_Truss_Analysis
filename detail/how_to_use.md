@@ -340,7 +340,7 @@ Member(joint0, joint1, dim=3, memberType=MemberType()) -> None
 
 <br/>
 
-### Check whether the member is tension strss or not
+### Check whether the member is tension stress or not
 
 ``` python
 Member.IsTension(forceVec) -> bool
