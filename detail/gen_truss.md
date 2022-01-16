@@ -17,7 +17,7 @@ The following is an example figure for how `4-cube truss` looks like. And also i
 Generate cube-like trusses and save them into JSON files.
 
 ```python
-from slientruss3d.generate import GenerateRandomCubeTrusses
+from slientruss3d.generate import GenerateRandomCubeTrusses, LinkType, GenerateMethod
 
 GenerateRandomCubeTrusses(gridRange              = (5, 5, 5), 
                           numCubeRange           = (3, 20), 
