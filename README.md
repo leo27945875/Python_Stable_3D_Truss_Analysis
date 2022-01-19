@@ -30,7 +30,7 @@ Shih-Chi Cheng                                  (鄭適其)
     - [Time consuming](#Time-consuming)
     - [Update log](#Update-log)
 2. **Quick start**
-    - [Basic example](./detail/how_to_use.md#Basic-example)
+    - [Basic example](./detail/how_to_use.md#Basic-example) >( Just read this if you aren't familiar with coding 😎 )
     - [Truss](./detail/how_to_use.md#Truss)
     - [Member](./detail/how_to_use.md#Member)
     - [MemberType](./detail/how_to_use.md#Define-a-new-member)
