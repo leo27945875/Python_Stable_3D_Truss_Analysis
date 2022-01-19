@@ -39,7 +39,7 @@ class Member:
 
     @property
     def memberType(self):
-        return self.__memberType
+        return self.__memberType.Copy()
     
     @memberType.setter
     def memberType(self, other):
@@ -215,20 +215,23 @@ class Truss:
         member = self.__members[memberID]
         return member[0], member[1]
     
+    def GetForce(self, jointID):
+        return self.__forces[jointID]
+    
     def GetJoints(self):
-        return copy.deepcopy(self.__joints)
+        return self.__joints
     
     def GetMembers(self):
-        return copy.deepcopy(self.__members)
+        return self.__members
     
     def GetForces(self):
-        return copy.deepcopy(self.__forces)
+        return self.__forces
     
     def GetDisplacements(self):
         return copy.deepcopy(self.__displace)
     
     def GetExternalForces(self):
-        return copy.deepcopy(self.__external if self.__isSolved else self.__forces)
+        return copy.deepcopy(self.__external) if self.__isSolved else self.__forces
     
     def GetInternalForces(self):
         return copy.deepcopy(self.__internal)
@@ -392,4 +395,4 @@ class Truss:
     
     # Copy this truss:
     def Copy(self):
-        return Truss(self.__dim).LoadFromJSON(data=self.Serialize())
+        return Truss(self.__dim).LoadFromJSON(data=self.Serialize(), isOutputFile=self.__isSolved)
