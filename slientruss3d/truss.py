@@ -237,7 +237,10 @@ class Truss:
         return copy.deepcopy(self.__internal)
     
     def GetInternalStresses(self):
-        return {memberID: internal / self.__members[memberID][2].a for memberID, internal in self.__internal.items()}
+        if self.__internal is not None:
+            return {memberID: internal / self.__members[memberID][2].a for memberID, internal in self.__internal.items()}
+        
+        return None
     
     def GetJointIDs(self):
         return [jointID for jointID in self.__joints]
