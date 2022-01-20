@@ -9,7 +9,7 @@ The following is the example code.
 - By the way, you could use `slientruss3d.plot.TrussPlotter` to plot the result of structural analysis for your truss. We will discuss its details in [Here](./plot_your_truss.md) !
 
 ```python
-from slientruss3d.truss import Truss, Member
+from slientruss3d.truss import Truss
 from slientruss3d.type  import SupportType, MemberType
 
 

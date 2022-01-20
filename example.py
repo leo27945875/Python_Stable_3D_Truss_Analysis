@@ -60,7 +60,7 @@ def TestPlot():
 
 
 def TestExample():
-    from slientruss3d.truss import Truss, Member
+    from slientruss3d.truss import Truss
     from slientruss3d.type  import SupportType, MemberType
     from slientruss3d.plot  import TrussPlotter
 
