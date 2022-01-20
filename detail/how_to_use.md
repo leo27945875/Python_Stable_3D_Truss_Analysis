@@ -15,11 +15,8 @@ from slientruss3d.type  import SupportType, MemberType
 
 def TestExample():
     # -------------------- Global variables --------------------
-    # Files settings:
     TEST_OUTPUT_FILE    = f"./test_output.json"
     TEST_PLOT_SAVE_PATH = f"./test_plot.png"
-
-    # Some settings:
     TRUSS_DIMENSION     = 3
     # ----------------------------------------------------------
 
