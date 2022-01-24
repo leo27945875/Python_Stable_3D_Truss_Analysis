@@ -30,7 +30,7 @@ def TestPlot():
     from slientruss3d.plot  import TrussPlotter
 
     # Global variables 
-    TEST_FILE_NUMBER        = 25
+    TEST_FILE_NUMBER        = 6
     TEST_LOAD_CASE          = 0
     TEST_INPUT_FILE         = f"./data/bar-{TEST_FILE_NUMBER}_output_{TEST_LOAD_CASE}.json"
     TEST_PLOT_SAVE_PATH     = f"./plot/bar-{TEST_FILE_NUMBER}_plot_{TEST_LOAD_CASE}.png"
@@ -202,9 +202,9 @@ def TestGA():
 
 
 if __name__ == '__main__':
-    TestTimeConsuming()
+    # TestTimeConsuming()
     # TestExample()
     # TestLoadFromJSON()
-    # TestPlot()
+    TestPlot()
     # TestGA()
     
