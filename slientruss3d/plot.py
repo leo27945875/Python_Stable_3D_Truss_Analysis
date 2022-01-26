@@ -45,7 +45,13 @@ class TrussPlotter:
         forcedIDs = truss.GetForces().keys()
         isSolved  = truss.isSolved
 
-        externalScale   = self.maxForce    / (max(abs(vec).max() for vec in externals.values())) if isSolved and externals and self.isForceScale    else 1.
+        externalScale = 1.
+        if self.isForceScale:
+            if isSolved and externals:
+                externalScale = self.maxForce / (max(abs(vec).max() for vec in externals.values()))
+            elif forces:
+                externalScale = self.maxForce / (max(abs(np.array(vec)).max() for vec in forces   .values()))
+         
         displaceScale   = self.maxDisplace / (max(abs(vec).max() for vec in displaces.values())) if isSolved and displaces and self.isDisplaceScale else 1.
         displacedJoints = {jointID: np.array([*vector]) + np.array(displaces.get(jointID, [0.] * dim)) * displaceScale for jointID, (vector, _) in joints.items()} if isSolved else {}
         
@@ -58,23 +64,23 @@ class TrussPlotter:
         arrowClass = Arrow3D if dim == 3 else Arrow2D
         for jointID, position in displacedJoints.items():
             ax.plot(*position, **self.GetSupportMarker(joints[jointID][-1]), alpha=0.3)
-            if jointID in externals:
-                if truss.GetSupportType(jointID) == SupportType.NO:
-                    arrowEnd = position + MinNorm(externals[jointID] * externalScale, self.maxForce * 0.3)
-                    ax.add_artist(arrowClass(position, arrowEnd, color='blueviolet', arrowstyle="->", mutation_scale=20 * self.arrowScale, lw=3 * self.arrowScale))
-                else:
-                    if jointID not in forcedIDs:
+            if truss.GetSupportType(jointID) == SupportType.NO and jointID in externals:
+                arrowEnd = position + MinNorm(externals[jointID] * externalScale, self.maxForce * 0.3)
+                ax.add_artist(arrowClass(position, arrowEnd, color='blueviolet', arrowstyle="->", mutation_scale=20 * self.arrowScale, lw=3 * self.arrowScale))
+            else:
+                if jointID not in forcedIDs:
+                    if jointID in externals:
                         arrowEnd = position + MinNorm(externals[jointID] * externalScale, self.maxForce * 0.3)
                         ax.add_artist(arrowClass(position, arrowEnd, color='green', arrowstyle="->", mutation_scale=20 * self.arrowScale, lw=3 * self.arrowScale))
-                    else:
-                        force = np.array(forces[jointID])
-                        arrowEndF = position + MinNorm(force * externalScale, self.maxForce * 0.3)
-                        ax.add_artist(arrowClass(position, arrowEndF, color='blueviolet', arrowstyle="->", mutation_scale=20 * self.arrowScale, lw=3 * self.arrowScale))
-                        
-                        force = externals[jointID] - force
-                        if not IsZeroVector(force):
-                            arrowEndR = position + MinNorm(force * externalScale, self.maxForce * 0.3)
-                            ax.add_artist(arrowClass(position, arrowEndR, color='green'     , arrowstyle="->", mutation_scale=20 * self.arrowScale, lw=3 * self.arrowScale))
+                else:
+                    force = np.array(forces[jointID])
+                    arrowEndF = position + MinNorm(force * externalScale, self.maxForce * 0.3)
+                    ax.add_artist(arrowClass(position, arrowEndF, color='blueviolet', arrowstyle="->", mutation_scale=20 * self.arrowScale, lw=3 * self.arrowScale))
+                    
+                    force = externals.get(jointID, np.zeros([dim])) - force
+                    if not IsZeroVector(force):
+                        arrowEndR = position + MinNorm(force * externalScale, self.maxForce * 0.3)
+                        ax.add_artist(arrowClass(position, arrowEndR, color='green'     , arrowstyle="->", mutation_scale=20 * self.arrowScale, lw=3 * self.arrowScale))
 
                 # Check the max and min position value of 2D force arrows: 
                 if dim == 2:

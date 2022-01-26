@@ -242,6 +242,20 @@ class Truss:
         
         return None
     
+    def GetResistances(self):
+        if not self.__isSolved:
+            raise TrussNotSolvedError("Haven't done structural analysis yet.")
+        
+        res = {}
+        for jointID in self.__joints:
+            if self.__joints[jointID][1] != SupportType.NO:  
+                if jointID in self.__forces:
+                    res[jointID] = self.__external.get(jointID, np.zeros([self.__dim])) - self.__forces[jointID]
+                else:
+                    res[jointID] = self.__external.get(jointID, np.zeros([self.__dim]))
+
+        return res
+    
     def GetJointIDs(self):
         return [jointID for jointID in self.__joints]
     

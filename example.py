@@ -35,11 +35,11 @@ def TestPlot():
     TEST_INPUT_FILE         = f"./data/bar-{TEST_FILE_NUMBER}_output_{TEST_LOAD_CASE}.json"
     TEST_PLOT_SAVE_PATH     = f"./plot/bar-{TEST_FILE_NUMBER}_plot_{TEST_LOAD_CASE}.png"
     TRUSS_DIMENSION         = 3
-    IS_EQUAL_AXIS           = True
+    IS_EQUAL_AXIS           = False
     IS_PLOT_STRESS          = True
     IS_SAVE_PLOT            = False
-    MAX_SCALED_DISPLACEMENT = 15 
-    MAX_SCALED_FORCE        = 50   
+    MAX_SCALED_DISPLACEMENT = 2 
+    MAX_SCALED_FORCE        = 10   
     POINT_SIZE_SCALE_FACTOR = 1
     ARROW_SIZE_SCALE_FACTOR = 1
 
