@@ -191,6 +191,18 @@ Truss.GetDisplacements() -> dict[int, numpy.array]
 
 <br/>
 
+### Get support resistance
+
+```python
+Truss.GetResistances() -> dict[int, numpy.array]
+```
+
+- Get resistance at each support. It returns a dictionary whose key is `joint ID` and value is `resistance vector`.
+
+    > Note that if you haven't done structural analysis yet, this method will return `None`.
+
+<br/>
+
 ### Load truss data from JSON file
 
 ```python

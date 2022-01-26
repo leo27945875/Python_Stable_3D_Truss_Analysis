@@ -244,7 +244,7 @@ class Truss:
     
     def GetResistances(self):
         if not self.__isSolved:
-            raise TrussNotSolvedError("Haven't done structural analysis yet.")
+            return None
         
         res = {}
         for jointID in self.__joints:
