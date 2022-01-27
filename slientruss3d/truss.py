@@ -92,7 +92,7 @@ class Member:
     
     # Serialize this member:
     def Serialize(self):
-        return {"joint0": self.__joint0, "joint1": self.__joint0, "memberType": self.__memberType.Serialize()}
+        return {"joint0": list(self.__joint0), "joint1": list(self.__joint1), "memberType": self.__memberType.Serialize()}
     
     # Copy this member:
     def Copy(self):
