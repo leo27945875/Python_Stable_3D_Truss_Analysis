@@ -1,3 +1,4 @@
+from turtle import position
 import numpy as np
 from matplotlib.patches import FancyArrowPatch
 from mpl_toolkits.mplot3d import proj3d
@@ -54,6 +55,7 @@ class ProbabilityGreaterThanOneError(Exception): pass
 class OnlyOneMemberTypeError        (Exception): pass
 class MinStressTooLargeError        (Exception): pass
 class MinDisplaceTooLargeError      (Exception): pass
+class NotAllBeSetError              (Exception): pass
 
 
 # ----------------------------- Truss -----------------------------
@@ -85,3 +87,19 @@ def GetPowerset(s):
     x = len(s)
     for i in range(1 << x):
         yield  [s[j] for j in range(x) if (i & (1 << j))]
+
+
+def GetCenter(position0, position1):
+    return [0.5 * (v0 + v1) for v0, v1 in zip(position0, position1)]
+
+
+def GetAngles(position0, position1):
+    p0, p1 = (position0, position1) if position0[-1] < position1[-1] else (position1, position0)
+    vec = [(v1 - v0) for v0, v1 in zip(p0, p1)]
+    vLength, xyLength = sum(v ** 2. for v in vec) ** 0.5, sum(v ** 2. for v in vec[:2]) ** 0.5
+    
+    if IsZero(xyLength):
+        return xyLength / vLength, vec[2] / vLength, 0., 0.
+
+    return xyLength / vLength, vec[2] / vLength, vec[1] / xyLength, vec[0] / xyLength
+

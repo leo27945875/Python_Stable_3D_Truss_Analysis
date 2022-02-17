@@ -17,19 +17,23 @@ The following is an example figure for how `4-cube truss` looks like. And also i
 Generate cube-like trusses and save them into JSON files.
 
 ```python
+from slientruss3d.truss    import Truss
 from slientruss3d.generate import GenerateRandomCubeTrusses, LinkType, GenerateMethod
 
 GenerateRandomCubeTrusses(gridRange              = (5, 5, 5), 
-                          numCubeRange           = (3, 20), 
-                          numCaseRange           = (0, 99), 
+                          numCubeRange           = (5, 5), 
+                          numCaseRange           = (1, 10), 
                           lengthRange            = (50, 150), 
-                          forceRange             = (0, 30000),
-                          linkType               = LinkType.Random,
+                          forceRange             = [(-30000, 30000), (-30000, 30000), (-30000, 30000)],
+                          nForceRange            = None,
                           method                 = GenerateMethod.DFS,
-                          saveFolder             = "./",
+                          linkType               = LinkType.Random,
+                          memberTypes            = [[1., 1e7, 0.1]],
+                          isAddPinSupport        = True,
                           isDoStructuralAnalysis = False,
                           isPlotTruss            = False,
-                          isPrintMessage         = True)
+                          isPrintMessage         = True,
+                          saveFolder             = None) -> list[Truss]
 
 ```
 
@@ -37,13 +41,15 @@ GenerateRandomCubeTrusses(gridRange              = (5, 5, 5),
 - **`numCubeRange`** : Range of the total numbers of cube-like truss block on the global grid.
 - **`numCaseRange`** : Range of the numbers of cases for each `numCubeRange` (only influence names of the saved JSON files).
 - **`lengthRange`** : Range of the edge length (that is, height, width, deepth) for every cube-like truss block.
-- **`forceRange`** : Range of the magnitudes for xy(z)-axis of the random forces assigned at joints.
-- **`linkType`** : Link type of faces of every cube-like truss block.
+- **`forceRange`** : Range of the magnitudes for xyz-axis of the random forces assigned at joints.
+- **`nForceRange`** : Range of the number of joints which will be assigned random external forces. If it's `None`, `nForceRange` ~ Uniform(1, Number_of_joints).
 - **`method`** : Algorithm to decide positions to generate cube-like truss blocks.
-- **`saveFolder`** : Folder to save the generated result (in JSON file).
+- **`linkType`** : Link type of faces of every cube-like truss block.
+- **`memberTypes`** : The member types in the list will be randomly assigned to each member. (list[list] or list[slientruss3d.type.MemberType])
 - **`isDoStructuralAnalysis`** : Whether to do structral analysis after each truss be generated.
 - **`isPlotTruss`** : Whether to plot the truss after each truss be generated.
 - **`isPrintMessage`** : Whether to print the message for the generating progress on the screen.
+- **`saveFolder`** : Folder to save the generated result (in JSON file). If it's `None`, this method won't save the generated result to JSON file.
 
 <br/>
 
@@ -60,5 +66,6 @@ Options of `linkType`:
 
 Options of `method`:
 
->- *GenerateMethod.DFS* &ensp; **(default)**
+>- *GenerateMethod.DFS*
 >- *GenerateMethod.BFS*
+>- *GenerateMethod.Random* &ensp; **(default)**

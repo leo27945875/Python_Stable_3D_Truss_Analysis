@@ -1,10 +1,11 @@
 import os
-import json
 import random
+
 
 from .truss import Truss
 from .plot  import TrussPlotter
-from .utils import GetPowerset
+from .type  import MemberType
+from .utils import GetPowerset, TrussNotStableError
 
 
 class LinkType:
@@ -15,14 +16,15 @@ class LinkType:
 
 
 class GenerateMethod:
-    DFS = 0
-    BFS = 1
+    DFS    = 0
+    BFS    = 1
+    Random = 2
 
 
 class CubeTruss:
     def __init__(self, coordinate, usedDict={}):
-        self.__coord  = coordinate
-        self.__links  = []
+        self.__coord = coordinate
+        self.__links = []
         self.jointIDs = [None for _ in range(8)]
         self.GenerateNew(usedDict)
 
@@ -51,7 +53,7 @@ class CubeTruss:
                 self[i] = usedDict[joint]
             else:
                 maxJointID += 1
-                self[i]         = maxJointID
+                self[i]          = maxJointID
                 usedDict[joint] = maxJointID
     
     def LinkMember(self, linkType=LinkType.Random):
@@ -137,6 +139,11 @@ class CubeGrid:
                 coord = coords.pop()
             elif method == GenerateMethod.BFS:
                 coord = coords.pop(0)
+            elif method == GenerateMethod.Random:
+                if random.random() <= 0.5:
+                    coord = coords.pop()
+                else:
+                    coord = coords.pop(0)
 
             self[coord] = True
             coords.extend([newCoord for newCoord in self.GetNextFeasibles(coord) if newCoord not in coords])
@@ -154,7 +161,7 @@ class CubeGrid:
                           ("PIN" if z == minZ else "NO") if isAddPinSupport else "NO"] 
                 for (x, y, z), jointID in self.__usedDict.items()}
     
-    def CubesToTruss(self, cubes, length=(100, 100, 100), isAddPinSupport=True, linkType=LinkType.Random, memberType=[1, 1e7, 1]):
+    def CubesToTruss(self, cubes, length=(100., 100., 100.), isAddPinSupport=True, linkType=LinkType.Random, memberType=[1., 1e7, 0.1]):
         # Joints:
         joints = self.ProcessPinSupport(isAddPinSupport, length)
 
@@ -170,43 +177,61 @@ class CubeGrid:
         return {'joint': joints, 'force': {}, 'member': members}
 
 
-def GenerateRandomCubeTrusses(gridRange=(5, 5, 5), numCubeRange=(3, 20), numCaseRange=(0, 99), lengthRange=(50, 150), forceRange=(0, 30000), linkType=LinkType.Random,
-                              method=GenerateMethod.DFS, saveFolder="./", isDoStructuralAnalysis=False, isPlotTruss=False, isPrintMessage=True):
-
-    def SaveJSON(obj, path):
-        with open(path, "w", encoding='utf-8') as f:
-            json.dump(obj, f, ensure_ascii=False)
-
-    def AssignRandomForces(trussData, forceRange):
+def GenerateRandomCubeTrusses(gridRange=(5, 5, 5), numCubeRange=(5, 5), numEachRange=(1, 10), lengthRange=(50, 150), forceRange=[(-30000, 30000), (-30000, 30000), (-30000, 30000)], 
+                              nForceRange=None, method=GenerateMethod.Random, linkType=LinkType.Random, memberTypes=[[1., 1e7, 0.1]], isAddPinSupport=True, isDoStructuralAnalysis=False, 
+                              isPlotTruss=False, isPrintMessage=True, saveFolder=None):
+    
+    def AssignRandomForces(trussData, forceRange, nForceRange):
         notSupportJoints = [jointID for jointID, (_, supportType) in trussData['joint'].items() if supportType == "NO"]
-        nForce = random.randint(*[1, len(notSupportJoints)])
-        trussData['force'] = {jointID: [random.uniform(*forceRange) * (-1 if random.random() < 0.5 else 1) for _ in range(3)] 
+        if nForceRange is None:
+            nForce = random.randint(1, len(notSupportJoints))
+        else:
+            nForce = random.randint(1                     if nForceRange[0] is None else nForceRange[0], 
+                                    len(notSupportJoints) if nForceRange[1] is None else nForceRange[1])
+
+        trussData['force'] = {jointID: [random.uniform(*forceRange[i]) for i in range(3)] 
                               for jointID in random.sample(notSupportJoints, nForce)}
         return trussData
+    
+    def AssignRandomMemberType(trussData, memberTypes):
+        memberDict = trussData['member']
+        for memberID in memberDict:
+            choice = random.choice(memberTypes)
+            memberDict[memberID][1] = choice.Serialize() if isinstance(choice, MemberType) else choice
+        
+        return trussData
 
+    trussList = []
     for numCube in range(numCubeRange[0], numCubeRange[1] + 1):
-        for i in range(numCaseRange[0], numCaseRange[1] + 1):
-            if isPrintMessage:
-                print(f"\rGenerating [numCube : {numCube :5d}, case : {i :5d}] ", end='')
+        for i in range(numEachRange[0], numEachRange[1] + 1):
+            while True:
+                try:
+                    if isPrintMessage: 
+                        print(f"\rnumCube : {numCube :5d}, i : {i :5d}", end='')
 
-            inputPath  = os.path.join(saveFolder, f"cube-{numCube}_input_{i}.json")
-            outputPath = os.path.join(saveFolder, f"cube-{numCube}_output_{i}.json")
-            plotPath   = os.path.join(saveFolder, f"cube-{numCube}_plot_{i}.png")
+                    cubeGrid  = CubeGrid(*gridRange)
+                    cubes     = cubeGrid.RandomGenerateCubes(numCube, method)
+                    trussData = cubeGrid.CubesToTruss(cubes, [random.uniform(*lengthRange) for _ in range(3)], isAddPinSupport, linkType)
+                    AssignRandomForces(trussData, forceRange, nForceRange)
+                    AssignRandomMemberType(trussData, memberTypes)
+                    truss = Truss(3).LoadFromJSON(data=trussData)
 
-            cubeGrid  = CubeGrid(*gridRange)
-            cubes     = cubeGrid.RandomGenerateCubes(numCube, method)
-            trussData = cubeGrid.CubesToTruss(cubes, length=[random.uniform(*lengthRange) for _ in range(3)], linkType=linkType)
-            AssignRandomForces(trussData, forceRange)
-            SaveJSON(trussData, inputPath)
+                    if isDoStructuralAnalysis:
+                        truss.Solve()
 
-            if isDoStructuralAnalysis:
-                truss = Truss(3)
-                truss.LoadFromJSON(data=trussData)
-                truss.Solve()
-                truss.DumpIntoJSON(outputPath)
+                    if saveFolder is not None:
+                        truss.DumpIntoJSON(os.path.join(saveFolder, f"cube-{numCube}_ga_{i}.json"))
 
-            if isPlotTruss:
-                TrussPlotter(truss, 
-                             maxScaledDisplace=lengthRange[1] * 0.1,
-                             maxScaledForce=lengthRange[1] * 0.6, 
-                             isEqualAxis=True).Plot(isSave=True, savePath=plotPath)
+                    if isPlotTruss:
+                        TrussPlotter(truss, 
+                                     maxScaledDisplace=lengthRange[1] * 0.1,
+                                     maxScaledForce=lengthRange[1] * 0.6, 
+                                     isEqualAxis=True).Plot(isSave=True, 
+                                                            savePath=os.path.join(saveFolder, f"cube-{numCube}_plot_{i}.png"))
+                    trussList.append(truss)
+                    break
+
+                except TrussNotStableError:
+                    if isPrintMessage: print("\nTruss is not stable. Re-genrating...\n")
+
+    return trussList

@@ -3,7 +3,7 @@ import json
 import copy
 from pprint import pformat
 
-from .utils import IsZero, IsZeroVector, GetLength, CheckDim, DimensionError, TrussNotStableError, InvaildJointError, TrussNotSolvedError
+from .utils import IsZero, IsZeroVector, GetLength, CheckDim, DimensionError, TrussNotStableError, InvaildJointError, TrussNotSolvedError, NotAllBeSetError
 from .type  import MemberType, SupportType
 
 
@@ -191,7 +191,10 @@ class Truss:
     def SetMemberType(self, memberID, memberType):
         self.__members[memberID][2].memberType = memberType
     
-    def SetMemberTypes(self, memberTypeDict):
+    def SetMemberTypes(self, memberTypeDict, isCheckAllSet=False):
+        if isCheckAllSet and self.__members.keys() - memberTypeDict.keys():
+            raise NotAllBeSetError("Didn't set member types to all members.")
+
         for memberID, memberType in memberTypeDict.items():
             self.__members[memberID][2].memberType = memberType
     
@@ -261,6 +264,9 @@ class Truss:
     
     def GetMemberIDs(self):
         return [memberID for memberID in self.__members]
+    
+    def GetUsedMemberTypes(self):
+        return set([member.memberType for _, _, member in self.__members.values()])
     
     # Get the full dimension vector of external forces padding by 0:
     def GetExternalForceVector(self):
@@ -344,17 +350,18 @@ class Truss:
         for jointID, vector in self.__forces.items():
             data["force"   ][str(jointID) ] = list(vector)
         
-        for jointID, vector in self.__displace.items():
-            data['displace'][str(jointID) ] = list(vector)
-        
-        for jointID, vector in self.__external.items():
-            data['external'][str(jointID) ] = list(vector)
- 
         for memberID, (jointID0, jointI1, member) in self.__members.items():
             data['member'  ][str(memberID)] = [[jointID0, jointI1], member.memberType.Serialize()]
         
-        for memberID, force in self.__internal.items():
-            data['internal'][str(memberID)] = float(force)
+        if self.__isSolved:
+            for jointID, vector in self.__displace.items():
+                data['displace'][str(jointID) ] = list(vector)
+            
+            for jointID, vector in self.__external.items():
+                data['external'][str(jointID) ] = list(vector)
+
+            for memberID, force in self.__internal.items():
+                data['internal'][str(memberID)] = float(force)
         
         return data
     
