@@ -86,3 +86,8 @@ class SupportType:
         for t in types:
             if getattr(SupportType, t) == supportType:
                 return t
+
+
+class MetapathType:
+    USE_IMPLICIT = 0
+    NO_IMPLICIT  = 1
