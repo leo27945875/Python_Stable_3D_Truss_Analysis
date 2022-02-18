@@ -118,7 +118,13 @@ class MemberType:
     def __repr__(self):
         return f"MemberType(a={self.a}, e={self.e}, density={self.density})"
     
-    def Set(other):
+    def __eq__(self, other):
+        return IsZero(self.a - other.a) and IsZero(self.e - other.e) and IsZero(self.density - other.density)
+    
+    def __hash__(self):
+        return (self.a, self.e, self.density).__hash__()
+    
+    def Set(self, other):
         self.a, self.e, self.density = other.a, other.e, other.density
     
     def Serialize(self):
