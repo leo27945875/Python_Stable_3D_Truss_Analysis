@@ -26,7 +26,7 @@ class GA:
             pCrossover      : float            = 0.7    , 
             pMutate         : float            = 0.1    , 
             pOrigin         : float            = 0.1    ,
-            isCheckWorst    : bool             = True
+            isCheckWorst    : bool             = False
         ):
         # Population settings:
         self.nPop             = nPop
