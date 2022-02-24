@@ -208,11 +208,20 @@ class Truss:
     def GetJointPosition(self, jointID):
         return self.__joints[jointID][0]
     
+    def GetJointPositions(self):
+        return {jointID: position for jointID, (position, _) in self.__joints.items()}
+    
     def GetSupportType(self, jointID):
         return self.__joints[jointID][1]
     
+    def GetSupportTypes(self):
+        return {jointID: supportType for jointID, (_, supportType) in self.__joints.items()}
+    
     def GetMemberType(self, memberID):
         return self.__members[memberID][2].memberType
+    
+    def GetMemberTypes(self):
+        return {memberID: member.memberType for memberID, (_, _, member) in self.__members.items()}
     
     def GetMemberConnect(self, memberID):
         member = self.__members[memberID]

@@ -91,3 +91,16 @@ class SupportType:
 class MetapathType:
     USE_IMPLICIT = 0
     NO_IMPLICIT  = 1
+
+
+class LinkType:
+    LeftBottom_RightTop = 0
+    RightBottom_LeftTop = 1
+    Cross               = 2
+    Random              = 3
+
+
+class GenerateMethod:
+    DFS    = 0
+    BFS    = 1
+    Random = 2

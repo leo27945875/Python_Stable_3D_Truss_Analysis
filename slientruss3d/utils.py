@@ -4,6 +4,10 @@ from matplotlib.patches import FancyArrowPatch
 from mpl_toolkits.mplot3d import proj3d
 
 
+# ----------------------------- Constant -----------------------------
+INF = float("inf")
+
+
 # ----------------------------- Plot -----------------------------
 class Arrow3D(FancyArrowPatch):
     def __init__(self, posA, posB, *args, **kwargs):
@@ -103,3 +107,10 @@ def GetAngles(position0, position1):
 
     return xyLength / vLength, vec[2] / vLength, vec[1] / xyLength, vec[0] / xyLength
 
+
+# ----------------------------- Flow Control -----------------------------
+def InfinteLoop():
+    i = 0
+    while True:
+        yield i
+        i += 1

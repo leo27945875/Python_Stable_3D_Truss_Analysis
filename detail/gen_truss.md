@@ -18,7 +18,8 @@ Generate cube-like trusses and save them into JSON files.
 
 ```python
 from slientruss3d.truss    import Truss
-from slientruss3d.generate import GenerateRandomCubeTrusses, LinkType, GenerateMethod
+from slientruss3d.type     import LinkType, GenerateMethod
+from slientruss3d.generate import GenerateRandomCubeTrusses
 
 GenerateRandomCubeTrusses(gridRange              = (5, 5, 5), 
                           numCubeRange           = (5, 5), 

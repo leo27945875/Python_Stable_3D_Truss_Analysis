@@ -5,17 +5,8 @@ from .utils import (EliteNumberTooMuchError,
                     ProbabilityGreaterThanOneError, 
                     OnlyOneMemberTypeError, 
                     MinStressTooLargeError, 
-                    MinDisplaceTooLargeError)
-
-
-INF = float("inf")
-
-
-def _InfinteLoop():
-    i = 0
-    while True:
-        yield i
-        i += 1
+                    MinDisplaceTooLargeError, 
+                    InfinteLoop, INF)
 
 
 class GA:
@@ -189,7 +180,7 @@ class GA:
 
         # Evolution loops:
         bestFitness, bestFitnessHistory, nWaitBestIter, isEarlyStopping = INF, [], 0, False
-        for i in (range(nIteration) if nIteration is not None else _InfinteLoop()):
+        for i in (range(nIteration) if nIteration is not None else InfinteLoop()):
             
             # Select elites:
             elitePop, (minFitness, isInternalAllowed, isDisplaceAllowed) = self.Select(pop)

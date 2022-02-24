@@ -4,21 +4,8 @@ import random
 
 from .truss import Truss
 from .plot  import TrussPlotter
-from .type  import MemberType
+from .type  import MemberType, LinkType, GenerateMethod
 from .utils import GetPowerset, TrussNotStableError
-
-
-class LinkType:
-    LeftBottom_RightTop = 0
-    RightBottom_LeftTop = 1
-    Cross               = 2
-    Random              = 3
-
-
-class GenerateMethod:
-    DFS    = 0
-    BFS    = 1
-    Random = 2
 
 
 class CubeTruss:
