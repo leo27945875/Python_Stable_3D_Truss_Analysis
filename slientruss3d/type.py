@@ -93,6 +93,11 @@ class MetapathType:
     NO_IMPLICIT  = 1
 
 
+class TaskType:
+    OPTIMIZATION = 0
+    REGRESSION   = 1
+
+
 class LinkType:
     LeftBottom_RightTop = 0
     RightBottom_LeftTop = 1

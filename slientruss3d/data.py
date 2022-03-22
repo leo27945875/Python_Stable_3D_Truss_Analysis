@@ -4,13 +4,14 @@ import torch
 from torch_geometric.data import HeteroData
 
 from .truss import Truss
-from .type  import MemberType, SupportType, MetapathType
-from .utils import GetCenter, GetAngles
+from .type  import MemberType, SupportType, MetapathType, TaskType
+from .utils import GetCenter, GetAngles, TrussNotSolvedError, InvalidTaskTypeError
 
 
 class TrussBipartiteDataCreator:
-    def __init__(self, metapathType: MetapathType):
+    def __init__(self, metapathType: MetapathType, taskType: TaskType):
         self.metapathType = metapathType
+        self.taskType     = taskType
         self.jointIndexToID, self.memberIndexToID, self.source, self.truss = [], [], None, None
     
     @staticmethod
@@ -29,8 +30,8 @@ class TrussBipartiteDataCreator:
         row, col = cooMat.row.tolist(), cooMat.col.tolist()
         return [row, col]
 
-    def FromJSON(self, trussJSONFile, trussDim, forceScale, displaceScale, positionScale, usedMemberTypes, fixedMemberType=MemberType(1., 1e7, 0.1)):
-        truss = Truss(trussDim).LoadFromJSON(trussJSONFile, isOutputFile=False)
+    def FromJSON(self, trussJSONFile, trussDim, forceScale, displaceScale, positionScale, usedMemberTypes, fixedMemberType=MemberType(1., 1e7, 0.1), isOutputFile=False):
+        truss = Truss(trussDim).LoadFromJSON(trussJSONFile, isOutputFile=isOutputFile)
         fixedInternals, fixedDisplaces = self.GetFixedInternalAndDisplace(truss, fixedMemberType)
         self.truss    , self.source    = truss, trussJSONFile
         return self.CreateGraphData(truss, 
@@ -47,32 +48,93 @@ class TrussBipartiteDataCreator:
                                     *self.CreateEdges(truss))
 
     def CreateJointData(self, truss, forceScale, positionScale, displaceScale, fixedDisplaces):
+        # Clear the mapping which is from joint indexes in dataset to joint IDs in the truss:
         self.jointIndexToID.clear()
-        joints, forces, dim, jointData = truss.GetJoints(), truss.GetForces(), truss.dim, {'x': [], 'y': []}
-        for jointID, (position, supportType) in joints.items():
-            jointData['x'].append([
-                *([p / positionScale for p in position]),
-                *([f / forceScale    for f in forces        [jointID]] if jointID in forces         else [0.] * dim),
-                *([d / displaceScale for d in fixedDisplaces[jointID]] if jointID in fixedDisplaces else [0.] * dim),
-                float(supportType != SupportType.NO)
-            ])
-            self.jointIndexToID.append(jointID)
+
+        # For [optimization] task:
+        if self.taskType == TaskType.OPTIMIZATION:
+            joints, forces, dim, jointData = truss.GetJoints(), truss.GetForces(), truss.dim, {'x': [], 'y': []}
+            for jointID, (position, supportType) in joints.items():
+                # X data:
+                jointData['x'].append([
+                    *([p / positionScale for p in position]),
+                    *([f / forceScale    for f in forces        [jointID]] if jointID in forces         else [0.] * dim),
+                    *([d / displaceScale for d in fixedDisplaces[jointID]] if jointID in fixedDisplaces else [0.] * dim),
+                    float(supportType != SupportType.NO)
+                ])
+
+                # Record a mapping which is from joint indexes in dataset to joint IDs in the truss:
+                self.jointIndexToID.append(jointID)
+
+        # For [regression] task:
+        elif self.taskType == TaskType.REGRESSION:
+            joints, forces, displaces, dim, jointData = truss.GetJoints(), truss.GetForces(), truss.GetDisplacements(), truss.dim, {'x': [], 'y': []}
+            for jointID, (position, supportType) in joints.items():
+                # X data:
+                jointData['x'].append([
+                    *([p / positionScale for p in position]),
+                    *([f / forceScale    for f in forces        [jointID]] if jointID in forces         else [0.] * dim),
+                    *([d / displaceScale for d in fixedDisplaces[jointID]] if jointID in fixedDisplaces else [0.] * dim),
+                    float(supportType != SupportType.NO)
+                ])
+
+                # Y data:
+                if not truss.isSolved: raise TrussNotSolvedError("Must do structural analysis first to create regression targets.")
+                target = displaces[jointID].tolist() if jointID in displaces else [0.] * truss.dim
+                jointData['y'].append([y / s for y, s in zip(target, displaceScale)])
+
+                # Record a mapping which is from joint indexes in dataset to joint IDs in the truss:
+                self.jointIndexToID.append(jointID)
+        else:
+            raise InvalidTaskTypeError(f"Invalid task type [{self.taskType}].")
 
         return jointData
     
     def CreateMemberData(self, truss, forceScale, positionScale, fixedInternals, usedMemberTypes):
+        # Clear the mapping which is from member indexes in dataset to member IDs in the truss:
         self.memberIndexToID.clear()
-        joints, members, memberData = truss.GetJoints(), truss.GetMembers(), {'x': [], 'y': []}
-        for memberID, (jointID0, jointID1, member) in members.items():
-            p0, p1 = joints[jointID0][0], joints[jointID1][0]
-            memberData['x'].append([
-                *[p / positionScale for p in GetCenter(p0, p1)],
-                *GetAngles(p0, p1),
-                member.length / positionScale,
-                (fixedInternals[memberID] / forceScale if memberID in fixedInternals else 0.)
-            ])
-            memberData['y'].append([usedMemberTypes.index(member.memberType)])
-            self.memberIndexToID.append(memberID)
+
+        # For [optimization] task:
+        if self.taskType == TaskType.OPTIMIZATION:
+            joints, members, memberData = truss.GetJoints(), truss.GetMembers(), {'x': [], 'y': []}
+            for memberID, (jointID0, jointID1, member) in members.items():
+                # X data:
+                p0, p1 = joints[jointID0][0], joints[jointID1][0]
+                memberData['x'].append([
+                    *[p / positionScale for p in GetCenter(p0, p1)],
+                    *GetAngles(p0, p1),
+                    member.length / positionScale,
+                    (fixedInternals[memberID] / forceScale if memberID in fixedInternals else 0.)
+                ])
+
+                # Y data (for imiation learning):
+                memberData['y'].append([usedMemberTypes.index(member.memberType)])
+
+                # Record a mapping which is from member indexes in dataset to member IDs in the truss:
+                self.memberIndexToID.append(memberID)
+        
+        # For [regression] task:
+        elif self.taskType == TaskType.REGRESSION:
+            joints, members, stresses, memberData = truss.GetJoints(), truss.GetMembers(), truss.GetInternalStresses(), {'x': [], 'y': []}
+            for memberID, (jointID0, jointID1, member) in members.items():
+                # X data:
+                p0, p1 = joints[jointID0][0], joints[jointID1][0]
+                memberData['x'].append([
+                    *[p / positionScale for p in GetCenter(p0, p1)],
+                    *GetAngles(p0, p1),
+                    member.length / positionScale,
+                    (fixedInternals[memberID] / forceScale if memberID in fixedInternals else 0.),
+                    usedMemberTypes.index(member.memberType)
+                ])
+
+                # Y data:
+                if not truss.isSolved: raise TrussNotSolvedError("Must do structural analysis first to create regression targets.")
+                memberData['y'].append([stresses[memberID] / forceScale] if memberID in stresses else [0.])
+
+                # Record a mapping which is from member indexes in dataset to member IDs in the truss:
+                self.memberIndexToID.append(memberID)
+        else:
+            raise InvalidTaskTypeError(f"Invalid task type [{self.taskType}].")
         
         return memberData
     
@@ -88,8 +150,8 @@ class TrussBipartiteDataCreator:
         jointToMemberEdge = [jointIndexList, memberIndexList]
         memberToJointEdge = [memberIndexList, jointIndexList]
 
-        jointToMemberAdj  = coo_matrix(([1] * len(jointIndexList) , jointToMemberEdge), shape=(truss.nJoint, truss.nMember))
-        memberToJointAdj  = coo_matrix(([1] * len(memberIndexList), memberToJointEdge), shape=(truss.nMember, truss.nJoint))
+        jointToMemberAdj  = coo_matrix(([1] * len(jointIndexList) , jointToMemberEdge), shape=(truss.nJoint , truss.nMember))
+        memberToJointAdj  = coo_matrix(([1] * len(memberIndexList), memberToJointEdge), shape=(truss.nMember, truss.nJoint ))
         
         if self.metapathType == MetapathType.USE_IMPLICIT:
             jointToJointEdge   = self.GetEdgeFromSparse(jointToMemberAdj @ memberToJointAdj)
