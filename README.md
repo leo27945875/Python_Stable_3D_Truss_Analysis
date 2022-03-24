@@ -107,7 +107,7 @@ After slientruss3d 1.3.x, you can use **`slientruss3d.generate`** module to gene
 
 ### New feature in v1.2.x update !
 
-After slientruss3d v1.2.x, you could use **`slientruss3d.ga`** module to do `truss type selection optimization` conveniencely with `Genetic Algorithm (GA)`! Just simply define the topology of the truss and what member types you want to use, and then you could start the optimization.  
+After slientruss3d v1.2.x, you could use **`slientruss3d.ga`** module to do `member type selection optimization` conveniencely with `Genetic Algorithm (GA)`! Just simply define the topology of the truss and what member types you want to use, and then you could start the optimization.  
 
 > More details is in [Truss optimization](./detail/truss_optimization.md)
 
