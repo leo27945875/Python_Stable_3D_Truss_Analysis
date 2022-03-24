@@ -201,10 +201,36 @@ def TestGA():
     truss.DumpIntoJSON('bar-120_ga_0.json')
 
 
+def TestGenerateCubeTruss():
+    from slientruss3d.generate import GenerateRandomCubeTrusses
+
+    # Some parameters for your generated cube truss:
+    GRID_RANGE                = (5, 5, 5)
+    CUBE_NUMBER               = 4
+    GENERATE_NUMBER           = 3
+    EDGE_LENGTH_RANGE         = (20, 60)
+    EXTERNAL_FORCE_RANGE      = [(-1000, 1000), (-1000, 1000), (-1000, 1000)]
+    IS_DO_STRUCTURAL_ANALYSIS = False
+    IS_PLOT_GENERATED_TRUSS   = True
+    SAVE_FOLDER               = './'
+
+    # Generate cube-like trusses:
+    trussList = GenerateRandomCubeTrusses(gridRange=GRID_RANGE,
+                                          numCubeRange=(CUBE_NUMBER, CUBE_NUMBER),
+                                          numEachRange=(1, GENERATE_NUMBER),
+                                          lengthRange=EDGE_LENGTH_RANGE,
+                                          forceRange=EXTERNAL_FORCE_RANGE,
+                                          isDoStructuralAnalysis=IS_DO_STRUCTURAL_ANALYSIS,
+                                          isPlotTruss=IS_PLOT_GENERATED_TRUSS,
+                                          saveFolder=SAVE_FOLDER)
+    return trussList
+
+
 if __name__ == '__main__':
     # TestTimeConsuming()
     # TestExample()
     # TestLoadFromJSON()
-    TestPlot()
+    # TestPlot()
     # TestGA()
+    TestGenerateCubeTruss()
     

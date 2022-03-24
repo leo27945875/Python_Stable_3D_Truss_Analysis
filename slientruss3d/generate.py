@@ -205,6 +205,8 @@ def GenerateRandomCubeTrusses(gridRange=(5, 5, 5), numCubeRange=(5, 5), numEachR
 
                     if isDoStructuralAnalysis:
                         truss.Solve()
+                    else:
+                        if not truss.isStable: raise TrussNotStableError
 
                     if saveFolder is not None:
                         truss.DumpIntoJSON(os.path.join(saveFolder, f"cube-{numCube}_ga_{i}.json"))
