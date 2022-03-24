@@ -182,7 +182,7 @@ GA.GetRandomGene() -> list[int]
 
 ## Customization
 
-As long as you comply with the function signiture and the meaning of every input, output varible, it's possible to customize your own generic algorithm by **`inheriting`** class GA in slientruss3d. The following are the methods you could perhaps override them to make your own custom GA.
+As long as you comply with the function signiture and the meaning of every input, output variable, it's possible to customize your own generic algorithm by **`inheriting`** class GA in slientruss3d. The following are the methods you could perhaps override them to make your own custom GA.
 
 ```python
 class CustomGA(GA):
