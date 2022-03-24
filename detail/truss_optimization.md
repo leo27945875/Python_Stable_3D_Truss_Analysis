@@ -99,7 +99,7 @@ def TestGA():
 ### Constructor
 
 ```python
-GA(truss, memberTypeList, allowStress=30000., allowDisplace=10., nIteration=None, nPatience=50, nPop=200, nElite=50, pCrossover=0.7, pMutate=0.1, pOrigin=0.1, isCheckWorst=True) -> None
+GA(truss, memberTypeList, allowStress=30000., allowDisplace=10., nIteration=None, nPatience=50, nPop=200, nElite=50, pCrossover=0.7, pMutate=0.1, pOrigin=0.1, isCheckWorst=False) -> None
 ```
 
 - **`truss`** : Truss object.
