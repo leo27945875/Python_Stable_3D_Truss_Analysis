@@ -80,8 +80,8 @@ class TrussBipartiteDataCreator:
 
                 # Y data:
                 if not truss.isSolved: raise TrussNotSolvedError("Must do structural analysis first to create regression targets.")
-                target = displaces[jointID].tolist() if jointID in displaces else [0.] * truss.dim
-                jointData['y'].append([y / s for y, s in zip(target, displaceScale)])
+                target = [d / displaceScale for d in displaces[jointID].tolist()] if jointID in displaces else [0.] * truss.dim
+                jointData['y'].append(target)
 
                 # Record a mapping which is from joint indexes in dataset to joint IDs in the truss:
                 self.jointIndexToID.append(jointID)
