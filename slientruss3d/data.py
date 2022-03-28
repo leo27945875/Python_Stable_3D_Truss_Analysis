@@ -195,7 +195,7 @@ class TrussBipartiteDataCreator:
         return graphData
     
 
-    def AddMasterNode(self, graphData):
+    def AddMasterNode(self, graphData, embeddingDim=1, fillValue=1.):
         if not self.truss:
             raise RuntimeError("No truss has been assigned.")
         
@@ -206,7 +206,7 @@ class TrussBipartiteDataCreator:
         memberToMasterEdge = [[i for i in range(nMember)], [0 for _ in range(nMember)]]
         masterToMemberEdge = [[0 for _ in range(nMember)], [i for i in range(nMember)]]
 
-        graphData['master'].x = torch.tensor([[0.]])
+        graphData['master'].x = torch.tensor([[fillValue] for _ in range(embeddingDim)])
         graphData['joint' , 'j2M', 'master'].edge_index = torch.tensor(jointToMasterEdge , dtype=torch.long)
         graphData['master', 'M2j', 'joint' ].edge_index = torch.tensor(masterToJointEdge , dtype=torch.long)
         graphData['member', 'm2M', 'master'].edge_index = torch.tensor(memberToMasterEdge, dtype=torch.long)
