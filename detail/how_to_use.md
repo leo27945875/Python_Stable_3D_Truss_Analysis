@@ -268,7 +268,7 @@ Truss.IsDisplacementAllowed(limit, isGetSumViolation=False) -> tuple[bool, dict 
 ```
 
 - **`limit`** : Allowable displacement.
-- **`isGetSumViolation`** : Sum of the exceeding quantities of members that violate allowable displacement.
+- **`isGetSumViolation`** : Sum of the exceeding quantities of joints that violate allowable displacement.
 
 &ensp; If the parameter `isGetSumViolation` is True, then the method returns
 
