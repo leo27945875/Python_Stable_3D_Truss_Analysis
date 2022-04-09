@@ -90,6 +90,13 @@ class Member:
         memberVec = np.array(self.__joint1) - np.array(self.__joint0)
         return np.dot(memberVec, forceVec) > 0 
     
+    # Change the position of joint:
+    def SetPosition(self, jointID_0or1, position):
+        if   jointID_0or1 == 0: self.__joint0 = position
+        elif jointID_0or1 == 1: self.__joint1 = position
+        else: raise KeyError("[jointID_0or1] must be 0 or 1.")
+        self.__length = sum((self.__joint1[i] - self.__joint0[i]) ** 2. for i in range(self.__dim)) ** 0.5
+
     # Serialize this member:
     def Serialize(self):
         return {"joint0": list(self.__joint0), "joint1": list(self.__joint1), "memberType": self.__memberType.Serialize()}
@@ -176,10 +183,13 @@ class Truss:
                                                                self.__dim, memberType))
     def SetJointPosition(self, jointID, position):
         self.__joints[jointID] = (position, self.__joints[jointID][-1])
+        for jointID0, jointID1, member in self.__members.values():
+            if jointID0 == jointID: member.SetPosition(0, position)
+            if jointID1 == jointID: member.SetPosition(1, position)
     
     def SetJointPositions(self, jointPositionDict):
         for jointID, position in jointPositionDict.items():
-            self.__joints[jointID][0] = (position, self.__joints[jointID][-1])
+            self.SetJointPosition(jointID, position)
     
     def SetSupportType(self, jointID, supportType):
         self.__joints[jointID][1] = supportType
@@ -199,11 +209,14 @@ class Truss:
             self.__members[memberID][2].memberType = memberType
     
     def SetMemberConnect(self, memberID, connect):
-        self.__members[memberID] = connect + self.__members[memberID][-1:]
-    
+        member = self.__members[memberID][-1]
+        member.SetPosition(0, self.__joints[connect[0]][0])
+        member.SetPosition(1, self.__joints[connect[1]][0])
+        self.__members[memberID] = connect + (member,)
+
     def SetMemberConnects(self, memberConnectDict):
         for memberID, connect in memberConnectDict.items():
-            self.__members[memberID] = connect + self.__members[memberID][-1:]
+            self.SetMemberConnect(memberID, connect)
     
     def GetJointPosition(self, jointID):
         return self.__joints[jointID][0]
