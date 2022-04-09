@@ -175,11 +175,11 @@ class Truss:
                                                                self.__joints[jointID1][0],
                                                                self.__dim, memberType))
     def SetJointPosition(self, jointID, position):
-        self.__joints[jointID][0] = position
+        self.__joints[jointID] = (position, self.__joints[jointID][-1])
     
     def SetJointPositions(self, jointPositionDict):
         for jointID, position in jointPositionDict.items():
-            self.__joints[jointID][0] = position
+            self.__joints[jointID][0] = (position, self.__joints[jointID][-1])
     
     def SetSupportType(self, jointID, supportType):
         self.__joints[jointID][1] = supportType
