@@ -175,11 +175,11 @@ class Truss:
                                                                self.__joints[jointID1][0],
                                                                self.__dim, memberType))
     def SetJointPosition(self, jointID, position):
-        self.__joints[jointID][0][:] = position
+        self.__joints[jointID][0] = position
     
     def SetJointPositions(self, jointPositionDict):
         for jointID, position in jointPositionDict.items():
-            self.__joints[jointID][0][:] = position
+            self.__joints[jointID][0] = position
     
     def SetSupportType(self, jointID, supportType):
         self.__joints[jointID][1] = supportType
@@ -199,11 +199,11 @@ class Truss:
             self.__members[memberID][2].memberType = memberType
     
     def SetMemberConnect(self, memberID, connect):
-        self.__members[memberID][:1] = connect
+        self.__members[memberID] = connect + self.__members[memberID][-1:]
     
     def SetMemberConnects(self, memberConnectDict):
         for memberID, connect in memberConnectDict.items():
-            self.__members[memberID][:1] = connect
+            self.__members[memberID] = connect + self.__members[memberID][-1:]
     
     def GetJointPosition(self, jointID):
         return self.__joints[jointID][0]
