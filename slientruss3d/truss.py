@@ -426,7 +426,7 @@ class Truss:
                 isVio     = len(violation) == 0
             
             if isGetSumNonViolation:
-                nonViolation = sum(f for memberID, force in self.__internal.items() if (f := abs(force) / self.__members[memberID][2].a) <= limit)
+                nonViolation = sum(limit - f for memberID, force in self.__internal.items() if (f := abs(force) / self.__members[memberID][2].a) <= limit)
                 return isVio, violation, nonViolation
             
             return isVio, violation
@@ -444,7 +444,7 @@ class Truss:
                 isVio     = len(violation) == 0
             
             if isGetSumNonViolation:
-                nonViolation = sum(l for displace in self.__displace.values() if (l := GetLength(displace)) <= limit)
+                nonViolation = sum(limit - l for displace in self.__displace.values() if (l := GetLength(displace)) <= limit)
                 return isVio, violation, nonViolation
             
             return isVio, violation
