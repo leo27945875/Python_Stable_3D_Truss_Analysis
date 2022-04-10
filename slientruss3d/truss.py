@@ -416,26 +416,38 @@ class Truss:
             json.dump(self.Serialize(), f, ensure_ascii=False)
     
     # Check whether all internal forces are in allowable range or not:
-    def IsInternalStressAllowed(self, limit, isGetSumViolation=False):
+    def IsInternalStressAllowed(self, limit, isGetSumViolation=False, isGetSumNonViolation=False):
         if self.__isSolved:
             if isGetSumViolation:
                 violation = sum(f - limit for memberID, force in self.__internal.items() if (f := abs(force) / self.__members[memberID][2].a) > limit)
-                return IsZero(violation), violation
+                isVio     = IsZero(violation)
             else:
                 violation = {memberID: f - limit for memberID, force in self.__internal.items() if (f := abs(force) / self.__members[memberID][2].a) > limit}
-                return len(violation) == 0, violation
+                isVio     = len(violation) == 0
+            
+            if isGetSumNonViolation:
+                nonViolation = sum(f for memberID, force in self.__internal.items() if (f := abs(force) / self.__members[memberID][2].a) <= limit)
+                return isVio, violation, nonViolation
+            
+            return isVio, violation
         
         raise TrussNotSolvedError("Haven't done structural analysis yet.")
     
     # Check whether all internal displacements are in allowable range or not:
-    def IsDisplacementAllowed(self, limit, isGetSumViolation=False):
+    def IsDisplacementAllowed(self, limit, isGetSumViolation=False, isGetSumNonViolation=False):
         if self.__isSolved:
             if isGetSumViolation:
                 violation = sum(l - limit for displace in self.__displace.values() if (l := GetLength(displace)) > limit)
-                return IsZero(violation), violation
+                isVio     = IsZero(violation)
             else:
                 violation = {jointID: l - limit for jointID, displace in self.__displace.items() if (l := GetLength(displace)) > limit}
-                return len(violation) == 0, violation
+                isVio     = len(violation) == 0
+            
+            if isGetSumNonViolation:
+                nonViolation = sum(l for displace in self.__displace.values() if (l := GetLength(displace)) <= limit)
+                return isVio, violation, nonViolation
+            
+            return isVio, violation
         
         raise TrussNotSolvedError("Haven't done structural analysis yet.")
     
