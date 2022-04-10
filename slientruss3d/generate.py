@@ -147,14 +147,20 @@ class CubeTruss:
         def SampleLink(links, choices, linkType, hasLinked):
             choice = choices[random.sample(range(len(choices)), k=1)[0]] if linkType == LinkType.Random else choices[linkType]
             if list(filter(lambda x: hasattr(x, '__iter__'), choice)):
-                for c in choice:
-                    if (link := tuple(c)) not in hasLinked:
-                        links.append(c)
-                        hasLinked.add(link)
+                if hasLinked is None:
+                    links.extend(choice)
+                else:
+                    for c in choice:
+                        if (link := tuple(c)) not in hasLinked:
+                            links.append(c)
+                            hasLinked.add(link)
             else:
-                if (link := tuple(choice)) not in hasLinked:
+                if hasLinked is None:
                     links.append(choice)
-                    hasLinked.add(link)
+                else:
+                    if (link := tuple(choice)) not in hasLinked:
+                        links.append(choice)
+                        hasLinked.add(link)
 
         links = []
 
@@ -174,9 +180,12 @@ class CubeTruss:
                 # Side cycle:
                 [self[0], self[4]], [self[1], self[5]], [self[2], self[6]], [self[3], self[7]]
         ]:
-            if (link := tuple(choice)) not in hasLinked: 
+            if hasLinked is None:
                 links.append(choice)
-                hasLinked.add(link)
+            else:
+                if (link := tuple(choice)) not in hasLinked: 
+                    links.append(choice)
+                    hasLinked.add(link)
 
         return links
 
@@ -245,12 +254,12 @@ class CubeGrid:
                           ("PIN" if z == minZ else "NO") if isAddPinSupport else "NO"] 
                 for (x, y, z), jointID in self.__usedDict.items()}
     
-    def CubesToTruss(self, cubes, length=(100., 100., 100.), isAddPinSupport=True, linkType=LinkType.Random, memberType=[1., 1e7, 0.1]):
+    def CubesToTruss(self, cubes, length, isAddPinSupport=True, isAllowParallel=True, linkType=LinkType.Random, memberType=[1., 1e7, 0.1]):
         # Joints:
         joints = self.ProcessPinSupport(isAddPinSupport, length)
 
         # Members:
-        members, hasLinked = [], set()
+        members, hasLinked = [], None if isAllowParallel else set()
         for cube in cubes:
             links = cube.LinkMember(linkType, hasLinked)
             members.extend([[link, memberType] for link in links])
@@ -262,8 +271,8 @@ class CubeGrid:
 
 
 def GenerateRandomCubeTrusses(gridRange=(5, 5, 5), numCubeRange=(5, 5), numEachRange=(1, 10), lengthRange=(50, 150), forceRange=[(-30000, 30000), (-30000, 30000), (-30000, 30000)], 
-                              nForceRange=None, method=GenerateMethod.Random, linkType=LinkType.Random, memberTypes=[[1., 1e7, 0.1]], isAddPinSupport=True, isDoStructuralAnalysis=False, 
-                              isPlotTruss=False, isPrintMessage=True, saveFolder=None, augmenter=NoChange(), seed=None):
+                              nForceRange=None, method=GenerateMethod.Random, linkType=LinkType.Random, memberTypes=[[1., 1e7, 0.1]], isAddPinSupport=True, isAllowParallel=True,
+                              isDoStructuralAnalysis=False, isPlotTruss=False, isPrintMessage=True, saveFolder=None, augmenter=NoChange(), seed=None):
     
     def AssignRandomForces(trussData, forceRange, nForceRange):
         notSupportJoints = [jointID for jointID, (_, supportType) in trussData['joint'].items() if supportType == "NO"]
@@ -298,7 +307,7 @@ def GenerateRandomCubeTrusses(gridRange=(5, 5, 5), numCubeRange=(5, 5), numEachR
 
                     cubeGrid  = CubeGrid(*gridRange)
                     cubes     = cubeGrid.RandomGenerateCubes(numCube, method)
-                    trussData = cubeGrid.CubesToTruss(cubes, [random.uniform(*lengthRange) for _ in range(3)], isAddPinSupport, linkType)
+                    trussData = cubeGrid.CubesToTruss(cubes, [random.uniform(*lengthRange) for _ in range(3)], isAddPinSupport, isAllowParallel, linkType)
                     AssignRandomForces      (trussData, forceRange, nForceRange)
                     AssignRandomMemberType  (trussData, memberTypes)
                     truss = Truss(3).LoadFromJSON(data=augmenter(trussData))
