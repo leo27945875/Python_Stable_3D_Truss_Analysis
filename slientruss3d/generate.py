@@ -1,17 +1,116 @@
 import os
+import json
 import random
-
+from math import ceil
 
 from .truss import Truss
 from .plot  import TrussPlotter
 from .type  import MemberType, LinkType, GenerateMethod
-from .utils import GetPowerset, TrussNotStableError
+from .utils import GetPowerset, TrussNotStableError, PinNotEnoughError
 
 
+# For data augmentation:
+class TrussDataAugmenter:
+    @staticmethod
+    def IsTrussClass(trussData):
+        isTrussClass = isinstance(trussData, Truss)
+        if isTrussClass:
+            return isTrussClass, trussData.Serialize()
+        
+        return isTrussClass, trussData
+    
+    @staticmethod
+    def GetCentroid(jointDict):
+        n, sumXYZ = len(jointDict), [0., 0., 0.]
+        for jointData in jointDict.values():
+            sumXYZ[:] = [sumXYZ[i] + jointData[0][i] for i in range(3)]
+        
+        return [x / n for x in sumXYZ]
+    
+    @staticmethod
+    def GetStableMinNumPin(trussData):
+        return ceil((len(trussData['joint']) * 3 - len(trussData['member'])) / 3)
+
+class NoChange(TrussDataAugmenter):
+    def __call__(self, trussData):
+        return trussData
+
+
+class AddJointNoise(TrussDataAugmenter):
+    def __init__(self, noiseMeans=[0., 0., 0.], noiseStds=[1., 1., 1.]):
+        self.noiseMeans = noiseMeans
+        self.noiseStds  = noiseStds
+    
+    def __call__(self, trussData):
+        isTrussClass, _trussData = self.IsTrussClass(trussData)
+        jointDict = _trussData['joint']
+        for jointData in jointDict.values():
+            jointData[0][:] = [jointData[0][i] + random.gauss(self.noiseMeans[i], self.noiseStds[i]) for i in range(3)]
+        
+        if isTrussClass:
+            trussData.LoadFromJSON(data=_trussData, isOutputFile=trussData.isSolved)
+        
+        return trussData
+
+
+class MoveToCentroid(TrussDataAugmenter):
+    def __init__(self, randomeShiftRange=[0., 0.]):
+        self.randomeShiftRange = randomeShiftRange
+
+    def __call__(self, trussData):
+        isTrussClass, _trussData = self.IsTrussClass(trussData)
+        jointDict = _trussData['joint']
+        centroid  = self.GetCentroid(jointDict)
+        for jointData in jointDict.values():
+            jointData[0][:] = [jointData[0][i] - centroid[i] + random.uniform(*self.randomeShiftRange) for i in range(3)]
+        
+        if isTrussClass:
+            trussData.LoadFromJSON(data=_trussData, isOutputFile=trussData.isSolved)
+        
+        return trussData
+
+
+class RandomResetPin(TrussDataAugmenter):
+    def __init__(self, minNumPin=3, maxNumPinRatio=None):
+        if minNumPin < 3:
+            raise PinNotEnoughError("Number of pins must >= 3.")
+
+        self.minNumPin      = minNumPin
+        self.maxNumPinRatio = maxNumPinRatio
+    
+    def __call__(self, trussData):
+        isTrussClass, _trussData = self.IsTrussClass(trussData)
+        jointDict = _trussData['joint']
+        minNumPin = self.GetStableMinNumPin(_trussData) if self.minNumPin is None else max(self.minNumPin, self.GetStableMinNumPin(_trussData))
+        maxNumPin = len(jointDict) if self.maxNumPinRatio is None else int(self.maxNumPinRatio * len(jointDict))
+        print('\n', minNumPin, maxNumPin)
+        sampledJointIDs = set(random.sample(list(jointDict.keys()), k=random.choice(range(minNumPin, maxNumPin + 1))))
+        for jointID, jointData in jointDict.items():
+            if jointID in sampledJointIDs:
+                jointData[-1] = "PIN"
+            else:
+                jointData[-1] = "NO"
+        
+        if isTrussClass:
+            trussData.LoadFromJSON(data=_trussData, isOutputFile=trussData.isSolved)
+        
+        return trussData
+
+class TrussDataAugmenterList:
+    def __init__(self, *augmenters):
+        self.augmenters = augmenters
+    
+    def __call__(self, trussData):
+        for augmenter in self.augmenters:
+            trussData = augmenter(trussData)
+        
+        return trussData
+
+
+# Generate cube truss:
 class CubeTruss:
     def __init__(self, coordinate, usedDict={}):
         self.__coord = coordinate
-        self.__links = []
         self.jointIDs = [None for _ in range(8)]
         self.GenerateNew(usedDict)
 
@@ -43,43 +142,41 @@ class CubeTruss:
                 self[i]          = maxJointID
                 usedDict[joint] = maxJointID
     
-    def LinkMember(self, linkType=LinkType.Random):
+    def LinkMember(self, linkType, hasLinked):
 
-        def SampleLink(links, choices, linkType):
+        def SampleLink(links, choices, linkType, hasLinked):
             choice = choices[random.sample(range(len(choices)), k=1)[0]] if linkType == LinkType.Random else choices[linkType]
             if list(filter(lambda x: hasattr(x, '__iter__'), choice)):
-                links.extend(choice)
+                for c in choice:
+                    if (link := tuple(c)) not in hasLinked:
+                        links.append(c)
+                        hasLinked.add(link)
             else:
-                links.append(choice)
+                if (link := tuple(choice)) not in hasLinked:
+                    links.append(choice)
+                    hasLinked.add(link)
 
-        links = self.__links
-        links.clear()
+        links = []
 
         # Middle:
-        SampleLink(links, ([self[0], self[5]], [self[1], self[4]], [[self[0], self[5]], [self[1], self[4]]]), linkType)
-        SampleLink(links, ([self[1], self[7]], [self[3], self[5]], [[self[1], self[7]], [self[3], self[5]]]), linkType)
-        SampleLink(links, ([self[3], self[6]], [self[2], self[7]], [[self[3], self[6]], [self[2], self[7]]]), linkType)
-        SampleLink(links, ([self[2], self[4]], [self[0], self[6]], [[self[2], self[4]], [self[0], self[6]]]), linkType)
-        SampleLink(links, ([self[4], self[7]], [self[5], self[6]], [[self[4], self[7]], [self[5], self[6]]]), linkType)
-        SampleLink(links, ([self[0], self[3]], [self[1], self[2]], [[self[0], self[3]], [self[1], self[2]]]), linkType)
+        SampleLink(links, ([self[0], self[5]], [self[1], self[4]], [[self[0], self[5]], [self[1], self[4]]]), linkType, hasLinked)
+        SampleLink(links, ([self[1], self[7]], [self[3], self[5]], [[self[1], self[7]], [self[3], self[5]]]), linkType, hasLinked)
+        SampleLink(links, ([self[3], self[6]], [self[2], self[7]], [[self[3], self[6]], [self[2], self[7]]]), linkType, hasLinked)
+        SampleLink(links, ([self[2], self[4]], [self[0], self[6]], [[self[2], self[4]], [self[0], self[6]]]), linkType, hasLinked)
+        SampleLink(links, ([self[4], self[7]], [self[5], self[6]], [[self[4], self[7]], [self[5], self[6]]]), linkType, hasLinked)
+        SampleLink(links, ([self[0], self[3]], [self[1], self[2]], [[self[0], self[3]], [self[1], self[2]]]), linkType, hasLinked)
 
-        # Top cycle:
-        links.append([self[4], self[5]])
-        links.append([self[5], self[7]])
-        links.append([self[6], self[7]])
-        links.append([self[4], self[6]])
-
-        # Bottom cycle:
-        links.append([self[0], self[1]])
-        links.append([self[0], self[2]])
-        links.append([self[1], self[3]])
-        links.append([self[2], self[3]])
-
-        # Side cycle:
-        links.append([self[0], self[4]])
-        links.append([self[1], self[5]])
-        links.append([self[2], self[6]])
-        links.append([self[3], self[7]])
+        for choice in [
+                # Top cycle:
+                [self[4], self[5]], [self[5], self[7]], [self[6], self[7]], [self[4], self[6]],
+                # Bottom cycle:
+                [self[0], self[1]], [self[0], self[2]], [self[1], self[3]], [self[2], self[3]],
+                # Side cycle:
+                [self[0], self[4]], [self[1], self[5]], [self[2], self[6]], [self[3], self[7]]
+        ]:
+            if (link := tuple(choice)) not in hasLinked: 
+                links.append(choice)
+                hasLinked.add(link)
 
         return links
 
@@ -153,9 +250,9 @@ class CubeGrid:
         joints = self.ProcessPinSupport(isAddPinSupport, length)
 
         # Members:
-        members = []
+        members, hasLinked = [], set()
         for cube in cubes:
-            links = cube.LinkMember(linkType)
+            links = cube.LinkMember(linkType, hasLinked)
             members.extend([[link, memberType] for link in links])
         
         members = {i: member for i, member in enumerate(members)}
@@ -166,7 +263,7 @@ class CubeGrid:
 
 def GenerateRandomCubeTrusses(gridRange=(5, 5, 5), numCubeRange=(5, 5), numEachRange=(1, 10), lengthRange=(50, 150), forceRange=[(-30000, 30000), (-30000, 30000), (-30000, 30000)], 
                               nForceRange=None, method=GenerateMethod.Random, linkType=LinkType.Random, memberTypes=[[1., 1e7, 0.1]], isAddPinSupport=True, isDoStructuralAnalysis=False, 
-                              isPlotTruss=False, isPrintMessage=True, saveFolder=None):
+                              isPlotTruss=False, isPrintMessage=True, saveFolder=None, augmenter=NoChange(), seed=None):
     
     def AssignRandomForces(trussData, forceRange, nForceRange):
         notSupportJoints = [jointID for jointID, (_, supportType) in trussData['joint'].items() if supportType == "NO"]
@@ -188,6 +285,9 @@ def GenerateRandomCubeTrusses(gridRange=(5, 5, 5), numCubeRange=(5, 5), numEachR
         
         return trussData
 
+    if seed is not None:
+        random.seed(seed)
+    
     trussList = []
     for numCube in range(numCubeRange[0], numCubeRange[1] + 1):
         for i in range(numEachRange[0], numEachRange[1] + 1):
@@ -199,9 +299,9 @@ def GenerateRandomCubeTrusses(gridRange=(5, 5, 5), numCubeRange=(5, 5), numEachR
                     cubeGrid  = CubeGrid(*gridRange)
                     cubes     = cubeGrid.RandomGenerateCubes(numCube, method)
                     trussData = cubeGrid.CubesToTruss(cubes, [random.uniform(*lengthRange) for _ in range(3)], isAddPinSupport, linkType)
-                    AssignRandomForces(trussData, forceRange, nForceRange)
-                    AssignRandomMemberType(trussData, memberTypes)
-                    truss = Truss(3).LoadFromJSON(data=trussData)
+                    AssignRandomForces      (trussData, forceRange, nForceRange)
+                    AssignRandomMemberType  (trussData, memberTypes)
+                    truss = Truss(3).LoadFromJSON(data=augmenter(trussData))
 
                     if isDoStructuralAnalysis:
                         truss.Solve()
@@ -224,3 +324,23 @@ def GenerateRandomCubeTrusses(gridRange=(5, 5, 5), numCubeRange=(5, 5), numEachR
                     if isPrintMessage: print("\nTruss is not stable. Re-genrating...\n")
 
     return trussList
+
+
+def CheckNoRepeat(jsonFile):
+    with open(jsonFile, 'r') as f:
+        data = json.load(f)
+    
+    jointDict = data['joint']
+    for i in jointDict:
+        for j in jointDict:
+            if i == j: continue
+            d = sum(abs(di - dj) for di, dj in zip(jointDict[i][0], jointDict[j][0]))
+            if d < 1e-5:
+                print("Joint position repeat:", i, j)
+    
+    memberDict = data['member']
+    for i in memberDict:
+        for j in memberDict:
+            if i == j: continue
+            if not (set(memberDict[i][0]) - set(memberDict[j][0])):
+                print("Member connection repeat:", i, j)

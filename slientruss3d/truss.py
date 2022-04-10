@@ -157,7 +157,11 @@ class Truss:
     
     @property
     def isStable(self):
-        return self.nMember + self.nResistance >= self.nJoint * self.__dim
+        if self.__dim == 2:
+            return self.nMember + self.nResistance >= self.nJoint * self.__dim
+        
+        nResistance = self.nResistance
+        return (nResistance >= 6) and (self.nMember + nResistance >= self.nJoint * self.__dim)
     
     @property
     def weight(self):

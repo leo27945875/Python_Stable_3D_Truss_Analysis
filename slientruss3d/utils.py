@@ -64,6 +64,7 @@ class OnlyOneMemberTypeError        (Exception): pass
 class MinStressTooLargeError        (Exception): pass
 class MinDisplaceTooLargeError      (Exception): pass
 class NotAllBeSetError              (Exception): pass
+class PinNotEnoughError             (Exception): pass
 
 
 # ----------------------------- Truss -----------------------------

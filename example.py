@@ -207,10 +207,10 @@ def TestGenerateCubeTruss():
     # Some parameters for your generated cube truss:
     GRID_RANGE                = (5, 5, 5)
     CUBE_NUMBER               = 4
-    GENERATE_NUMBER           = 3
+    GENERATE_NUMBER           = 100
     EDGE_LENGTH_RANGE         = (20, 60)
     EXTERNAL_FORCE_RANGE      = [(-1000, 1000), (-1000, 1000), (-1000, 1000)]
-    IS_DO_STRUCTURAL_ANALYSIS = False
+    IS_DO_STRUCTURAL_ANALYSIS = True
     IS_PLOT_GENERATED_TRUSS   = True
     SAVE_FOLDER               = './'
 
@@ -222,7 +222,8 @@ def TestGenerateCubeTruss():
                                           forceRange=EXTERNAL_FORCE_RANGE,
                                           isDoStructuralAnalysis=IS_DO_STRUCTURAL_ANALYSIS,
                                           isPlotTruss=IS_PLOT_GENERATED_TRUSS,
-                                          saveFolder=SAVE_FOLDER)
+                                          saveFolder=SAVE_FOLDER,
+                                          seed=42)
     return trussList
 
 
