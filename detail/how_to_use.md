@@ -253,7 +253,7 @@ Truss.IsInternalStressAllowed(limit, isGetSumViolation=False, isGetSumNonViolati
 
 - **`limit`** : Allowable stress.
 - **`isGetSumViolation`** : Sum of the exceeding quantities of members that violate allowable stress.
-- **`isGetSumNonViolation`** : Sum of the stresses of members that don't violate allowable stress. If it's True, then the length of return is 3, otherwise 2.
+- **`isGetSumNonViolation`** : Sum of differences between allowable stress and the stresses of members that don't violate allowable stress. If it's True, then the length of return is 3, otherwise 2.
 
 &ensp; If the parameter `isGetSumViolation` is True, then the method returns
 
@@ -270,7 +270,7 @@ Truss.IsDisplacementAllowed(limit, isGetSumViolation=False, isGetSumNonViolation
 
 - **`limit`** : Allowable displacement.
 - **`isGetSumViolation`** : Sum of the exceeding quantities of joints that violate allowable displacement.
-- **`isGetSumNonViolation`** : Sum of the displacements of members that don't violate allowable displacement. If it's True, then the length of return is 3, otherwise 2.
+- **`isGetSumNonViolation`** : Sum of differences between allowable displacement and the displacements of joints that don't violate allowable displacement. If it's True, then the length of return is 3, otherwise 2.
 
 &ensp; If the parameter `isGetSumViolation` is True, then the method returns
 
