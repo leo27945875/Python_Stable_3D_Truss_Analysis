@@ -31,10 +31,12 @@ GenerateRandomCubeTrusses(gridRange              = (5, 5, 5),
                           linkType               = LinkType.Random,
                           memberTypes            = [[1., 1e7, 0.1]],
                           isAddPinSupport        = True,
+                          isAllowParallel        = True,
                           isDoStructuralAnalysis = False,
                           isPlotTruss            = False,
                           isPrintMessage         = True,
-                          saveFolder             = None) -> list[Truss]
+                          saveFolder             = None,
+                          seed                   = None  ) -> list[Truss]
 
 ```
 
@@ -47,10 +49,13 @@ GenerateRandomCubeTrusses(gridRange              = (5, 5, 5),
 - **`method`** : Algorithm to decide positions to generate cube-like truss blocks.
 - **`linkType`** : Link type of faces of every cube-like truss block.
 - **`memberTypes`** : The member types in the list will be randomly assigned to each member. (list[list] or list[slientruss3d.type.MemberType])
+- **`isAddPinSupport`** : Whether to add pin supports in the generated truss or not.
+- **`isAllowParallel`** : Whether to allow parallel members in the generated truss or not.
 - **`isDoStructuralAnalysis`** : Whether to do structral analysis after each truss be generated.
 - **`isPlotTruss`** : Whether to plot the truss after each truss be generated.
 - **`isPrintMessage`** : Whether to print the message for the generating progress on the screen.
 - **`saveFolder`** : Folder to save the generated result (in JSON file). If it's `None`, this method won't save the generated result to JSON file.
+- **`seed`** : Set random seed.
 
 <br/>
 
