@@ -30,17 +30,17 @@ class TrussBipartiteDataCreator:
         row, col = cooMat.row.tolist(), cooMat.col.tolist()
         return [row, col]
 
-    def FromJSON(self, trussJSONFile, trussDim, forceScale, displaceScale, positionScale, usedMemberTypes, fixedMemberType=MemberType(1., 1e7, 0.1), isOutputFile=False):
+    def FromJSON(self, trussJSONFile, trussDim, forceScale, displaceScale, positionScale, usedMemberTypes, fixedMemberType=MemberType(1., 1e7, 0.1), isUseFixed=True, isOutputFile=False):
         truss = Truss(trussDim).LoadFromJSON(trussJSONFile, isOutputFile=isOutputFile)
-        fixedInternals, fixedDisplaces = self.GetFixedInternalAndDisplace(truss, fixedMemberType)
+        fixedInternals, fixedDisplaces = self.GetFixedInternalAndDisplace(truss, fixedMemberType) if isUseFixed else (None, None)
         self.truss    , self.source    = truss, trussJSONFile
         return self.CreateGraphData(truss, 
                                     self.CreateJointData (truss, forceScale, positionScale, displaceScale , fixedDisplaces ), 
                                     self.CreateMemberData(truss, forceScale, positionScale, fixedInternals, usedMemberTypes), 
                                     *self.CreateEdges(truss))
     
-    def FromTruss(self, trussID, truss, forceScale, displaceScale, positionScale, usedMemberTypes, fixedMemberType=MemberType(1., 1e7, 0.1)):
-        fixedInternals, fixedDisplaces = self.GetFixedInternalAndDisplace(truss, fixedMemberType)
+    def FromTruss(self, trussID, truss, forceScale, displaceScale, positionScale, usedMemberTypes, fixedMemberType=MemberType(1., 1e7, 0.1), isUseFixed=True):
+        fixedInternals, fixedDisplaces = self.GetFixedInternalAndDisplace(truss, fixedMemberType) if isUseFixed else (None, None)
         self.truss    , self.source    = truss, trussID
         return self.CreateGraphData(truss, 
                                     self.CreateJointData (truss, forceScale, positionScale, displaceScale , fixedDisplaces ), 
@@ -56,12 +56,19 @@ class TrussBipartiteDataCreator:
             joints, forces, dim, jointData = truss.GetJoints(), truss.GetForces(), truss.dim, {'x': [], 'y': []}
             for jointID, (position, supportType) in joints.items():
                 # X data:
-                jointData['x'].append([
-                    *([p / positionScale for p in position]),
-                    *([f / forceScale    for f in forces        [jointID]] if jointID in forces         else [0.] * dim),
-                    *([d / displaceScale for d in fixedDisplaces[jointID]] if jointID in fixedDisplaces else [0.] * dim),
-                    float(supportType != SupportType.NO)
-                ])
+                if fixedDisplaces is None:
+                    jointData['x'].append([
+                        *([p / positionScale for p in position]),
+                        *([f / forceScale    for f in forces[jointID]] if jointID in forces else [0.] * dim),
+                        float(supportType != SupportType.NO)
+                    ])
+                else:
+                    jointData['x'].append([
+                        *([p / positionScale for p in position]),
+                        *([f / forceScale    for f in forces        [jointID]] if jointID in forces         else [0.] * dim),
+                        *([d / displaceScale for d in fixedDisplaces[jointID]] if jointID in fixedDisplaces else [0.] * dim),
+                        float(supportType != SupportType.NO)
+                    ])
 
                 # Record a mapping which is from joint indexes in dataset to joint IDs in the truss:
                 self.jointIndexToID.append(jointID)
@@ -100,12 +107,19 @@ class TrussBipartiteDataCreator:
             for memberID, (jointID0, jointID1, member) in members.items():
                 # X data:
                 p0, p1 = joints[jointID0][0], joints[jointID1][0]
-                memberData['x'].append([
-                    *[p / positionScale for p in GetCenter(p0, p1)],
-                    *GetAngles(p0, p1),
-                    member.length / positionScale,
-                    (fixedInternals[memberID] / forceScale if memberID in fixedInternals else 0.)
-                ])
+                if fixedInternals is None:
+                    memberData['x'].append([
+                        *[p / positionScale for p in GetCenter(p0, p1)],
+                        *GetAngles(p0, p1),
+                        member.length / positionScale
+                    ])
+                else:
+                    memberData['x'].append([
+                        *[p / positionScale for p in GetCenter(p0, p1)],
+                        *GetAngles(p0, p1),
+                        member.length / positionScale,
+                        (fixedInternals[memberID] / forceScale if memberID in fixedInternals else 0.)
+                    ])
 
                 # Y data (for imiation learning):
                 memberData['y'].append([usedMemberTypes.index(member.memberType)])
