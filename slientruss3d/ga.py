@@ -222,10 +222,11 @@ class GA:
             pop = self.UpdatePop(pop, elitePop)
         
         # Print the message if GA early stopped:
-        if isEarlyStopping:
-            print('...Early stoping !')
-        else:
-            print("")
+        if isPrintMessage:
+            if isEarlyStopping:
+                print('...Early stoping !')
+            else:
+                print("")
         
         # Output the final result:
         minGene, minGeneInfo = self.GetBestFeasibleGene(pop, isEarlyStopping)
