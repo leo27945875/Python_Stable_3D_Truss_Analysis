@@ -15,40 +15,44 @@ class GA:
     """
     def __init__(
             self, 
-            truss           : Truss                     , 
-            memberTypeList  : list[MemberType]          , 
-            allowStress     : float            = 30000. , 
-            allowDisplace   : float            = 10.    , 
-            nIteration      : int              = None   , 
-            nPatience       : int              = 50     , 
-            nPop            : int              = 200    , 
-            nElite          : int              = 50     , 
-            pCrossover      : float            = 0.7    , 
-            pMutate         : float            = 0.1    , 
+            truss           : Truss                     ,
+            memberTypeList  : list[MemberType]          ,
+            allowStress     : float            = 30000. ,
+            allowDisplace   : float            = 10.    ,
+            nIteration      : int              = None   ,
+            nPatience       : int              = 50     ,
+            nPop            : int              = 200    ,
+            nElite          : int              = 50     ,
+            pCrossover      : float            = 0.7    ,
+            pMutate         : float            = 0.1    ,
             pOrigin         : float            = 0.1    ,
             isCheckWorst    : bool             = False
         ):
         # Population settings:
-        self.nPop             = nPop
-        self.nElite           = nElite
-        self.pCrossover       = pCrossover
-        self.pMutate          = pMutate
-        self.pOrigin          = pOrigin
-        self.pRandomGene      = 1. - pCrossover - pMutate - pOrigin
+        self.nPop          = nPop
+        self.nElite        = nElite
+        self.pCrossover    = pCrossover
+        self.pMutate       = pMutate
+        self.pOrigin       = pOrigin
+        self.pRandomGene   = 1. - pCrossover - pMutate - pOrigin
 
         # Iteration policy settings:
-        self.nIteration       = nIteration
-        self.nPatience        = nPatience
+        self.nIteration    = nIteration
+        self.nPatience     = nPatience
 
         # Truss settings:
-        self.truss            = truss
-        self.allowStress      = allowStress
-        self.allowDisplace    = allowDisplace
-        self.typeList         = memberTypeList
-        self.nMember          = self.truss.nMember
-        self.nType            = len(memberTypeList)
-        self.memberIDList     = self.truss.GetMemberIDs()
-        self.memberIDMap      = {typeID: memberID for typeID, memberID in enumerate(self.memberIDList)}
+        self.truss         = truss
+        self.allowStress   = allowStress
+        self.allowDisplace = allowDisplace
+        self.typeList      = memberTypeList
+        self.nMember       = self.truss.nMember
+        self.nType         = len(memberTypeList)
+        self.memberIDList  = self.truss.GetMemberIDs()
+        self.memberIDMap   = {typeID: memberID for typeID, memberID in enumerate(self.memberIDList)}
+
+        # Feasible record:
+        self.__lastFeasibleGene    = [None for _ in range(self.nMember)]
+        self.__lastFeasibleFitness = None
 
         # Rationality:
         self.CheckRatioality(isCheckWorst)
@@ -57,6 +61,12 @@ class GA:
     def memberTypeWeightedInitProb(self):
         return [1. for _ in self.typeList]
     
+    def _RecordFeasible(self, evaluatedPop, isSorted=False):
+        for gene, (fitness, isInternalAllowed, isDisplaceAllowed) in evaluatedPop:
+            if isInternalAllowed and isDisplaceAllowed and (self.__lastFeasibleFitness is None or fitness < self.__lastFeasibleFitness):
+                self.__lastFeasibleGene[:], self.__lastFeasibleFitness = gene, fitness
+                if isSorted: break
+
     def CheckRatioality(self, isCheckWorst):
         truss, allowStress, allowDisplace  = self.truss, self.allowStress, self.allowDisplace
 
@@ -97,12 +107,18 @@ class GA:
             if not truss.IsDisplacementAllowed(allowDisplace)[0]:
                 raise MinDisplaceTooLargeError("Minimum displacement is too large. Need other member types which have more [E*A] value.")
     
-    def GetBestFeasibleGene(self, pop):
+    def GetBestFeasibleGene(self, pop, isDirectlyReturnRecord=False):
+        if isDirectlyReturnRecord and self.__lastFeasibleFitness is not None:
+            return self.__lastFeasibleGene, (self.__lastFeasibleFitness, True, True)
+
         minFitness, minGene, isMinInternalAllowed, isMinDisplaceAllowed = INF, None, False, False
         for gene in pop:
             fitness, isInternalAllowed, isDisplaceAllowed = self.GetFitness(gene)
             if isInternalAllowed and isDisplaceAllowed and fitness < minFitness:
                 minFitness, minGene, isMinInternalAllowed, isMinDisplaceAllowed = fitness, gene, isInternalAllowed, isDisplaceAllowed
+        
+        if minGene is None and self.__lastFeasibleFitness is not None:
+            return self.__lastFeasibleGene, (self.__lastFeasibleFitness, True, True)
         
         return minGene, (minFitness, isMinInternalAllowed, isMinDisplaceAllowed)
 
@@ -136,10 +152,11 @@ class GA:
         nType, nMember, typeChosenProbs = self.nType, self.nMember, self.memberTypeWeightedInitProb
         return [random.choices(range(nType), k=nMember, weights=typeChosenProbs) for _ in range(self.nPop)]
     
-    def Select(self, pop):
+    def Select(self, pop, isRecordFeasible=False):
         fitnessFunc = self.GetFitness
         pop      = sorted([[gene, fitnessFunc(gene)] for gene in pop], key=lambda x: x[1][0])
         elitePop = [gene for gene, _ in pop[:self.nElite]]
+        if isRecordFeasible: self._RecordFeasible(pop, isSorted=True)
         return elitePop, pop[0][1]
     
     def Crossover(self, gene0, gene1):
@@ -183,7 +200,7 @@ class GA:
         for i in (range(nIteration) if nIteration is not None else InfinteLoop()):
             
             # Select elites:
-            elitePop, (minFitness, isInternalAllowed, isDisplaceAllowed) = self.Select(pop)
+            elitePop, (minFitness, isInternalAllowed, isDisplaceAllowed) = self.Select(pop, True)
 
             # Early stopping:
             if minFitness < bestFitness:
@@ -204,9 +221,17 @@ class GA:
             # Population update:
             pop = self.UpdatePop(pop, elitePop)
         
-        # Print and output the final result:
-        minGene, minGeneInfo = self.GetBestFeasibleGene(pop)
-        if isPrintMessage:
-            print(f"\rIteration: {i + 1 :6d}, nWaitBestIter: {nWaitBestIter :3d}, minFitness: {minFitness :10.4f}, isInternalAllowed: {str(isInternalAllowed) :5s}, isDisplaceAllowed: {str(isDisplaceAllowed) :5s} {'...EarlyStopping !' if isEarlyStopping else ''}")
+        # Print the message if GA early stopped:
+        if isEarlyStopping:
+            print('...Early stoping !')
+        else:
+            print("")
+        
+        # Output the final result:
+        minGene, minGeneInfo = self.GetBestFeasibleGene(pop, isEarlyStopping)
+        if minGene is None:
+            minGene = pop[0]
+            minGeneInfo = self.GetFitness(minGene)
+            if isPrintMessage: print('-' * 50 + '\n' + "Warning: Cannot find any feasible result, so only return the gene which has lowest fitness." + '\n' + '-' * 50)
         
         return minGene, minGeneInfo, pop, bestFitnessHistory
