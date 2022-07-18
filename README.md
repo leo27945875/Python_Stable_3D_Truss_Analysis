@@ -99,7 +99,7 @@ RAM: 8GB DDR4 * 2
 
 ### An important API change after v1.3.25 !
 
-After slientruss3d 1.3.25, the method `Truss.Solve()` will return `None` instead of the result of structural analysis. If you want to get the result of structural analysis, please use other getters defined in Truss object such as:
+After slientruss3d 1.3.25, the method [`Truss.Solve()`](./detail/how_to_use.md#Do-structural-analysis) will return `None` instead of the result of structural analysis. If you want to get the result of structural analysis, please use other getters defined in Truss object such as:
 
 ```python
 # Get result of structural analysis:
