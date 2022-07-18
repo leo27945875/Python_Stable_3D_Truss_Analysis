@@ -244,6 +244,11 @@ class Truss:
         member = self.__members[memberID]
         return member[0], member[1]
     
+    def GetMemberFromConnect(self, connect):
+        for jointID0, jointID1, member in self.__members.values():
+            if (jointID0 == connect[0]) and (jointID1 == connect[1]):
+                return member
+    
     def GetForce(self, jointID):
         return self.__forces[jointID]
     
@@ -357,7 +362,6 @@ class Truss:
         
         # Return results:
         self.__isSolved = True
-        return self.__displace, self.__internal, self.__external
     
     # Serialize this truss:
     def Serialize(self):

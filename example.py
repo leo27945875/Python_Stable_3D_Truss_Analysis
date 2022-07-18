@@ -102,7 +102,7 @@ def TestExample():
         truss.AddNewMember(i, jointID0, jointID1, memberType)
 
     # Do direct stiffness method:
-    displace, internal, external = truss.Solve()
+    truss.Solve()
 
     # Dump all the structural analysis results into a .json file:
     truss.DumpIntoJSON(TEST_OUTPUT_FILE)
@@ -116,7 +116,9 @@ def TestExample():
                      pointScale=POINT_SIZE_SCALE_FACTOR,
                      arrowScale=ARROW_SIZE_SCALE_FACTOR).Plot(IS_SAVE_PLOT, TEST_PLOT_SAVE_PATH)
     
-    return displace, internal, external
+    # Get result of structural analysis:
+    displace, stress, resistance = truss.GetDisplacements(), truss.GetInternalStresses(), truss.GetResistances()
+    return displace, stress, resistance
 
 
 def TestLoadFromJSON():
@@ -139,7 +141,7 @@ def TestLoadFromJSON():
     # Plot layout settings:
     IS_EQUAL_AXIS           = True   # Whether to use actual aspect ratio in the truss figure or not.
     MAX_SCALED_DISPLACEMENT = 10     # Scale the max value of all dimensions of displacements.
-    MAX_SCALED_FORCE        = 50     # Scale the max value of all dimensions of force arrows.
+    MAX_SCALED_FORCE        = 100     # Scale the max value of all dimensions of force arrows.
     POINT_SIZE_SCALE_FACTOR = 1      # Scale the default size of joint point in the truss figure.
     ARROW_SIZE_SCALE_FACTOR = 1      # Scale the default size of force arrow in the truss figure.
     # ----------------------------------------------------------
@@ -151,7 +153,7 @@ def TestLoadFromJSON():
     truss.LoadFromJSON(TEST_INPUT_FILE)
 
     # Do direct stiffness method:
-    displace, internal, external = truss.Solve()
+    truss.Solve()
 
     # Dump all the structural analysis results into a .json file:
     truss.DumpIntoJSON(TEST_OUTPUT_FILE)
@@ -165,7 +167,9 @@ def TestLoadFromJSON():
                      pointScale=POINT_SIZE_SCALE_FACTOR,
                      arrowScale=ARROW_SIZE_SCALE_FACTOR).Plot(IS_SAVE_PLOT, TEST_PLOT_SAVE_PATH)
     
-    return displace, internal, external
+    # Get result of structural analysis:
+    displace, stress, resistance = truss.GetDisplacements(), truss.GetInternalStresses(), truss.GetResistances()
+    return displace, stress, resistance
 
 
 def TestGA():
@@ -230,8 +234,8 @@ def TestGenerateCubeTruss():
 if __name__ == '__main__':
     # TestTimeConsuming()
     # TestExample()
-    # TestLoadFromJSON()
+    TestLoadFromJSON()
     # TestPlot()
     # TestGA()
-    TestGenerateCubeTruss()
+    # TestGenerateCubeTruss()
     

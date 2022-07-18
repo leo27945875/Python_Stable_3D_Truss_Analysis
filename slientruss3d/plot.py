@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
+from .truss import Truss
 from .utils import Arrow2D, Arrow3D, IsZero, IsZeroVector, MinNorm, SetAxesEqual
 from .type import SupportType
 
@@ -8,7 +9,7 @@ from .type import SupportType
 plt.style.use("seaborn")
 
 class TrussPlotter:
-    def __init__(self, truss, isDisplaceScale=True, isForceScale=True, isEqualAxis=False, isPlotStress=True,
+    def __init__(self, truss: Truss, isDisplaceScale=True, isForceScale=True, isEqualAxis=False, isPlotStress=True,
                  maxScaledDisplace=5, maxScaledForce=5, pointScale=1.0, arrowScale=1.0, figsize=(10, 10)):
         self.truss           = truss
         self.isDisplaceScale = isDisplaceScale
@@ -80,11 +81,11 @@ class TrussPlotter:
                     force = externals.get(jointID, np.zeros([dim])) - force
                     if not IsZeroVector(force):
                         arrowEndR = position + MinNorm(force * externalScale, self.maxForce * 0.3)
-                        ax.add_artist(arrowClass(position, arrowEndR, color='green'     , arrowstyle="->", mutation_scale=20 * self.arrowScale, lw=3 * self.arrowScale))
+                        ax.add_artist(arrowClass(position, arrowEndR, color='green', arrowstyle="->", mutation_scale=20 * self.arrowScale, lw=3 * self.arrowScale))
 
-                # Check the max and min position value of 2D force arrows: 
-                if dim == 2:
-                    maxArrowPos, minArrowPos = np.array([maxArrowPos, arrowEnd]).max(axis=0), np.array([minArrowPos, arrowEnd]).min(axis=0)
+            # Check the max and min position value of 2D force arrows: 
+            if (dim == 2) and (jointID in externals):
+                maxArrowPos, minArrowPos = np.array([maxArrowPos, arrowEnd]).max(axis=0), np.array([minArrowPos, arrowEnd]).min(axis=0)
 
         # Plot internal forces and members:
         if isSolved:

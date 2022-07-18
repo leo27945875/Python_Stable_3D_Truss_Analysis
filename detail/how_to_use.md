@@ -16,7 +16,6 @@ from slientruss3d.type  import SupportType, MemberType
 def TestExample():
     # -------------------- Global variables --------------------
     TEST_OUTPUT_FILE    = f"./test_output.json"
-    TEST_PLOT_SAVE_PATH = f"./test_plot.png"
     TRUSS_DIMENSION     = 3
     # ----------------------------------------------------------
 
@@ -41,12 +40,14 @@ def TestExample():
         truss.AddNewMember(i, jointID0, jointID1, memberType)
 
     # Do direct stiffness method:
-    displace, internal, external = truss.Solve()
+    truss.Solve()
 
     # Dump all the structural analysis results into a .json file:
     truss.DumpIntoJSON(TEST_OUTPUT_FILE)
     
-    return displace, internal, external
+    # Get result of structural analysis:
+    displace, stress, resistance = truss.GetDisplacements(), truss.GetInternalStresses(), truss.GetResistances()
+    return displace, stress, resistance
 
 ```
 

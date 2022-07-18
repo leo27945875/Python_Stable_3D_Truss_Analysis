@@ -96,7 +96,7 @@ class RandomResetPin(TrussDataAugmenter):
         
         return trussData
 
-class TrussDataAugmenterList:
+class TrussDataAugmenterList(TrussDataAugmenter):
     def __init__(self, *augmenters):
         self.augmenters = augmenters
     
