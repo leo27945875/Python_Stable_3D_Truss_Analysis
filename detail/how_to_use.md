@@ -150,7 +150,7 @@ Truss.GetKMatrix() -> numpy.array
 ### Do structural analysis
 
 ```python
-Truss.Solve() -> tuple[dict[int, numpy.array], dict[int, float], dict[int, numpy.array]]
+Truss.Solve() -> None
 ```
 
 - Do the structral analysis of your truss by `direct stiffness method`. After that, all the `internal force (not stress!)` of each member, `displacement` and `total force` at each joint will solved and stored in the Truss object. You could get them with some getters defined in Truss.
