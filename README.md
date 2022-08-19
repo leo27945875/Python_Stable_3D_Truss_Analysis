@@ -102,13 +102,13 @@ RAM: 8GB DDR4 * 2
 
 ### New feature in v2.0.0 update !
 
-- _**Important API adjustment**_ : We simplified the JSON format in slientruss3d, see the details in [Format of JSON](./detail/combine_with_JSON.md#Format-of-JSON). You can use the `v1_to_v2.py` module in the root folder to convert the old JSON format to the new one rapidly.
+- _**Important API adjustment**_ : We `simplified the JSON format` in slientruss3d, see the details in [Format of JSON](./detail/combine_with_JSON.md#Format-of-JSON). You can use the `v1_to_v2.py` module in the root folder to convert the old JSON format to the new one rapidly.
 
 - _**Data Augmentation**_ : You can use some new method in **`slientruss3d.generate`** module to do data augmentation to generated cube-like trusses ! See more details in [Data Augmentation](./detail/gen_truss.md#data-augmentation).  For example:  
 
 <p align="center">
-    <img src="./detail/figure/before_aug.png" alt="drawing" width="300"/>
-    <img src="./detail/figure/after_aug.png" alt="drawing" width="300"/>
+    <img src="./detail/figure/before_aug.png" alt="drawing" width="400"/>
+    <img src="./detail/figure/after_aug.png" alt="drawing" width="400"/>
 </p>
 
 - _**Graph Deep Learning**_ : With the increasing importance of deep learning in the field of truss design, we also provide a solution to let our users convert the `Truss` object to the data structure of [`Pytorch-Geometric`](https://github.com/pyg-team/pytorch_geometric) conveniently. See the details in [Convert Truss to Pytorch-Geometric HeteroData](./detail/to_PyG#convert-truss-to-pytorch-geometric-heterodata).
