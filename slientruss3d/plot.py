@@ -71,6 +71,7 @@ class TrussPlotter:
             else:
                 if jointID not in forcedIDs:
                     if jointID in externals:
+                        # It means that this joint is a support:
                         arrowEnd = position + MinNorm(externals[jointID] * externalScale, self.maxForce * 0.3)
                         ax.add_artist(arrowClass(position, arrowEnd, color='green', arrowstyle="->", mutation_scale=20 * self.arrowScale, lw=3 * self.arrowScale))
                 else:

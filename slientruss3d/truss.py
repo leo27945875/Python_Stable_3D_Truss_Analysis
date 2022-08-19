@@ -171,8 +171,8 @@ class Truss:
     def isSolved(self):
         return self.__isSolved
     
-    def AddNewJoint(self, jointID, vector, supportType=SupportType.NO):
-        self.__joints[jointID] = (tuple(float(vector[i]) for i in range(self.__dim)), supportType)
+    def AddNewJoint(self, vector, supportType=SupportType.NO):
+        self.__joints[len(self.__joints)] = (tuple(float(vector[i]) for i in range(self.__dim)), supportType)
     
     def AddExternalForce(self, jointID, vector):
         if jointID not in self.__joints:
@@ -181,10 +181,10 @@ class Truss:
         if not IsZeroVector(vector):
             self.__forces[jointID] = tuple(float(vector[i]) for i in range(self.__dim))
         
-    def AddNewMember(self, memberID, jointID0, jointID1, memberType):
-        self.__members[memberID] = (jointID0, jointID1, Member(self.__joints[jointID0][0], 
-                                                               self.__joints[jointID1][0],
-                                                               self.__dim, memberType))
+    def AddNewMember(self, jointID0, jointID1, memberType):
+        self.__members[len(self.__members)] = (jointID0, jointID1, Member(self.__joints[jointID0][0], 
+                                                                          self.__joints[jointID1][0],
+                                                                          self.__dim, memberType))
     def SetJointPosition(self, jointID, position):
         self.__joints[jointID] = (position, self.__joints[jointID][-1])
         for jointID0, jointID1, member in self.__members.values():
@@ -252,23 +252,23 @@ class Truss:
     def GetForce(self, jointID):
         return self.__forces[jointID]
     
-    def GetJoints(self):
-        return self.__joints
+    def GetJoints(self, isProtect=True):
+        return copy.deepcopy(self.__joints) if isProtect else self.__joints
     
-    def GetMembers(self):
-        return self.__members
+    def GetMembers(self, isProtect=True):
+        return copy.deepcopy(self.__members) if isProtect else self.__members
     
-    def GetForces(self):
-        return self.__forces
+    def GetForces(self, isProtect=True):
+        return copy.deepcopy(self.__forces) if isProtect else self.__forces
     
-    def GetDisplacements(self):
-        return copy.deepcopy(self.__displace)
+    def GetDisplacements(self, isProtect=True):
+        return copy.deepcopy(self.__displace) if isProtect else self.__displace
     
-    def GetExternalForces(self):
-        return copy.deepcopy(self.__external) if self.__isSolved else self.__forces
+    def GetExternalForces(self, isProtect=True):
+        return copy.deepcopy(self.__external) if isProtect else self.__external
     
-    def GetInternalForces(self):
-        return copy.deepcopy(self.__internal)
+    def GetInternalForces(self, isProtect=True):
+        return copy.deepcopy(self.__internal) if isProtect else self.__internal
     
     def GetInternalStresses(self):
         if self.__internal is not None:
@@ -366,32 +366,34 @@ class Truss:
     # Serialize this truss:
     def Serialize(self):
         data = {
-            'joint'   : {}, 
-            'force'   : {},
-            'member'  : {},
-            'displace': {},
-            'external': {},
-            'internal': {},
-            'weight'  : self.weight
+            'joint'   : [None for _ in self.__joints  ], 
+            'force'   : [None for _ in self.__forces  ],
+            'member'  : [None for _ in self.__members ]
         }
+
         for jointID, (vector, supportType) in self.__joints.items():
-            data["joint"   ][str(jointID) ] = [list(vector), SupportType.GetFromType(supportType)]
-        
-        for jointID, vector in self.__forces.items():
-            data["force"   ][str(jointID) ] = list(vector)
+            data["joint"][jointID ] = [list(vector), SupportType.GetFromType(supportType)]
         
         for memberID, (jointID0, jointI1, member) in self.__members.items():
-            data['member'  ][str(memberID)] = [[jointID0, jointI1], member.memberType.Serialize()]
+            data["member"][memberID] = [[jointID0, jointI1], member.memberType.Serialize()]
         
-        if self.__isSolved:
-            for jointID, vector in self.__displace.items():
-                data['displace'][str(jointID) ] = list(vector)
-            
-            for jointID, vector in self.__external.items():
-                data['external'][str(jointID) ] = list(vector)
+        for i, (jointID, vector) in enumerate(self.__forces.items()):
+            data["force"][i] = [jointID, list(vector)]
 
-            for memberID, force in self.__internal.items():
-                data['internal'][str(memberID)] = float(force)
+        if self.__isSolved:
+            data['displace'] = [None for _ in self.__displace]
+            data['external'] = [None for _ in self.__external]
+            data['internal'] = [None for _ in self.__internal]
+            data['weight'  ] = self.weight
+
+            for i, (jointID, vector) in enumerate(self.__displace.items()):
+                data["displace"][i] = [jointID, list(vector)]
+            
+            for i, (jointID, vector) in enumerate(self.__external.items()):
+                data["external"][i] = [jointID, list(vector)]
+
+            for i, (memberID, force) in enumerate(self.__internal.items()):
+                data["internal"][i] = [memberID, float(force)]
         
         return data
     
@@ -401,20 +403,20 @@ class Truss:
             with open(path, 'r', encoding='utf-8') as f:
                 data = json.load(f)
         
-        for jointID, (vector, supportType) in data['joint'].items():
-            self.AddNewJoint(int(jointID), vector, SupportType.GetFromString(supportType))
+        for vector, supportType in data['joint']:
+            self.AddNewJoint(vector, SupportType.GetFromString(supportType))
         
-        for jointID, vector in data['force'].items():
-            self.AddExternalForce(int(jointID), vector)
+        for jointID, vector in data['force']:
+            self.AddExternalForce(jointID, vector)
         
-        for memberID, ([jointID0, jointID1], memberType) in data['member'].items():
-            self.AddNewMember(int(memberID), jointID0, jointID1, MemberType(*memberType))
+        for [jointID0, jointID1], memberType in data['member']:
+            self.AddNewMember(jointID0, jointID1, MemberType(*memberType))
 
         if isOutputFile:
             self.__isSolved = True
-            self.__displace = {int(jointID) : np.array(vector) for jointID , vector in data['displace'].items()}
-            self.__external = {int(jointID) : np.array(vector) for jointID , vector in data['external'].items()}
-            self.__internal = {int(memberID): float(force)     for memberID, force  in data['internal'].items()}
+            self.__displace = {jointID : np.array(vector) for jointID , vector in data['displace']}
+            self.__external = {jointID : np.array(vector) for jointID , vector in data['external']}
+            self.__internal = {memberID: float(force)     for memberID, force  in data['internal']}
         
         return self
  

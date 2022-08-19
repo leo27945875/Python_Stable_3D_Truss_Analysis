@@ -30,14 +30,14 @@ def TestExample():
     memberType = MemberType(1, 1e7, 1)
 
     # Read data in this [.py]:
-    for i, (joint, support) in enumerate(zip(joints, supports)):
-        truss.AddNewJoint(i, joint, support)
+    for joint, support in zip(joints, supports):
+        truss.AddNewJoint(joint, support)
         
-    for i, force in forces:
-        truss.AddExternalForce(i, force)
+    for jointID, force in forces:
+        truss.AddExternalForce(jointID, force)
     
-    for i, (jointID0, jointID1) in enumerate(members):
-        truss.AddNewMember(i, jointID0, jointID1, memberType)
+    for jointID0, jointID1 in members:
+        truss.AddNewMember(jointID0, jointID1, memberType)
 
     # Do direct stiffness method:
     truss.Solve()
@@ -60,7 +60,7 @@ def TestExample():
 ### Constructor
 
 ```python
-Truss(dim)
+Truss(dim) -> None
 ```
 
 - **`dim`** : Dimension of the truss (only can be `2` or `3`).
@@ -70,10 +70,9 @@ Truss(dim)
 ### Define a new joint
 
 ```python
-Truss.AddNewJoint(jointID, vector, supportType=SupportType.NO) -> None
+Truss.AddNewJoint(vector, supportType=SupportType.NO) -> None
 ```
 
-- **`jointID`** : ID number of the joint.
 - **`vector`** : Position of each joints in the truss.
 - **`supportType`** : Support type of the joint. The following is the options of support type in slientruss3d:
 
@@ -99,10 +98,9 @@ Truss.AddExternalForce(jointID, vector) -> None
 ### Define a new member
 
 ```python
-Truss.AddNewMember(memberID, jointID0, jointID1, memberType=MemberType()) -> None
+Truss.AddNewMember(jointID0, jointID1, memberType=MemberType()) -> None
 ```
 
-- **`memberID`** : ID number of the member.
 - **`jointID0`** : ID number of the first joint of this member.
 - **`jointID1`** : ID number of the second joint of this member.
 - **`memberType`** : Member type which contain the information about `cross-sectional area`, `Young's modulus`, `density` of this member.
@@ -176,12 +174,14 @@ Truss.GetInternalStresses() -> dict[int, float]
 ### Get internal force
 
 ```python
-Truss.GetInternalForces() -> dict[int, float]
+Truss.GetInternalForces(isProtect=True) -> dict[int, float]
 ```
 
 - Get inetrnal force at each member. It returns a dictionary whose key is `member ID` and value is `force magnitude`.
 
-    > Note that if you haven't done structural analysis yet, this method will return `None`.
+    > Note that if you haven't done structural analysis yet, this method will return `None`.  
+
+- **`isProtect`** : If it's `True`, then return a deep-copy of the result of internal forces stored in Truss object. Otherwise, return its reference directly, but remember not to change any value in this reference. 
 
 <br/>
 
@@ -189,12 +189,14 @@ Truss.GetInternalForces() -> dict[int, float]
 ### Get joint displacement
 
 ```python
-Truss.GetDisplacements() -> dict[int, numpy.array]
+Truss.GetDisplacements(isProtect=True) -> dict[int, numpy.array]
 ```
 
 - Get displacement at each joint. It returns a dictionary whose key is `joint ID` and value is `displacement vector`.
 
-    > Note that if you haven't done structural analysis yet, this method will return `None`.
+    > Note that if you haven't done structural analysis yet, this method will return `None`.  
+
+- **`isProtect`** : If it's `True`, then return a deep-copy of the result of joint displacements stored in Truss object. Otherwise, return its reference directly, but remember not to change any value in this reference. 
 
 <br/>
 

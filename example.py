@@ -92,14 +92,14 @@ def TestExample():
     members    = [(0, 4), (1, 4), (2, 4), (3, 4), (1, 2), (1, 3)]
     memberType = MemberType(1, 1e7, 1)
 
-    for i, (joint, support) in enumerate(zip(joints, supports)):
-        truss.AddNewJoint(i, joint, support)
+    for joint, support in zip(joints, supports):
+        truss.AddNewJoint(joint, support)
         
-    for i, force in forces:
-        truss.AddExternalForce(i, force)
+    for jointID, force in forces:
+        truss.AddExternalForce(jointID, force)
     
-    for i, (jointID0, jointID1) in enumerate(members):
-        truss.AddNewMember(i, jointID0, jointID1, memberType)
+    for jointID0, jointID1 in members:
+        truss.AddNewMember(jointID0, jointID1, memberType)
 
     # Do direct stiffness method:
     truss.Solve()
@@ -141,7 +141,7 @@ def TestLoadFromJSON():
     # Plot layout settings:
     IS_EQUAL_AXIS           = True   # Whether to use actual aspect ratio in the truss figure or not.
     MAX_SCALED_DISPLACEMENT = 10     # Scale the max value of all dimensions of displacements.
-    MAX_SCALED_FORCE        = 100     # Scale the max value of all dimensions of force arrows.
+    MAX_SCALED_FORCE        = 50     # Scale the max value of all dimensions of force arrows.
     POINT_SIZE_SCALE_FACTOR = 1      # Scale the default size of joint point in the truss figure.
     ARROW_SIZE_SCALE_FACTOR = 1      # Scale the default size of force arrow in the truss figure.
     # ----------------------------------------------------------
@@ -211,12 +211,12 @@ def TestGenerateCubeTruss():
     # Some parameters for your generated cube truss:
     GRID_RANGE                = (5, 5, 5)
     CUBE_NUMBER               = 4
-    GENERATE_NUMBER           = 100
-    EDGE_LENGTH_RANGE         = (20, 60)
+    GENERATE_NUMBER           = 10
+    EDGE_LENGTH_RANGE         = (100, 200)
     EXTERNAL_FORCE_RANGE      = [(-1000, 1000), (-1000, 1000), (-1000, 1000)]
     IS_DO_STRUCTURAL_ANALYSIS = True
     IS_PLOT_GENERATED_TRUSS   = True
-    SAVE_FOLDER               = './'
+    SAVE_FOLDER               = './generate'
 
     # Generate cube-like trusses:
     trussList = GenerateRandomCubeTrusses(gridRange=GRID_RANGE,
@@ -231,11 +231,51 @@ def TestGenerateCubeTruss():
     return trussList
 
 
+def TestDataAugmentation():
+    from slientruss3d.generate import GenerateRandomCubeTrusses
+    from slientruss3d.generate import MoveToCentroid, RandomTranslation, AddJointNoise, RandomResetPin, NoChange, TrussDataAugmenterList
+
+    # Some parameters for your generated cube truss:
+    GRID_RANGE                = (5, 5, 5)
+    CUBE_NUMBER               = 4
+    GENERATE_NUMBER           = 1
+    EDGE_LENGTH_RANGE         = (100, 200)
+    EXTERNAL_FORCE_RANGE      = [(-1000, 1000), (-1000, 1000), (-1000, 1000)]
+    IS_DO_STRUCTURAL_ANALYSIS = True
+    IS_PLOT_GENERATED_TRUSS   = True
+    SAVE_FOLDER               = './generate/augmentations'
+
+    # Data augmentor:
+    transforms = TrussDataAugmenterList(
+        NoChange(),                                                         # Do nothing
+        MoveToCentroid(),                                                   # Move the centroid of the truss to [0., 0., 0.]
+        RandomTranslation(translateRange=[-30., 30.]),                      # Translate the whole truss randomly
+        AddJointNoise(noiseMeans=[0., 0., 0.], noiseStds=[10., 10., 10.]),  # Add guassian noise to all positions of the joints
+        RandomResetPin(minNumPin=5, maxNumPinRatio=0.6)                     # Reset the positions and number of pin supports
+    )
+
+    # Generate cube-like truss:
+    truss = GenerateRandomCubeTrusses(gridRange=GRID_RANGE,
+                                      numCubeRange=(CUBE_NUMBER, CUBE_NUMBER),
+                                      numEachRange=(1, GENERATE_NUMBER),
+                                      lengthRange=EDGE_LENGTH_RANGE,
+                                      forceRange=EXTERNAL_FORCE_RANGE,
+                                      isDoStructuralAnalysis=IS_DO_STRUCTURAL_ANALYSIS,
+                                      isPlotTruss=IS_PLOT_GENERATED_TRUSS,
+                                      saveFolder=SAVE_FOLDER,
+                                      seed=42,
+                                      augmenter=transforms  # <- Do data augmentation !!!
+                                    )[0]
+
+    return truss
+    
+
 if __name__ == '__main__':
+    pass
     # TestTimeConsuming()
     # TestExample()
     # TestLoadFromJSON()
-    TestPlot()
+    # TestPlot()
     # TestGA()
     # TestGenerateCubeTruss()
-    
+    # TestDataAugmentation()

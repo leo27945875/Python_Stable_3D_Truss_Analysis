@@ -8,14 +8,96 @@ from .type  import MemberType, SupportType, MetapathType, TaskType
 from .utils import GetCenter, GetAngles, TrussNotSolvedError, InvalidTaskTypeError
 
 
-class TrussBipartiteDataCreator:
+class TrussHeteroDataCreator:
     def __init__(self, metapathType: MetapathType, taskType: TaskType):
         self.metapathType = metapathType
         self.taskType     = taskType
         self.jointIndexToID, self.memberIndexToID, self.source, self.truss = [], [], None, None
+
+    def FromJSON(self, trussJSONFile, trussDim, forceScale, displaceScale, positionScale, usedMemberTypes=None, 
+                       fixedMemberType=MemberType(1., 1e7, 0.1), isUseFixed=True, isOutputFile=False):
+        truss = Truss(trussDim).LoadFromJSON(trussJSONFile, isOutputFile=isOutputFile)
+        fixedInternals, fixedDisplaces = self.__GetFixedInternalAndDisplace(truss, fixedMemberType) if isUseFixed else (None, None)
+        self.truss    , self.source    = truss, trussJSONFile
+        return self.__CreateGraphData(
+            truss, 
+            self.__CreateJointData (truss, forceScale, positionScale, displaceScale , fixedDisplaces ), 
+            self.__CreateMemberData(truss, forceScale, positionScale, fixedInternals, usedMemberTypes), 
+            *self.__CreateEdges(truss)
+        )
     
-    @staticmethod
-    def GetFixedInternalAndDisplace(truss: Truss, fixedMemberType: MemberType):
+    def FromTruss(self, truss, forceScale, displaceScale, positionScale, usedMemberTypes=None, 
+                        fixedMemberType=MemberType(1., 1e7, 0.1), isUseFixed=True, trussSrc=None):
+        fixedInternals, fixedDisplaces = self.__GetFixedInternalAndDisplace(truss, fixedMemberType) if isUseFixed else (None, None)
+        self.truss    , self.source    = truss, trussSrc
+        return self.__CreateGraphData(
+            truss, 
+            self.__CreateJointData (truss, forceScale, positionScale, displaceScale , fixedDisplaces ), 
+            self.__CreateMemberData(truss, forceScale, positionScale, fixedInternals, usedMemberTypes), 
+            *self.__CreateEdges(truss)
+        )
+
+    def AddDenseEdges(self, graphData: HeteroData):
+        if not self.truss:
+            raise RuntimeError("No truss has been assigned.")
+
+        nJoint, nMember = self.truss.nJoint, self.truss.nMember
+
+        jointToMemberEdge = [[], []]
+        for i in range(nJoint):
+            for j in range(nMember):
+                jointToMemberEdge[0].append(i)
+                jointToMemberEdge[1].append(j)
+
+        memberToJointEdge = [jointToMemberEdge[1], jointToMemberEdge[0]]
+        graphData['joint' , 'jFCm', 'member'].edge_index = torch.tensor(jointToMemberEdge, dtype=torch.long)
+        graphData['member', 'mFCj', 'joint' ].edge_index = torch.tensor(memberToJointEdge, dtype=torch.long)
+
+        if self.metapathType == MetapathType.USE_IMPLICIT:
+            jointToJointEdge = [[], []]
+            for i in range(nJoint):
+                for j in range(nJoint): 
+                    jointToJointEdge[0].append(i)
+                    jointToJointEdge[1].append(j)
+
+            memberToMemberEdge = [[], []]
+            for i in range(nMember):
+                for j in range(nMember): 
+                    memberToMemberEdge[0].append(i)
+                    memberToMemberEdge[1].append(j)
+
+            graphData['joint' , 'jFCj', 'joint' ].edge_index = torch.tensor(jointToJointEdge  , dtype=torch.long)
+            graphData['member', 'mFCm', 'member'].edge_index = torch.tensor(memberToMemberEdge, dtype=torch.long)
+
+        return graphData
+    
+
+    def AddMasterNode(self, graphData: HeteroData, embeddingDim=1, fillValue=1.):
+        if not self.truss:
+            raise RuntimeError("No truss has been assigned.")
+        
+        nJoint, nMember = self.truss.nJoint, self.truss.nMember
+
+        jointToMasterEdge  = [[i for i in range(nJoint )], [0 for _ in range(nJoint )]]
+        masterToJointEdge  = [[0 for _ in range(nJoint )], [i for i in range(nJoint )]]
+        memberToMasterEdge = [[i for i in range(nMember)], [0 for _ in range(nMember)]]
+        masterToMemberEdge = [[0 for _ in range(nMember)], [i for i in range(nMember)]]
+
+        graphData['master'].x = torch.tensor([[fillValue] for _ in range(embeddingDim)])
+        graphData['joint' , 'j2M', 'master'].edge_index = torch.tensor(jointToMasterEdge , dtype=torch.long)
+        graphData['master', 'M2j', 'joint' ].edge_index = torch.tensor(masterToJointEdge , dtype=torch.long)
+        graphData['member', 'm2M', 'master'].edge_index = torch.tensor(memberToMasterEdge, dtype=torch.long)
+        graphData['master', 'M2m', 'member'].edge_index = torch.tensor(masterToMemberEdge, dtype=torch.long)
+
+        return graphData
+    
+    def __GetEdgeFromSparse(csrMat: csr_matrix):
+        csrMat[csrMat > 1] = 1
+        cooMat = coo_matrix(csrMat)
+        row, col = cooMat.row.tolist(), cooMat.col.tolist()
+        return [row, col]
+    
+    def __GetFixedInternalAndDisplace(truss: Truss, fixedMemberType: MemberType):
         truss = truss.Copy()
         for memberID in truss.GetMemberIDs():
             truss.SetMemberType(memberID, fixedMemberType)
@@ -23,31 +105,7 @@ class TrussBipartiteDataCreator:
         truss.Solve()
         return truss.GetInternalStresses(), truss.GetDisplacements()
     
-    @staticmethod
-    def GetEdgeFromSparse(csrMat: csr_matrix):
-        csrMat[csrMat > 1] = 1
-        cooMat = coo_matrix(csrMat)
-        row, col = cooMat.row.tolist(), cooMat.col.tolist()
-        return [row, col]
-
-    def FromJSON(self, trussJSONFile, trussDim, forceScale, displaceScale, positionScale, usedMemberTypes, fixedMemberType=MemberType(1., 1e7, 0.1), isUseFixed=True, isOutputFile=False):
-        truss = Truss(trussDim).LoadFromJSON(trussJSONFile, isOutputFile=isOutputFile)
-        fixedInternals, fixedDisplaces = self.GetFixedInternalAndDisplace(truss, fixedMemberType) if isUseFixed else (None, None)
-        self.truss    , self.source    = truss, trussJSONFile
-        return self.CreateGraphData(truss, 
-                                    self.CreateJointData (truss, forceScale, positionScale, displaceScale , fixedDisplaces ), 
-                                    self.CreateMemberData(truss, forceScale, positionScale, fixedInternals, usedMemberTypes), 
-                                    *self.CreateEdges(truss))
-    
-    def FromTruss(self, trussID, truss, forceScale, displaceScale, positionScale, usedMemberTypes, fixedMemberType=MemberType(1., 1e7, 0.1), isUseFixed=True):
-        fixedInternals, fixedDisplaces = self.GetFixedInternalAndDisplace(truss, fixedMemberType) if isUseFixed else (None, None)
-        self.truss    , self.source    = truss, trussID
-        return self.CreateGraphData(truss, 
-                                    self.CreateJointData (truss, forceScale, positionScale, displaceScale , fixedDisplaces ), 
-                                    self.CreateMemberData(truss, forceScale, positionScale, fixedInternals, usedMemberTypes), 
-                                    *self.CreateEdges(truss))
-
-    def CreateJointData(self, truss, forceScale, positionScale, displaceScale, fixedDisplaces):
+    def __CreateJointData(self, truss, forceScale, positionScale, displaceScale, fixedDisplaces):
         # Clear the mapping which is from joint indexes in dataset to joint IDs in the truss:
         self.jointIndexToID.clear()
 
@@ -97,7 +155,7 @@ class TrussBipartiteDataCreator:
 
         return jointData
     
-    def CreateMemberData(self, truss, forceScale, positionScale, fixedInternals, usedMemberTypes):
+    def __CreateMemberData(self, truss, forceScale, positionScale, fixedInternals, usedMemberTypes):
         # Clear the mapping which is from member indexes in dataset to member IDs in the truss:
         self.memberIndexToID.clear()
 
@@ -122,7 +180,8 @@ class TrussBipartiteDataCreator:
                     ])
 
                 # Y data (for imiation learning):
-                memberData['y'].append([usedMemberTypes.index(member.memberType)])
+                if usedMemberTypes is not None:
+                    memberData['y'].append([usedMemberTypes.index(member.memberType)])
 
                 # Record a mapping which is from member indexes in dataset to member IDs in the truss:
                 self.memberIndexToID.append(memberID)
@@ -138,7 +197,7 @@ class TrussBipartiteDataCreator:
                     *GetAngles(p0, p1),
                     member.length / positionScale,
                     (fixedInternals[memberID] / forceScale if memberID in fixedInternals else 0.),
-                    usedMemberTypes.index(member.memberType)
+                    member.memberType.a
                 ])
 
                 # Y data:
@@ -152,7 +211,7 @@ class TrussBipartiteDataCreator:
         
         return memberData
     
-    def CreateEdges(self, truss):
+    def __CreateEdges(self, truss):
         if not (self.jointIndexToID and self.memberIndexToID):
             raise ValueError("not (self.jointIndexToID and self.memberIndexToID)")
 
@@ -168,68 +227,13 @@ class TrussBipartiteDataCreator:
         memberToJointAdj  = coo_matrix(([1] * len(memberIndexList), memberToJointEdge), shape=(truss.nMember, truss.nJoint ))
         
         if self.metapathType == MetapathType.USE_IMPLICIT:
-            jointToJointEdge   = self.GetEdgeFromSparse(jointToMemberAdj @ memberToJointAdj)
-            memberToMemberEdge = self.GetEdgeFromSparse(memberToJointAdj @ jointToMemberAdj)
+            jointToJointEdge   = self.__GetEdgeFromSparse(jointToMemberAdj @ memberToJointAdj)
+            memberToMemberEdge = self.__GetEdgeFromSparse(memberToJointAdj @ jointToMemberAdj)
             return [jointToMemberEdge, memberToJointEdge, jointToJointEdge, memberToMemberEdge]
 
         return [jointToMemberEdge, memberToJointEdge, None, None]
     
-    def AddDenseEdges(self, graphData):
-        if not self.truss:
-            raise RuntimeError("No truss has been assigned.")
-
-        nJoint, nMember = self.truss.nJoint, self.truss.nMember
-
-        jointToMemberEdge = [[], []]
-        for i in range(nJoint):
-            for j in range(nMember):
-                jointToMemberEdge[0].append(i)
-                jointToMemberEdge[1].append(j)
-
-        memberToJointEdge = [jointToMemberEdge[1], jointToMemberEdge[0]]
-        graphData['joint' , 'jFCm', 'member'].edge_index = torch.tensor(jointToMemberEdge, dtype=torch.long)
-        graphData['member', 'mFCj', 'joint' ].edge_index = torch.tensor(memberToJointEdge, dtype=torch.long)
-
-        if self.metapathType == MetapathType.USE_IMPLICIT:
-            jointToJointEdge = [[], []]
-            for i in range(nJoint):
-                for j in range(nJoint): 
-                    jointToJointEdge[0].append(i)
-                    jointToJointEdge[1].append(j)
-
-            memberToMemberEdge = [[], []]
-            for i in range(nMember):
-                for j in range(nMember): 
-                    memberToMemberEdge[0].append(i)
-                    memberToMemberEdge[1].append(j)
-
-            graphData['joint' , 'jFCj', 'joint' ].edge_index = torch.tensor(jointToJointEdge  , dtype=torch.long)
-            graphData['member', 'mFCm', 'member'].edge_index = torch.tensor(memberToMemberEdge, dtype=torch.long)
-
-        return graphData
-    
-
-    def AddMasterNode(self, graphData, embeddingDim=1, fillValue=1.):
-        if not self.truss:
-            raise RuntimeError("No truss has been assigned.")
-        
-        nJoint, nMember = self.truss.nJoint, self.truss.nMember
-
-        jointToMasterEdge  = [[i for i in range(nJoint )], [0 for _ in range(nJoint )]]
-        masterToJointEdge  = [[0 for _ in range(nJoint )], [i for i in range(nJoint )]]
-        memberToMasterEdge = [[i for i in range(nMember)], [0 for _ in range(nMember)]]
-        masterToMemberEdge = [[0 for _ in range(nMember)], [i for i in range(nMember)]]
-
-        graphData['master'].x = torch.tensor([[fillValue] for _ in range(embeddingDim)])
-        graphData['joint' , 'j2M', 'master'].edge_index = torch.tensor(jointToMasterEdge , dtype=torch.long)
-        graphData['master', 'M2j', 'joint' ].edge_index = torch.tensor(masterToJointEdge , dtype=torch.long)
-        graphData['member', 'm2M', 'master'].edge_index = torch.tensor(memberToMasterEdge, dtype=torch.long)
-        graphData['master', 'M2m', 'member'].edge_index = torch.tensor(masterToMemberEdge, dtype=torch.long)
-
-        return graphData
-
-    
-    def CreateGraphData(self, truss, jointData, memberData, jointToMemberEdge, memberToJointEdge, jointToJointEdge=None, memberToMemberEdge=None):
+    def __CreateGraphData(self, truss, jointData, memberData, jointToMemberEdge, memberToJointEdge, jointToJointEdge=None, memberToMemberEdge=None):
         bigraphData = HeteroData()
         bigraphData['src'] = self.source
         bigraphData['originWeight'] = truss.weight
