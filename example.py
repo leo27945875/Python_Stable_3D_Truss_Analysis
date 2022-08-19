@@ -30,16 +30,16 @@ def TestPlot():
     from slientruss3d.plot  import TrussPlotter
 
     # Global variables 
-    TEST_FILE_NUMBER        = 6
+    TEST_FILE_NUMBER        = 10
     TEST_LOAD_CASE          = 0
     TEST_INPUT_FILE         = f"./data/bar-{TEST_FILE_NUMBER}_output_{TEST_LOAD_CASE}.json"
     TEST_PLOT_SAVE_PATH     = f"./plot/bar-{TEST_FILE_NUMBER}_plot_{TEST_LOAD_CASE}.png"
-    TRUSS_DIMENSION         = 3
-    IS_EQUAL_AXIS           = False
+    TRUSS_DIMENSION         = 2
+    IS_EQUAL_AXIS           = True
     IS_PLOT_STRESS          = True
     IS_SAVE_PLOT            = False
     MAX_SCALED_DISPLACEMENT = 2 
-    MAX_SCALED_FORCE        = 10   
+    MAX_SCALED_FORCE        = 100
     POINT_SIZE_SCALE_FACTOR = 1
     ARROW_SIZE_SCALE_FACTOR = 1
 
@@ -234,8 +234,8 @@ def TestGenerateCubeTruss():
 if __name__ == '__main__':
     # TestTimeConsuming()
     # TestExample()
-    TestLoadFromJSON()
-    # TestPlot()
+    # TestLoadFromJSON()
+    TestPlot()
     # TestGA()
     # TestGenerateCubeTruss()
     
