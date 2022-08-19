@@ -19,7 +19,7 @@ Generate cube-like trusses and save them into JSON files.
 ```python
 from slientruss3d.truss    import Truss
 from slientruss3d.type     import LinkType, GenerateMethod
-from slientruss3d.generate import GenerateRandomCubeTrusses
+from slientruss3d.generate import GenerateRandomCubeTrusses, NoChange
 
 GenerateRandomCubeTrusses(gridRange              = (5, 5, 5), 
                           numCubeRange           = (5, 5), 
@@ -36,6 +36,7 @@ GenerateRandomCubeTrusses(gridRange              = (5, 5, 5),
                           isPlotTruss            = False,
                           isPrintMessage         = True,
                           saveFolder             = None,
+                          augmenter              = NoChange(),
                           seed                   = None  ) -> list[Truss]
 
 ```
@@ -55,6 +56,7 @@ GenerateRandomCubeTrusses(gridRange              = (5, 5, 5),
 - **`isPlotTruss`** : Whether to plot the truss after each truss be generated.
 - **`isPrintMessage`** : Whether to print the message for the generating progress on the screen.
 - **`saveFolder`** : Folder to save the generated result (in JSON file). If it's `None`, this method won't save the generated result to JSON file.
+- **`augmenter`** : (We will discuss it in the next section)
 - **`seed`** : Set random seed.
 
 <br/>
