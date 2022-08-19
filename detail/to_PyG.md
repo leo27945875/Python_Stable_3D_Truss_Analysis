@@ -107,7 +107,7 @@ TrussHeteroDataCreator.AddMasterNode(graphData: torch_geometric.data.HeteroData,
 TrussHeteroDataCreator.truss : Truss
 ```
 
-- Source of the origin truss. You could use it to find the origin Truss object from HeteroData.
+- Source of the origin truss. You could use it to find the origin Truss object from a batch of HeteroData.
 
 ```python
 TrussHeteroDataCreator.source : Any
