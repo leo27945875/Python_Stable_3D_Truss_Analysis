@@ -98,3 +98,29 @@ TrussHeteroDataCreator.AddMasterNode(graphData: torch_geometric.data.HeteroData,
 - **`graphData`** : HeteroData.
 - **`embeddingDim`** : Dimension of the initial master node embedding.
 - **`fillValue`** : Initial value of all the elements in master node embedding.
+
+### Some useful properties
+
+- Origin Truss object.
+
+```python
+TrussHeteroDataCreator.truss : Truss
+```
+
+- Source of the origin truss. You could use it to find the origin Truss object from HeteroData.
+
+```python
+TrussHeteroDataCreator.source : Any
+```
+
+- Mapping from the indices of HeteroData["joint"] to jointIDs in Truss object.
+
+```python
+TrussHeteroDataCreator.jointIndexToID : list[int]
+```
+
+- Mapping from the indices of HeteroData["member"] to memberIDs in Truss object.
+
+```python
+TrussHeteroDataCreator.memberIndexToID : list[int]
+```
