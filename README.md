@@ -111,7 +111,7 @@ RAM: 8GB DDR4 * 2
     <img src="./detail/figure/after_aug.png" alt="drawing" width="400"/>
 </p>
 
-- _**Graph Deep Learning**_ : With the increasing importance of deep learning in the field of truss design, we also provide a solution to let our users convert the `Truss` object to the data structure of [`Pytorch-Geometric`](https://github.com/pyg-team/pytorch_geometric) conveniently. See the details in [Convert Truss to Pytorch-Geometric HeteroData](./detail/to_PyG#convert-truss-to-pytorch-geometric-heterodata).
+- _**Graph Deep Learning**_ : With the increasing importance of deep learning in the field of truss design, we also provide a solution to let our users convert the `Truss` object to the data structure of [`Pytorch-Geometric`](https://github.com/pyg-team/pytorch_geometric) conveniently. See the details in [Convert Truss to Pytorch-Geometric HeteroData](./detail/to_PyG.md#convert-truss-to-pytorch-geometric-heterodata).
 
 <p align="center">
     <img src="https://raw.githubusercontent.com/pyg-team/pyg_sphinx_theme/master/pyg_sphinx_theme/static/img/pyg_logo_text.svg?sanitize=true" alt="drawing" width="200"/>
