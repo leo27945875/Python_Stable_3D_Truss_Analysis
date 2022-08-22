@@ -1,6 +1,5 @@
 # Convert Truss to Pytorch-Geometric HeteroData
 
-
 With the increasing importance of graph deep learning in the field of truss design, we also provide a solution to let our users convert the `Truss` object to the data structure of `Pytorch-Geometric` conveniently.  
 After slientruss3d v2.0.0, you can use **`slientruss3d.data.TrussHeteroDataCreator`** to build heterogeneous graph data (torch_geometric.data.HeteroData).
 
@@ -177,3 +176,32 @@ TrussHeteroDataCreator.memberIndexToID : list[int]
         > \[ Origin_Weight \]
     - Source of each Truss :
         > \[ Source \]
+
+## Example
+
+The following is the example of **`TrussHeteroDataCreator`**:
+
+```python
+from slientruss3d.data  import TrussHeteroDataCreator
+from slientruss3d.type  import TaskType
+from slientruss3d.truss import Truss 
+
+JSON_FILE    = "./data/bar-25_input_0.json"
+TRUSS_DIM    = 3
+IS_USE_TRUSS = False
+
+# Creator to create PyG's HeteroData:
+creator = TrussHeteroDataCreator(taskType=TaskType.OPTIMIZATION)
+
+# Create PyG's HeteroData from JSON file or Truss object:
+if IS_USE_TRUSS:
+    truss = Truss(TRUSS_DIM).LoadFromJSON(JSON_FILE)
+    graph = creator.FromTruss(truss, trussSrc=JSON_FILE)
+else:
+    graph = creator.FromJSON(JSON_FILE, TRUSS_DIM)
+
+# Print the structure of the HeteroData:
+print("Hetero Graph Structure:\n" + "-" * 50)
+print(graph)
+
+```
