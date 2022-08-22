@@ -9,14 +9,17 @@ from .utils import GetCenter, GetAngles, TrussNotSolvedError, InvalidTaskTypeErr
 
 
 class TrussHeteroDataCreator:
-    def __init__(self, metapathType: MetapathType, taskType: TaskType):
+    def __init__(self, metapathType: MetapathType = MetapathType.NO_IMPLICIT, taskType: TaskType = TaskType.OPTIMIZATION):
         self.metapathType = metapathType
         self.taskType     = taskType
         self.jointIndexToID, self.memberIndexToID, self.source, self.truss = [], [], None, None
 
-    def FromJSON(self, trussJSONFile, trussDim, forceScale, displaceScale, positionScale, usedMemberTypes=None, 
+    def FromJSON(self, trussJSONFile, trussDim, forceScale=1., displaceScale=1., positionScale=1., usedMemberTypes=None, 
                        fixedMemberType=MemberType(1., 1e7, 0.1), isUseFixed=True, isOutputFile=False):
         truss = Truss(trussDim).LoadFromJSON(trussJSONFile, isOutputFile=isOutputFile)
+        if not isOutputFile: 
+            truss.Solve()
+
         fixedInternals, fixedDisplaces = self.__GetFixedInternalAndDisplace(truss, fixedMemberType) if isUseFixed else (None, None)
         self.truss    , self.source    = truss, trussJSONFile
         return self.__CreateGraphData(
@@ -26,7 +29,7 @@ class TrussHeteroDataCreator:
             *self.__CreateEdges(truss)
         )
     
-    def FromTruss(self, truss, forceScale, displaceScale, positionScale, usedMemberTypes=None, 
+    def FromTruss(self, truss, forceScale=1., displaceScale=1., positionScale=1., usedMemberTypes=None, 
                         fixedMemberType=MemberType(1., 1e7, 0.1), isUseFixed=True, trussSrc=None):
         fixedInternals, fixedDisplaces = self.__GetFixedInternalAndDisplace(truss, fixedMemberType) if isUseFixed else (None, None)
         self.truss    , self.source    = truss, trussSrc
@@ -91,12 +94,14 @@ class TrussHeteroDataCreator:
 
         return graphData
     
+    @staticmethod
     def __GetEdgeFromSparse(csrMat: csr_matrix):
         csrMat[csrMat > 1] = 1
         cooMat = coo_matrix(csrMat)
         row, col = cooMat.row.tolist(), cooMat.col.tolist()
         return [row, col]
     
+    @staticmethod
     def __GetFixedInternalAndDisplace(truss: Truss, fixedMemberType: MemberType):
         truss = truss.Copy()
         for memberID in truss.GetMemberIDs():

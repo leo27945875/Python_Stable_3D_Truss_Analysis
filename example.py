@@ -268,6 +268,19 @@ def TestDataAugmentation():
                                     )[0]
 
     return truss
+
+
+def TestTrussHeteroData():
+    from slientruss3d.data import TrussHeteroDataCreator
+    from slientruss3d.type import MetapathType, TaskType
+
+    JSON_FILE = "./data/bar-25_input_0.json"
+
+    creator = TrussHeteroDataCreator(MetapathType.NO_IMPLICIT, TaskType.REGRESSION)
+    graph   = creator.FromJSON(JSON_FILE, trussDim=3, forceScale=1., displaceScale=1., positionScale=1.)
+
+    print("Hetero Graph Structure:\n" + "-" * 50)
+    print(graph)
     
 
 if __name__ == '__main__':
@@ -279,3 +292,4 @@ if __name__ == '__main__':
     # TestGA()
     # TestGenerateCubeTruss()
     # TestDataAugmentation()
+    TestTrussHeteroData()
