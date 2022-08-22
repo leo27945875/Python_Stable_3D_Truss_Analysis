@@ -134,14 +134,14 @@ TrussHeteroDataCreator.memberIndexToID : list[int]
 
 - X data :
     - Joint :
-        - If `isUseFix` is `True` :
+        - If `isUseFixed` is `True` :
             > \[ Position_X, Position_Y, Position_Z, Force_X, Force_Y, Force_Z, Prior_Displace_X, Prior_Displace_Y, Prior_Displace_Z, Is_Support \]
-        - If `isUseFix` is `False` :
+        - If `isUseFixed` is `False` :
             > \[ Position_X, Position_Y, Position_Z, Force_X, Force_Y, Force_Z, Is_Support \]
     - Member :
-        - If `isUseFix` is `True` :
+        - If `isUseFixed` is `True` :
             > \[ Centroid_X, Centroid_Y, Centroid_Z, sin(Angle_Z_Axis), cos(Angle_Z_Axis), sin(Angle_X_Axis), cos(Angle_X_Axis), Member_Length, Prior_Internal_Force \]
-        - If `isUseFix` is `False` :
+        - If `isUseFixed` is `False` :
             > \[ Centroid_X, Centroid_Y, Centroid_Z, sin(Angle_Z_Axis), cos(Angle_Z_Axis), sin(Angle_X_Axis), cos(Angle_X_Axis), Member_Length \]
 - Y data :
     - Joint :
@@ -161,14 +161,14 @@ TrussHeteroDataCreator.memberIndexToID : list[int]
 
 - X data :
     - Joint :
-        - If `isUseFix` is `True` :
+        - If `isUseFixed` is `True` :
             > \[ Position_X, Position_Y, Position_Z, Force_X, Force_Y, Force_Z, Prior_Displace_X, Prior_Displace_Y, Prior_Displace_Z, Is_Support \]
-        - If `isUseFix` is `False` :
+        - If `isUseFixed` is `False` :
             > \[ Position_X, Position_Y, Position_Z, Force_X, Force_Y, Force_Z, Is_Support \]
     - Member :
-        - If `isUseFix` is `True` :
+        - If `isUseFixed` is `True` :
             > \[ Centroid_X, Centroid_Y, Centroid_Z, sin(Angle_Z_Axis), cos(Angle_Z_Axis), sin(Angle_X_Axis), cos(Angle_X_Axis), Member_Length, Prior_Axial_Force, Cross_Sectioal_Area \]
-        - If `isUseFix` is `False` :
+        - If `isUseFixed` is `False` :
             > \[ Centroid_X, Centroid_Y, Centroid_Z, sin(Angle_Z_Axis), cos(Angle_Z_Axis), sin(Angle_X_Axis), cos(Angle_X_Axis), Member_Length, Cross_Sectioal_Area \]
 - Y data :
     - Joint :
