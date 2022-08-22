@@ -73,7 +73,7 @@ TrussHeteroDataCreator.FromTruss(
 - **`usedMemberTypes`** : If you want to do regression or imiation-learning task, please provide the list of used MemberTypes.
 - **`fixedMemberType`** : This parameter is used to get prior stress and displacement of the truss.
 - **`isUseFixed`** : Whether to include prior stress and displacement in HeteroData or not.
-- **`trussSrc`** : The identifier of the input truss. (Can be None, an integer, source JSON filename ... etc)
+- **`trussSrc`** : An identifier of the input truss. (Can be None, an integer, source JSON filename ... etc)
 
 <br/>
 
@@ -124,3 +124,56 @@ TrussHeteroDataCreator.jointIndexToID : list[int]
 ```python
 TrussHeteroDataCreator.memberIndexToID : list[int]
 ```
+
+## Fields in HeteroData
+
+### For optimization task (TaskType.OPTIMIZATION)
+
+- X data :
+    - Joint :
+        - If `isUseFix` is `True` :
+            > \[ Position_X, Position_Y, Position_Z, Force_X, Force_Y, Force_Z, Prior_Displace_X, Prior_Displace_Y, Prior_Displace_Z, Is_Support \]
+        - If `isUseFix` is `False` :
+            > \[ Position_X, Position_Y, Position_Z, Force_X, Force_Y, Force_Z, Is_Support \]
+    - Member :
+        - If `isUseFix` is `True` :
+            > \[ Centroid_X, Centroid_Y, Centroid_Z, sin(Angle_Z_Axis), cos(Angle_Z_Axis), sin(Angle_X_Axis), cos(Angle_X_Axis), Member_Length, Prior_Internal_Force \]
+        - If `isUseFix` is `False` :
+            > \[ Centroid_X, Centroid_Y, Centroid_Z, sin(Angle_Z_Axis), cos(Angle_Z_Axis), sin(Angle_X_Axis), cos(Angle_X_Axis), Member_Length \]
+- Y data :
+    - Joint :
+        > (No data)
+    - Member :
+        - If `usedMemberTypes` is not None :
+            > [Index_of_MemberType_in_`usedMemberTypes`]
+        - If `usedMemberTypes` is None :
+            > (No data)
+- Other :
+    - Origin weigth of each Truss :
+        > \[ Origin_Weight \]
+    - Identifier of each Truss :
+        > \[ Identifier \]
+
+### For Regression task (TaskType.REGRESSION)
+
+- X data :
+    - Joint :
+        - If `isUseFix` is `True` :
+            > \[ Position_X, Position_Y, Position_Z, Force_X, Force_Y, Force_Z, Prior_Displace_X, Prior_Displace_Y, Prior_Displace_Z, Is_Support \]
+        - If `isUseFix` is `False` :
+            > \[ Position_X, Position_Y, Position_Z, Force_X, Force_Y, Force_Z, Is_Support \]
+    - Member :
+        - If `isUseFix` is `True` :
+            > \[ Centroid_X, Centroid_Y, Centroid_Z, sin(Angle_Z_Axis), cos(Angle_Z_Axis), sin(Angle_X_Axis), cos(Angle_X_Axis), Member_Length, Prior_Axial_Force, Cross_Sectioal_Area \]
+        - If `isUseFix` is `False` :
+            > \[ Centroid_X, Centroid_Y, Centroid_Z, sin(Angle_Z_Axis), cos(Angle_Z_Axis), sin(Angle_X_Axis), cos(Angle_X_Axis), Member_Length, Cross_Sectioal_Area \]
+- Y data :
+    - Joint :
+        > \[ Displace_X, Displace_Y, Displace_Z \]
+    - Member :
+        > \[ Axial_Stress \]
+- Other :
+    - Origin weigth of each Truss :
+        > \[ Origin_Weight \]
+    - Source of each Truss :
+        > \[ Source \]

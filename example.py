@@ -278,12 +278,12 @@ def TestTrussHeteroData():
     IS_USE_TRUSS = False
 
     # Creator to create PyG's HeteroData:
-    creator = TrussHeteroDataCreator(taskType=TaskType.REGRESSION)
+    creator = TrussHeteroDataCreator(taskType=TaskType.OPTIMIZATION)
 
     # Create PyG's HeteroData from JSON file or Truss object:
     if IS_USE_TRUSS:
         truss = Truss(TRUSS_DIM).LoadFromJSON(JSON_FILE)
-        graph = creator.FromTruss(truss)
+        graph = creator.FromTruss(truss, trussSrc=JSON_FILE)
     else:
         graph = creator.FromJSON(JSON_FILE, TRUSS_DIM)
 

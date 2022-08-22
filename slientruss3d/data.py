@@ -14,7 +14,7 @@ class TrussHeteroDataCreator:
         self.taskType     = taskType
         self.jointIndexToID, self.memberIndexToID, self.source, self.truss = [], [], None, None
 
-    def FromJSON(self, trussJSONFile, trussDim, forceScale=1., displaceScale=1., positionScale=1., usedMemberTypes=None, 
+    def FromJSON(self, trussJSONFile: str, trussDim: int, forceScale=1., displaceScale=1., positionScale=1., usedMemberTypes: list[MemberType] = None, 
                        fixedMemberType=MemberType(1., 1e7, 0.1), isUseFixed=True, isOutputFile=False):
         truss = Truss(trussDim).LoadFromJSON(trussJSONFile, isOutputFile=isOutputFile)
         if not isOutputFile: 
@@ -29,8 +29,11 @@ class TrussHeteroDataCreator:
             *self.__CreateEdges(truss)
         )
     
-    def FromTruss(self, truss, forceScale=1., displaceScale=1., positionScale=1., usedMemberTypes=None, 
+    def FromTruss(self, truss: Truss, forceScale=1., displaceScale=1., positionScale=1., usedMemberTypes: list[MemberType] = None, 
                         fixedMemberType=MemberType(1., 1e7, 0.1), isUseFixed=True, trussSrc=None):
+        if not truss.isSolved:
+            truss.Solve()
+
         fixedInternals, fixedDisplaces = self.__GetFixedInternalAndDisplace(truss, fixedMemberType) if isUseFixed else (None, None)
         self.truss    , self.source    = truss, trussSrc
         return self.__CreateGraphData(
@@ -122,7 +125,7 @@ class TrussHeteroDataCreator:
                 if fixedDisplaces is None:
                     jointData['x'].append([
                         *([p / positionScale for p in position]),
-                        *([f / forceScale    for f in forces[jointID]] if jointID in forces else [0.] * dim),
+                        *([f / forceScale    for f in forces        [jointID]] if jointID in forces        else [0.] * dim),
                         float(supportType != SupportType.NO)
                     ])
                 else:
@@ -141,12 +144,19 @@ class TrussHeteroDataCreator:
             joints, forces, displaces, dim, jointData = truss.GetJoints(), truss.GetForces(), truss.GetDisplacements(), truss.dim, {'x': [], 'y': []}
             for jointID, (position, supportType) in joints.items():
                 # X data:
-                jointData['x'].append([
-                    *([p / positionScale for p in position]),
-                    *([f / forceScale    for f in forces        [jointID]] if jointID in forces         else [0.] * dim),
-                    *([d / displaceScale for d in fixedDisplaces[jointID]] if jointID in fixedDisplaces else [0.] * dim),
-                    float(supportType != SupportType.NO)
-                ])
+                if fixedDisplaces is None:
+                    jointData['x'].append([
+                        *([p / positionScale for p in position]),
+                        *([f / forceScale    for f in forces        [jointID]] if jointID in forces         else [0.] * dim),
+                        float(supportType != SupportType.NO)
+                    ])
+                else:
+                    jointData['x'].append([
+                        *([p / positionScale for p in position]),
+                        *([f / forceScale    for f in forces        [jointID]] if jointID in forces         else [0.] * dim),
+                        *([d / displaceScale for d in fixedDisplaces[jointID]] if jointID in fixedDisplaces else [0.] * dim),
+                        float(supportType != SupportType.NO)
+                    ])
 
                 # Y data:
                 if not truss.isSolved: raise TrussNotSolvedError("Must do structural analysis first to create regression targets.")
@@ -196,14 +206,23 @@ class TrussHeteroDataCreator:
             joints, members, stresses, memberData = truss.GetJoints(), truss.GetMembers(), truss.GetInternalStresses(), {'x': [], 'y': []}
             for memberID, (jointID0, jointID1, member) in members.items():
                 # X data:
-                p0, p1 = joints[jointID0][0], joints[jointID1][0]
-                memberData['x'].append([
-                    *[p / positionScale for p in GetCenter(p0, p1)],
-                    *GetAngles(p0, p1),
-                    member.length / positionScale,
-                    (fixedInternals[memberID] / forceScale if memberID in fixedInternals else 0.),
-                    member.memberType.a
-                ])
+                if fixedInternals is None:
+                    p0, p1 = joints[jointID0][0], joints[jointID1][0]
+                    memberData['x'].append([
+                        *[p / positionScale for p in GetCenter(p0, p1)],
+                        *GetAngles(p0, p1),
+                        member.length / positionScale,
+                        member.memberType.a
+                    ])
+                else:
+                    p0, p1 = joints[jointID0][0], joints[jointID1][0]
+                    memberData['x'].append([
+                        *[p / positionScale for p in GetCenter(p0, p1)],
+                        *GetAngles(p0, p1),
+                        member.length / positionScale,
+                        (fixedInternals[memberID] / forceScale if memberID in fixedInternals else 0.),
+                        member.memberType.a
+                    ])
 
                 # Y data:
                 if not truss.isSolved: raise TrussNotSolvedError("Must do structural analysis first to create regression targets.")
