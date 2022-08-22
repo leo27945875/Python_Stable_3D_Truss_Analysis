@@ -238,7 +238,6 @@ def TestDataAugmentation():
     # Some parameters for your generated cube truss:
     GRID_RANGE                = (5, 5, 5)
     CUBE_NUMBER               = 4
-    GENERATE_NUMBER           = 1
     EDGE_LENGTH_RANGE         = (100, 200)
     EXTERNAL_FORCE_RANGE      = [(-1000, 1000), (-1000, 1000), (-1000, 1000)]
     IS_DO_STRUCTURAL_ANALYSIS = True
@@ -257,7 +256,7 @@ def TestDataAugmentation():
     # Generate cube-like truss:
     truss = GenerateRandomCubeTrusses(gridRange=GRID_RANGE,
                                       numCubeRange=(CUBE_NUMBER, CUBE_NUMBER),
-                                      numEachRange=(1, GENERATE_NUMBER),
+                                      numEachRange=(1, 1),
                                       lengthRange=EDGE_LENGTH_RANGE,
                                       forceRange=EXTERNAL_FORCE_RANGE,
                                       isDoStructuralAnalysis=IS_DO_STRUCTURAL_ANALYSIS,
@@ -266,13 +265,12 @@ def TestDataAugmentation():
                                       seed=42,
                                       augmenter=transforms  # <- Do data augmentation !!!
                                     )[0]
-
     return truss
 
 
 def TestTrussHeteroData():
     from slientruss3d.data  import TrussHeteroDataCreator
-    from slientruss3d.type  import MetapathType, TaskType
+    from slientruss3d.type  import TaskType
     from slientruss3d.truss import Truss 
 
     JSON_FILE    = "./data/bar-25_input_0.json"
