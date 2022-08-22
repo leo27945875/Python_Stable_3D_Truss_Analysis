@@ -57,7 +57,11 @@ Shih-Chi Cheng                                  (鄭適其)
     - [Generate cube-like truss](./detail/gen_truss.md#Generate-cube-like-truss)
     - [Data Augmentation](./detail/gen_truss.md#data-augmentation)
 7. **Graph Deep Learning**
-    - [Convert Truss to Pytorch-Geometric HeteroData](./detail/to_PyG.md#convert-truss-to-pytorch-geometric-heterodata)
+    - [Introduction](./detail/to_PyG.md#introduction)
+    - [Installation](./detail/to_PyG.md#installation)
+    - [How to use it ?](./detail/to_PyG.md#how-to-use-it)
+    - [Fields in HeteroData](./detail/to_PyG.md#fields-in-heterodata)
+    - [Example code](./detail/to_PyG.md#example-code)
 
 ---
 

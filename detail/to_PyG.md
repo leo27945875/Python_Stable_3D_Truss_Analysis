@@ -1,10 +1,14 @@
 # Convert Truss to Pytorch-Geometric HeteroData
 
+## Introduction
+
 With the increasing importance of graph deep learning in the field of truss design, we also provide a solution to let our users convert the `Truss` object to the data structure of `Pytorch-Geometric` conveniently.  
 After slientruss3d v2.0.0, you can use **`slientruss3d.data.TrussHeteroDataCreator`** to build heterogeneous graph data (torch_geometric.data.HeteroData).
 
 ## Installation
 
+You have to install the `Pytorch` and `PyTorch Geometric` first:  
+[Install Pytorch](https://pytorch.org/)  
 [Install PyTorch Geometric](https://pytorch-geometric.readthedocs.io/en/latest/notes/installation.html)
 
 ## How to use it ?
@@ -177,7 +181,7 @@ TrussHeteroDataCreator.memberIndexToID : list[int]
     - Source of each Truss :
         > \[ Source \]
 
-## Example
+## Example code
 
 The following is the example of **`TrussHeteroDataCreator`**:
 
