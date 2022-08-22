@@ -271,14 +271,25 @@ def TestDataAugmentation():
 
 
 def TestTrussHeteroData():
-    from slientruss3d.data import TrussHeteroDataCreator
-    from slientruss3d.type import MetapathType, TaskType
+    from slientruss3d.data  import TrussHeteroDataCreator
+    from slientruss3d.type  import MetapathType, TaskType
+    from slientruss3d.truss import Truss 
 
-    JSON_FILE = "./data/bar-25_input_0.json"
+    JSON_FILE    = "./data/bar-25_input_0.json"
+    TRUSS_DIM    = 3
+    IS_USE_TRUSS = False
 
-    creator = TrussHeteroDataCreator(MetapathType.NO_IMPLICIT, TaskType.REGRESSION)
-    graph   = creator.FromJSON(JSON_FILE, trussDim=3, forceScale=1., displaceScale=1., positionScale=1.)
+    # Creator to create PyG's HeteroData:
+    creator = TrussHeteroDataCreator(taskType=TaskType.REGRESSION)
 
+    # Create PyG's HeteroData from JSON file or Truss object:
+    if IS_USE_TRUSS:
+        truss = Truss(TRUSS_DIM).LoadFromJSON(JSON_FILE)
+        graph = creator.FromTruss(truss)
+    else:
+        graph = creator.FromJSON(JSON_FILE, TRUSS_DIM)
+
+    # Print the structure of the HeteroData:
     print("Hetero Graph Structure:\n" + "-" * 50)
     print(graph)
     
@@ -292,4 +303,4 @@ if __name__ == '__main__':
     # TestGA()
     # TestGenerateCubeTruss()
     # TestDataAugmentation()
-    TestTrussHeteroData()
+    # TestTrussHeteroData()
