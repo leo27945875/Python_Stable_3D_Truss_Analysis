@@ -16,7 +16,8 @@ You have to install the `Pytorch` and `PyTorch Geometric` first:
 ### Constructor
 
 ```python
-TrussHeteroDataCreator(metapathType: MetapathType, taskType: TaskType) -> None
+TrussHeteroDataCreator(metapathType: MetapathType = MetapathType.NO_IMPLICIT, 
+                       taskType    : TaskType     = TaskType.OPTIMIZATION   ) -> None
 ```
 
 - **`metapathType`** : Whether to use impicit connection of the bipartite graph representation of the truss.
@@ -37,7 +38,10 @@ TrussHeteroDataCreator(metapathType: MetapathType, taskType: TaskType) -> None
 
 ```python
 TrussHeteroDataCreator.FromJSON(
-    trussJSONFile, trussDim, forceScale, displaceScale, positionScale, 
+    trussJSONFile, trussDim, 
+    forceScale=1., 
+    displaceScale=1., 
+    positionScale=1., 
     usedMemberTypes=None, 
     fixedMemberType=MemberType(1., 1e7, 0.1), 
     isUseFixed=True, 
@@ -61,7 +65,10 @@ TrussHeteroDataCreator.FromJSON(
 
 ```python
 TrussHeteroDataCreator.FromTruss(
-    truss, forceScale, displaceScale, positionScale, 
+    truss, 
+    forceScale=1., 
+    displaceScale=1., 
+    positionScale=1., 
     usedMemberTypes=None, 
     fixedMemberType=MemberType(1., 1e7, 0.1), 
     isUseFixed=True, 
