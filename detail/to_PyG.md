@@ -151,8 +151,8 @@ TrussHeteroDataCreator.memberIndexToID : list[int]
 - Other :
     - Origin weigth of each Truss :
         > \[ Origin_Weight \]
-    - Identifier of each Truss :
-        > \[ Identifier \]
+    - Source of each Truss :
+        > \[ Source \]
 
 ### For Regression task (TaskType.REGRESSION)
 
