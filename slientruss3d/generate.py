@@ -312,7 +312,7 @@ class CubeGrid:
 
 
 def GenerateRandomCubeTrusses(gridRange=(5, 5, 5), numCubeRange=(5, 5), numEachRange=(1, 10), lengthRange=(50, 150), forceRange=[(-30000, 30000), (-30000, 30000), (-30000, 30000)], 
-                              nForceRange=None, method=GenerateMethod.Random, linkType=LinkType.Random, memberTypes=[[1., 1e7, 0.1]], isAddPinSupport=True, isAllowParallel=True,
+                              nForceRange=None, method=GenerateMethod.Random, linkType=LinkType.Random, memberTypes=[[1., 1e7, 0.1]], isAddPinSupport=True, isAllowParallel=False,
                               isDoStructuralAnalysis=False, isPlotTruss=False, isPrintMessage=True, saveFolder=None, augmenter=NoChange(), seed=None):
     
     def AssignRandomForces(trussData, forceRange, nForceRange):
