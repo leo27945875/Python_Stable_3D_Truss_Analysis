@@ -79,7 +79,7 @@ The `input` data of truss in the .json file must follow this format :
 ```json
 {
     // Joints 
-    // [ [positionX, positionY, positionZ, support_type] ]
+    // [ [[positionX, positionY, positionZ], support_type] ]
     "joint": [
         [[0 , 0 , 0 ], "PIN"     ],  
         [[36, 0 , 0 ], "PIN"     ],
