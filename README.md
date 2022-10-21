@@ -1,4 +1,4 @@
-# **slientruss3d** : Python for stable truss analysis and optimization tool
+# **slientruss3d** : Python for stable truss analysis and deep learning reseach
 
 [![Python](https://img.shields.io/pypi/pyversions/slientruss3d)](https://pypi.org/project/slientruss3d/)
 [![Version](https://img.shields.io/pypi/v/slientruss3d)](https://pypi.org/project/slientruss3d/)
