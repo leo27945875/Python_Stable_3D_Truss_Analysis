@@ -210,7 +210,7 @@ def TestGenerateCubeTruss():
 
     # Some parameters for your generated cube truss:
     GRID_RANGE                = (5, 5, 5)
-    CUBE_NUMBER               = 4
+    CUBE_NUMBER               = 7
     GENERATE_NUMBER           = 10
     EDGE_LENGTH_RANGE         = (100, 200)
     EXTERNAL_FORCE_RANGE      = [(-1000, 1000), (-1000, 1000), (-1000, 1000)]
@@ -299,6 +299,6 @@ if __name__ == '__main__':
     # TestLoadFromJSON()
     # TestPlot()
     # TestGA()
-    # TestGenerateCubeTruss()
+    TestGenerateCubeTruss()
     # TestDataAugmentation()
     # TestTrussHeteroData()

@@ -27,13 +27,10 @@ def TestLoadFromJSON():
     truss.LoadFromJSON(TEST_INPUT_FILE)
 
     # Do direct stiffness method:
-    displace, internal, external = truss.Solve()
+    truss.Solve()
 
     # Dump all the structural analysis results into a .json file:
     truss.DumpIntoJSON(TEST_OUTPUT_FILE)
-    
-    return displace, internal, external
-
 ```
 
 ---
