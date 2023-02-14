@@ -299,6 +299,6 @@ if __name__ == '__main__':
     # TestLoadFromJSON()
     # TestPlot()
     # TestGA()
-    TestGenerateCubeTruss()
+    # TestGenerateCubeTruss()
     # TestDataAugmentation()
     # TestTrussHeteroData()
